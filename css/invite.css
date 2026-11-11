@@ -27,6 +27,7 @@ body { font-family: var(--sans); line-height: 1.7; word-break: keep-all; -webkit
   padding: 12px 16px; background: var(--px-bg); color: var(--px-ink);
   font-family: 'Galmuri11', var(--sans); line-height: 1.6;
 }
+.stage[hidden] { display: none; }
 .stage-inner { position: relative; width: 100%; max-width: min(420px, calc((100svh - 190px) * 0.78)); }
 canvas { display: block; width: 100%; height: auto; border-radius: 16px; touch-action: none; image-rendering: pixelated; box-shadow: 0 6px 0 #f0cdd6; background: #fff; }
 .topbar { display: flex; justify-content: flex-end; margin-bottom: 6px; }

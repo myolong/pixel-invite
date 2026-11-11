@@ -50,9 +50,26 @@
   $('stageNames').textContent = `${gShort} ♥ ${bShort}`;
   $('stageWhen').textContent = `${W.m}월 ${W.d}일 ${WEEK[W.wd]}요일 ${timeText}`;
 
-  const toInfo = () => {
-    $('info').scrollIntoView({ behavior: 'smooth' });
+  // 청첩장 본문은 버튼을 눌러야 열린다(스크롤로는 안 보임)
+  const stageEl = $('stage'), infoEl = $('info');
+  const openInvite = () => {
+    stageEl.hidden = true;
+    infoEl.hidden = false;
+    window.scrollTo(0, 0);
   };
+  const openStage = () => {
+    infoEl.hidden = true;
+    stageEl.hidden = false;
+    window.scrollTo(0, 0);
+  };
+  const toInfo = () => {
+    if (!infoEl.hidden) return;
+    if (location.hash !== '#invite') history.pushState({ view: 'invite' }, '', '#invite');
+    openInvite();
+  };
+  // 휴대폰 뒤로 가기: 청첩장 → 게임 화면
+  window.addEventListener('popstate', () => { if (location.hash === '#invite') openInvite(); else openStage(); });
+  if (location.hash === '#invite') history.replaceState(null, '', location.pathname + location.search);
   const showMenu = () => {
     mode = 'menu';
     $('resultUi').hidden = true;
@@ -83,6 +100,10 @@
     if (mode === 'game') { game = null; showMenu(); }
     toInfo();
   });
+  const backToStage = () => {
+    if (location.hash === '#invite') history.back();
+    else openStage();
+  };
 
   // ── 입력
   const onPointer = e => {
@@ -142,6 +163,7 @@
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
+    if (stageEl.hidden) { requestAnimationFrame(frame); return; }
     if (mode === 'game' && game) {
       game.update(dt);
       game.draw(ctx);
@@ -279,7 +301,7 @@
       copy(location.href, '청첩장 주소를 복사했어요');
     });
     $('replayBtn').addEventListener('click', () => {
-      $('stage').scrollIntoView({ behavior: 'smooth' });
+      backToStage();
       startGame();
     });
   }
