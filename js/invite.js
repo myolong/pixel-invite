@@ -358,8 +358,10 @@
   }
 
   // 사진이 없으면 픽셀 신랑·신부 그림을 대표 사진 자리에 둔다
-  function drawPixelCover(media) {
+  async function drawPixelCover(media) {
     media.classList.add('pixel');
+    // 사진 얼굴이 있으면 다 읽힌 뒤에 그린다
+    await Promise.all([chars.groom, chars.bride].filter(c => c && c.face).map(c => c.face.decode().catch(() => {})));
     const S = 4;
     const c = document.createElement('canvas');
     c.width = Stage.LW * S; c.height = Stage.LH * S;

@@ -22,6 +22,8 @@
 - `js/invite.js` 오프닝, 게임 흐름, 청첩장 본문(대표 사진·영상, 인사말, 달력, 사진첩 9장, 지도, 계좌, 캘린더, 공유)
 - `invites/<이름>/` 그 청첩장의 사진·영상 파일. 설정의 `cover`(`type`: `photo` 또는 `video`)와 `gallery`에 파일 이름을 적어요.
 
+- `js/face-crop.js` 사진 얼굴: 사진에서 얼굴을 자동으로 찾아(MediaPipe Face Detector, 처음 쓸 때 jsdelivr·Google 저장소에서 받음) 72px 동그란 얼굴로 오려요. 사진은 기기 안에서만 처리하고, 오린 얼굴(몇 KB)만 링크(`look.face`)에 들어가요. 캐릭터는 얼굴이 있으면 픽셀 머리 대신 이 얼굴을 그려요.
+
 글꼴: Galmuri(SIL Open Font License 1.1, `fonts/LICENSE.txt`)
 
 ## 예시 사진·화면 캡처

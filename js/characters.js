@@ -228,14 +228,36 @@ function makeCharacter(look) {
     G: '#2a2033', V: 'rgba(255,255,255,0.85)',
     C: cloth, c: shade(cloth, 0.85), P: '#4a5578',
   };
+  // 사진 얼굴: 픽셀 머리 대신 동그랗게 오린 사진을 머리 자리에 붙인다(drawSprite가 그림)
+  const face = faceImage(look.face);
   const build = head => {
     const layers = [];
     if (look.veil) layers.push(VEIL);
-    layers.push(head, OUTFITS[outfit], HAIRS[hair]);
-    if (look.glasses) layers.push(GLASSES);
-    return bakeSprite(stackLayers(layers), pal);
+    if (face) layers.push(NECK, OUTFITS[outfit]);
+    else {
+      layers.push(head, OUTFITS[outfit], HAIRS[hair]);
+      if (look.glasses) layers.push(GLASSES);
+    }
+    const c = bakeSprite(stackLayers(layers), pal);
+    if (face) c.face = face;
+    return c;
   };
-  return { stand: build(HEAD), happy: build(HEAD_HAPPY) };
+  return { stand: build(HEAD), happy: build(HEAD_HAPPY), face };
+}
+
+const NECK = pad24(Array(10).fill('................').concat(['......SSSS......', '.......SS.......']));
+
+// 얼굴 사진(data URL)만 받는다. 같은 사진은 한 번만 읽는다.
+const FACE_CACHE = new Map();
+const FACE_RE = /^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+/=]+$/;
+function faceImage(src) {
+  if (typeof src !== 'string' || src.length > 40000 || !FACE_RE.test(src)) return null;
+  if (!FACE_CACHE.has(src)) {
+    const img = new Image();
+    img.src = src;
+    FACE_CACHE.set(src, img);
+  }
+  return FACE_CACHE.get(src);
 }
 
 // 작은 소품들
@@ -312,4 +334,4 @@ const PROPS = {
   ], { C: '#8d93a8', c: '#6f7488', b: '#5aa0e6' }),
 };
 
-window.PixelChars = { makeCharacter, bakeSprite, PROPS, SKINS, HAIR_COLORS, SUIT_COLORS, DRESS_COLORS, CASUAL_COLORS, OUTFIT_COLORS };
+window.PixelChars = { makeCharacter, faceImage, FACE_RE, bakeSprite, PROPS, SKINS, HAIR_COLORS, SUIT_COLORS, DRESS_COLORS, CASUAL_COLORS, OUTFIT_COLORS };
