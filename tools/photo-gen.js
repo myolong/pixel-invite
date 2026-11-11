@@ -82,7 +82,11 @@
     rect(g, '#c98c64', x - 14, GROUND - 16, 2, 16); rect(g, '#c98c64', x + 12, GROUND - 16, 2, 16);
     if (prop) { const img = PixelChars.PROPS[prop]; g.drawImage(img, Math.round(x - img.width), GROUND - 22 - img.height * 2, img.width * 2, img.height * 2); }
   }
-  function sprite(g, img, cx, bottom, s = 2) { g.drawImage(img, Math.round(cx - img.width * s / 2), Math.round(bottom - img.height * s), img.width * s, img.height * s); }
+  function sprite(g, img, cx, bottom, s = 2) {
+    const x = Math.round(cx - img.width * s / 2), y = Math.round(bottom - img.height * s);
+    g.drawImage(img, x, y, img.width * s, img.height * s);
+    if (img.over) g.drawImage(img.over, x, y, img.width * s, img.height * s);
+  }
   function hearts(g, n) { for (let i = 0; i < n; i++) g.drawImage(PixelChars.PROPS.heart, 20 + Math.floor(rnd() * 80), 40 + Math.floor(rnd() * 40)); }
   function falling(g, prop, n) { const img = PixelChars.PROPS[prop]; for (let i = 0; i < n; i++) g.drawImage(img, 10 + Math.floor(rnd() * 96), 20 + Math.floor(rnd() * 60), img.width * 2, img.height * 2); }
 
@@ -112,8 +116,8 @@
   function plan(k) {
     const K = InviteKinds.KINDS[k];
     const a = K.people[0].look, b = (K.people[1] || {}).look;
-    const casualA = Object.assign({}, a, { outfit: 'casual', veil: false });
-    const casualB = b && Object.assign({}, b, { outfit: 'casual', veil: false, color: 2 });
+    const casualA = Object.assign({}, a, { outfit: 'casual', veil: false, acc: '' });
+    const casualB = b && Object.assign({}, b, { outfit: 'casual', veil: false, acc: '', color: 2 });
     const good = K.game.good;
     const couple = (x1, x2, h, A = a, B = b) => [[A, x1, h], [B, x2, h]];
     switch (k) {
@@ -139,7 +143,10 @@
       default: {
         const bg = { bihon: ['party', 'cafe', 'flowers', 'night', 'beach', 'park'], ihon: ['night', 'beach', 'party', 'cafe', 'park', 'sunrise'],
           yearend: ['snow', 'party', 'night', 'cafe', 'snow', 'party'], newyear: ['sunrise', 'cafe', 'snow', 'party', 'sunrise', 'park'],
-          event: ['party', 'park', 'cafe', 'flowers', 'party', 'night'] }[k];
+          event: ['party', 'park', 'cafe', 'flowers', 'party', 'night'],
+          xmas: ['snow', 'party', 'night', 'cafe', 'snow', 'party'], seollal: ['sunrise', 'cafe', 'snow', 'park', 'sunrise', 'party'],
+          chuseok: ['night', 'park', 'cafe', 'night', 'park', 'flowers'], bungae: ['night', 'cafe', 'party', 'night', 'cafe', 'park'],
+          gather: ['party', 'park', 'cafe', 'flowers', 'party', 'night'] }[k] || ['party', 'park', 'cafe', 'flowers', 'party', 'night'];
         return [
           { bg: bg[0], people: [[a, 60, true]], falling: [good, 4] },
           { bg: bg[1], people: [[F1, 28, true], [a, 60, true], [F2, 92, true]] },

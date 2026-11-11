@@ -140,7 +140,7 @@
     });
   }
   const HAIR_NAMES = { short: '짧은 머리', bun: '올림머리', bob: '단발', long: '긴 머리', ponytail: '포니테일', twin: '양갈래', perm: '파마' };
-  const OUTFIT_NAMES = { tux: '턱시도', suit: '정장', dress: '드레스', onepiece: '원피스', hanbok: '한복', casual: '티셔츠', hoodie: '후드티' };
+  const { OUTFIT_NAMES, ACC_NAMES } = InviteKinds;
   function renderLook() {
     const L = looks[who];
     const panel = $('lookPanel');
@@ -185,7 +185,8 @@
     });
     panel.append(fb);
 
-    group('옷', Object.keys(OUTFIT_NAMES).map(k => ({ value: k, label: OUTFIT_NAMES[k] })), L.outfit, v => {
+    const outfits = K.outfits.includes(L.outfit) ? K.outfits : K.outfits.concat(L.outfit in OUTFIT_NAMES ? [L.outfit] : []);
+    group('옷', outfits.map(k => ({ value: k, label: OUTFIT_NAMES[k] })), L.outfit, v => {
       if (L.outfit !== v) L.color = 0;
       L.outfit = v;
     });
@@ -196,7 +197,10 @@
     group('피부색', PixelChars.SKIN_ORDER.map(i => ({ value: i, color: PixelChars.SKINS[i] })), L.skin, v => { L.skin = v; }, true);
     const yesNo = [{ value: true, label: '쓰기' }, { value: false, label: '안 쓰기' }];
     if (!L.face) group('안경', yesNo, !!L.glasses, v => { L.glasses = v; });
-    group('베일', yesNo, !!L.veil, v => { L.veil = v; });
+    // 소품: 종류마다 다른 목록(예전 veil:true는 면사포로 본다)
+    const curAcc = L.acc || (L.veil ? 'veil' : '');
+    const accs = K.accs.includes(curAcc) ? K.accs : K.accs.concat([curAcc]);
+    group('소품', accs.map(k => ({ value: k, label: ACC_NAMES[k] || k })), curAcc, v => { L.acc = v; delete L.veil; });
   }
 
   // ── 계좌
@@ -346,7 +350,7 @@
 
   // ── 링크 만들기
   const base = location.href.replace(/[?#].*$/, '').replace(/make\.html$/, '');
-  let inviteUrl = '', editUrl = '';
+  let inviteUrl = '', editUrl = '', shortMemo = {};
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const d = readForm();
@@ -379,7 +383,13 @@
     const cfg = toConfig(d);
     const code = await InviteCode.encode(cfg);
     const editCode = await InviteCode.encode(useRsvp ? { ...cfg, rsvpKey: rsvp.key } : { ...cfg, rsvpOff: !rsvp.on || undefined });
-    inviteUrl = `${base}invite-${kind}.html?d=${code}`; // 종류별 입구: 카톡 미리보기 제목·그림이 종류에 맞게 나옴
+    // 짧은 링크: 긴 링크는 카톡이 긴 글로 접어서 미리보기를 안 만든다. 저장이 안 되면 긴 링크로.
+    let shortId = shortMemo.code === code ? shortMemo.id : null;
+    if (!shortId && window.ShortLink && ShortLink.enabled) {
+      try { shortId = await ShortLink.put(code); shortMemo = { code, id: shortId }; } catch (e2) { shortId = null; }
+    }
+    // 종류별 입구: 카톡 미리보기 제목·그림이 종류에 맞게 나옴
+    inviteUrl = shortId ? `${base}invite-${kind}.html?s=${shortId}` : `${base}invite-${kind}.html?d=${code}`;
     editUrl = `${base}make.html?d=${editCode}`;
     $('rsvpKeep').hidden = !useRsvp;
     saveDraft();

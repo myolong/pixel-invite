@@ -10,10 +10,16 @@
   //   invite.html?d=<링크 코드>  만들기 화면에서 만든 청첩장(내용이 주소 안에 들어 있음)
   //   invite.html?c=<이름>      invites/<이름>.json
   const params = new URLSearchParams(location.search);
-  const linkCode = params.get('d');
-  const code = linkCode ? 'link' : (params.get('c') || 'sample').replace(/[^a-z0-9_-]/gi, '');
+  //   invite.html?s=<짧은 번호>  짧은 링크(내용은 Supabase에 저장, js/rsvp.js의 ShortLink)
+  const shortId = params.get('s');
+  let linkCode = params.get('d');
+  const code = linkCode || shortId ? 'link' : (params.get('c') || 'sample').replace(/[^a-z0-9_-]/gi, '');
   let cfg;
   try {
+    if (!linkCode && shortId) {
+      if (!window.ShortLink || !ShortLink.validId(shortId)) throw new Error('짧은 링크 오류');
+      linkCode = await ShortLink.get(shortId);
+    }
     if (linkCode) {
       cfg = await InviteCode.decode(linkCode);
     } else {

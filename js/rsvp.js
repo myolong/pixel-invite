@@ -39,6 +39,25 @@
 
   const validId = id => /^[A-Za-z0-9]{12}$/.test(id || '');
 
+  // 짧은 링크(supabase/short-link.sql): 긴 링크 코드를 8글자 번호로 저장
+  const validShort = id => /^[A-Za-z0-9]{8}$/.test(id || '');
+  window.ShortLink = {
+    enabled,
+    validId: validShort,
+    put: async code => {
+      for (let i = 0; i < 3; i++) {
+        const id = randId(8);
+        if (await rpc('link_put', { p_id: id, p_code: code })) return id;
+      }
+      throw new Error('짧은 링크 저장 실패');
+    },
+    get: async id => {
+      const code = await rpc('link_get', { p_id: id });
+      if (typeof code !== 'string' || !code) throw new Error('없는 링크');
+      return code;
+    },
+  };
+
   window.Rsvp = {
     enabled,
     validId,
