@@ -349,7 +349,7 @@
 
     setupRsvp(el);
 
-    $('calBtn').addEventListener('click', downloadIcs);
+    setupCalendar();
     $('shareBtn').addEventListener('click', async () => {
       const data = { title: document.title, text: [`${dateText} ${timeText}`.trim(), cfg.venue.name].filter(Boolean).join(', '), url: location.href };
       if (navigator.share) { try { await navigator.share(data); return; } catch (e) { /* 취소 */ } }
@@ -419,6 +419,35 @@
       img.removeEventListener('pointerdown', onDown);
       img.removeEventListener('pointerup', onUp);
       window.removeEventListener('keydown', onKey);
+    }
+  }
+
+  // 캘린더: 구글 캘린더 주소(어디서나 열림) + .ics 파일(카톡 안 브라우저는 파일 받기가 막혀서 바깥 브라우저로 연다)
+  const inKakao = /KAKAOTALK/i.test(navigator.userAgent);
+  function setupCalendar() {
+    const z = d => `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
+    const end = new Date(when.getTime() + 2 * 3600e3);
+    const place = [cfg.venue.name, cfg.venue.address].filter(Boolean).join(' ');
+    const shareUrl = location.href.replace(/#.*$/, '');
+    const q = new URLSearchParams({ action: 'TEMPLATE', text: document.title, dates: `${z(when)}/${z(end)}`, details: shareUrl });
+    if (place) q.set('location', place);
+    $('calGoogle').href = `https://calendar.google.com/calendar/render?${q}`;
+    $('calBtn').addEventListener('click', () => {
+      const open = $('calPick').hidden;
+      $('calPick').hidden = !open;
+      $('calBtn').setAttribute('aria-expanded', open);
+    });
+    $('calIcs').addEventListener('click', () => {
+      if (inKakao) {
+        toast('바깥 브라우저에서 열어요. 거기서 한 번 더 눌러 주세요');
+        location.href = `kakaotalk://web/openExternal?url=${encodeURIComponent(shareUrl + '#cal')}`;
+        return;
+      }
+      downloadIcs();
+    });
+    if (location.hash === '#cal') {
+      $('calPick').hidden = false;
+      setTimeout(() => { if (mode === 'opening') t = 99; toInfo(); setTimeout(() => $('calPick').scrollIntoView({ block: 'center' }), 400); }, 300);
     }
   }
 

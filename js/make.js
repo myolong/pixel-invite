@@ -379,7 +379,7 @@
     const cfg = toConfig(d);
     const code = await InviteCode.encode(cfg);
     const editCode = await InviteCode.encode(useRsvp ? { ...cfg, rsvpKey: rsvp.key } : { ...cfg, rsvpOff: !rsvp.on || undefined });
-    inviteUrl = `${base}invite.html?d=${code}`;
+    inviteUrl = `${base}invite-${kind}.html?d=${code}`; // 종류별 입구: 카톡 미리보기 제목·그림이 종류에 맞게 나옴
     editUrl = `${base}make.html?d=${editCode}`;
     $('rsvpKeep').hidden = !useRsvp;
     saveDraft();
