@@ -7,9 +7,9 @@
   <meta name="description" content="픽셀 캐릭터와 미니게임이 들어간 재밌는 초대장. 예시를 보고 바로 만들어요.">
   <meta name="theme-color" content="#fff3f5">
   <link rel="preload" href="fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/invite.css">
-  <link rel="stylesheet" href="css/make.css">
-  <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="css/invite.css?v=20261111c">
+  <link rel="stylesheet" href="css/make.css?v=20261111c">
+  <link rel="stylesheet" href="css/site.css?v=20261111c">
 </head>
 <body class="maker">
   <header class="mk-head">
@@ -65,8 +65,8 @@
     </section>
   </main>
 
-  <script src="js/invite-code.js"></script>
-  <script src="js/kinds.js"></script>
+  <script src="js/invite-code.js?v=20261111c"></script>
+  <script src="js/kinds.js?v=20261111c"></script>
   <script>
     'use strict';
     (async function () {
@@ -75,6 +75,7 @@
       const k = KINDS[q] ? q : 'wedding';
       const K = KINDS[k];
       const $ = id => document.getElementById(id);
+      ['makeBtn', 'makeBtn2'].forEach(id => { $(id).href = `make.html?k=${k}`; });
       const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
       const DOC = k === 'wedding' ? '청첩장' : k === 'notice' ? '알림장' : '초대장';
       const josa = (w, a, b) => ((w.charCodeAt(w.length - 1) - 0xac00) % 28 ? a : b);
@@ -84,11 +85,10 @@
       $('kEyebrow').textContent = K.eyebrow;
       $('kName').textContent = K.name;
       $('kDesc').textContent = K.desc;
-      K.uses.forEach(t => $('kUses').append(el('li', '', t)));
-      K.points.forEach(t => $('kPoints').append(el('li', '', t)));
+      (K.uses || []).forEach(t => $('kUses').append(el('li', '', t)));
+      (K.points || []).forEach(t => $('kPoints').append(el('li', '', t)));
       const gn = K.game.goodName;
       $('kGame').textContent = `${gn} 받기: 30초 동안 떨어지는 ${gn}${josa(gn, '과', '와')} 하트를 받고 먹구름은 피해요. 화면을 좌우로 밀면 캐릭터가 움직여요. 점수와 상관없이 끝나면 ${DOC}이 열리고, 게임을 건너뛰고 바로 볼 수도 있어요.`;
-      ['makeBtn', 'makeBtn2'].forEach(id => { $(id).href = `make.html?k=${k}`; });
 
       // 화면 캡처 3장
       [['오프닝', `캐릭터가 걸어 들어오고 "${K.stage}" 문구가 나와요.`],
