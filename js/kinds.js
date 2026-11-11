@@ -346,7 +346,6 @@
     c.sample = true;
     c.greeting = K.greetings[0];
     c.base = `invites/examples/${k}/`;
-    c.gallery = [1, 2, 3, 4, 5, 6].map(i => `p${i}.png`);
     c.rsvp = { id: 'sample', pub: !!K.rsvpPublic };
     c.groom.look = K.people[0].look;
     if (c.bride && K.people[1]) c.bride.look = K.people[1].look;
