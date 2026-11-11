@@ -379,13 +379,16 @@
   // "{names}", "{title}", "{n}" 바꾸기
   const fill = (s, v) => String(s || '').replace(/\{(\w+)\}/g, (_, k) => (v[k] != null ? v[k] : ''));
 
-  // 게임 3가지(만드는 사람이 고름). 결혼식·결혼 알림장 말고는 게임을 깨야 초대장이 열린다.
+  // 게임 6가지(만드는 사람이 고름). 결혼식·결혼 알림장 말고는 게임을 깨야 초대장이 열린다.
   const GAMES = {
     catch: { name: '받기', desc: '던지는 소품을 받아요 (30초)' },
     blocks: { name: '블록 쌓기', desc: '블록으로 가로줄 4개를 채워요' },
     shoot: { name: '물총 쏘기', desc: '날아다니는 소품을 물총으로 맞혀요 (30초)' },
+    tower: { name: '케이크 탑 쌓기', desc: '움직이는 케이크 층을 톡 쳐서 8층까지 쌓아요' },
+    whack: { name: '두더지 톡톡', desc: '구멍에서 튀어나오는 손님과 소품을 톡 쳐요 (30초)' },
+    quiz: { name: '문제 맞히기', desc: '내가 낸 문제 하나를 맞혀야 열려요' },
   };
-  const GAME_ORDER = ['catch', 'blocks', 'shoot'];
+  const GAME_ORDER = ['catch', 'blocks', 'shoot', 'tower', 'whack', 'quiz'];
   const OPEN_KINDS = ['wedding', 'notice'];
   const gated = kind => !OPEN_KINDS.includes(kind || 'wedding');
 
