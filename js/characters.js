@@ -309,28 +309,34 @@ HAIRS.ponytail = pad24([
   '.............HH.',
   '.............Hh.',
 ]);
+// 양갈래: 양옆으로 뻗어 내린 두 갈래 + 양쪽 머리끈(N)
 HAIRS.twin = pad24([
   '................',
   '....HHHHHHHH....',
   '...HHHHHHHHHH...',
-  '..HHHHHHHHHHHH..',
-  '.HHHh......hHHH.',
-  '.HH..........HH.',
-  '.HH..........HH.',
-  '.HH..........HH.',
-  '.Hh..........hH.',
-  '..h..........h..',
-]);
-HAIRS.perm = pad24([
-  '....HHHHHHHH....',
   '...HHHHHHHHHH...',
-  '..HHHHHHHHHHHH..',
-  '..HHHHHHHHHHHH..',
-  '..HHHh....hHHH..',
-  '..HHH......HHH..',
-  '..HH........HH..',
-  '..HH........HH..',
-  '...h........h...',
+  '.hNNHh....hHNNh.',
+  'HHNN........NNHH',
+  'HHH..........HHH',
+  'HH............HH',
+  'HH............HH',
+  'Hh............hH',
+  '.h............h.',
+]);
+// 파마: 크게 부풀고 울퉁불퉁한 곱슬(진한 점이 컬)
+HAIRS.perm = pad24([
+  '....HhHHhHHh....',
+  '..HHHHhHHhHHHH..',
+  '.HhHHHHHHHHHHhH.',
+  '.HHhHHHHHHHHhHH.',
+  'HhHHHh....hHHHhH',
+  'HHhH........HhHH',
+  '.HHh........hHH.',
+  'HhHH........HHhH',
+  '.HHh........hHH.',
+  'HhH..........HhH',
+  '.hH..........Hh.',
+  '..h..........h..',
 ]);
 
 // 소품: 얼굴(사진 얼굴 포함) 위에 따로 그리는 겹. 키는 make 화면의 '소품'
@@ -474,7 +480,7 @@ function makeCharacter(look) {
     G: '#2a2033', V: 'rgba(255,255,255,0.85)',
     C: cloth, c: shade(cloth, 0.85), P: '#4a5578',
     J: '#fff6e8', O: outfit === 'hanbok' ? shade(cloth, 0.7) : outfit === 'hanbokM' ? '#d8424f' : cloth,
-    Q: '#f3eee4', q: cloth, k: '#2a2033', Y: '#f5c542', y: shade(cloth, 0.7),
+    N: '#ff5c8a', Q: '#f3eee4', q: cloth, k: '#2a2033', Y: '#f5c542', y: shade(cloth, 0.7),
   };
   // 사진 얼굴: 픽셀 머리 대신 동그랗게 오린 사진을 머리 자리에 붙인다(drawSprite가 그림)
   const face = faceImage(look.face);
