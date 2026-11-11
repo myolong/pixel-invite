@@ -15,9 +15,9 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#fff3f5">
   <link rel="preload" href="fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/invite.css?v=20261111v">
-  <link rel="stylesheet" href="css/make.css?v=20261111v">
-  <link rel="stylesheet" href="css/site.css?v=20261111v">
+  <link rel="stylesheet" href="css/invite.css?v=20261111x">
+  <link rel="stylesheet" href="css/make.css?v=20261111x">
+  <link rel="stylesheet" href="css/site.css?v=20261111x">
   <!-- 광고: 초대장을 만드는 사람이 보는 화면에만(손님이 여는 invite*.html에는 넣지 않음) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5781805498180631" crossorigin="anonymous"></script>
 </head>
@@ -75,8 +75,8 @@
     </section>
   </main>
 
-  <script src="js/invite-code.js?v=20261111v"></script>
-  <script src="js/kinds.js?v=20261111v"></script>
+  <script src="js/invite-code.js?v=20261111x"></script>
+  <script src="js/kinds.js?v=20261111x"></script>
   <script>
     'use strict';
     (async function () {
@@ -106,7 +106,7 @@
       // 화면 캡처 3장
       [['오프닝', `캐릭터가 걸어 들어오고 "${K.stage}" 문구가 나와요.`],
        ['미니게임', `${gn} 받기 30초. 건너뛰기 버튼이 항상 있어요.`],
-       [DOC, '사진첩, 인사말, 달력, 오시는 길, 계좌가 이어져요.']].forEach(([t, d], i) => {
+       [DOC, '인사말, 달력, 오시는 길, 계좌가 이어져요.']].forEach(([t, d], i) => {
         const f = el('figure', 'shot');
         const img = el('img');
         img.src = `assets/shots/${k}-${i + 1}.jpg`; img.alt = `${K.name} ${t} 화면`; img.loading = 'lazy';
@@ -133,7 +133,7 @@
         ['받는 사람이 앱을 깔아야 하나요?', '아니요. 카톡으로 받은 링크를 누르면 휴대폰 브라우저에서 바로 열려요.'],
         ['게임이 어려우면 어떡하죠?', `게임은 언제든 건너뛸 수 있고, 점수와 상관없이 끝나면 ${DOC}이 열려요.`],
         ['보낸 뒤에 내용을 고칠 수 있나요?', '수정용 링크로 들어가 고친 뒤 새 링크를 다시 보내면 돼요. 이미 보낸 링크는 고치기 전 내용으로 보여요.'],
-        ['사진도 넣을 수 있나요?', '무료 베타에서는 사진 대신 픽셀 캐릭터 그림이 대표 사진 자리에 들어가요. 예시의 사진첩은 보여 주기용 그림이에요. 사진 올리기는 준비 중이에요.'],
+        ['사진도 넣을 수 있나요?', '무료 베타에서는 사진 대신 픽셀 캐릭터 그림이 들어가요. 사진첩은 준비 중이에요.'],
         ['입력한 정보는 어디에 저장되나요?', '서버에 저장하지 않고 링크 안에만 들어가요. 링크를 가진 사람은 누구나 볼 수 있으니 계좌·연락처는 필요한 것만 적어 주세요.'],
       ];
       faq.forEach(([qq, a]) => { const d = el('details'); d.append(el('summary', '', qq), el('p', '', a)); $('faq').append(d); });
