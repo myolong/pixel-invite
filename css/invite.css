@@ -1,0 +1,80 @@
+@font-face { font-family: 'Galmuri11'; src: url('../fonts/Galmuri11.woff2') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Galmuri11'; font-weight: 700; src: url('../fonts/Galmuri11-Bold.woff2') format('woff2'); font-display: swap; }
+
+:root {
+  --bg: #fff3f5;
+  --card: #ffffff;
+  --ink: #2a2033;
+  --muted: #7a6d80;
+  --accent: #e0526e;
+  --accent-soft: #ffe1e7;
+  --line: #f0d9df;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body {
+  font-family: 'Galmuri11', 'Apple SD Gothic Neo', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+/* ── 무대(오프닝·게임) ── */
+.stage { min-height: 100svh; display: flex; align-items: center; justify-content: center; padding: 12px 16px; }
+.stage-inner { position: relative; width: 100%; max-width: min(420px, calc((100svh - 190px) * 0.78)); }
+canvas { display: block; width: 100%; height: auto; border-radius: 16px; touch-action: none; image-rendering: pixelated; box-shadow: 0 6px 0 #f0cdd6; background: #fff; }
+.topbar { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+.skip {
+  font: inherit; font-size: 15px; padding: 7px 12px; border-radius: 999px;
+  border: 2px solid var(--ink); background: #fff; color: var(--ink);
+}
+.stage-ui { padding: 10px 0 0; text-align: center; }
+.stage-ui[hidden] { display: none; }
+.names { font-size: 20px; font-weight: 700; margin: 0; }
+.when { margin: 0 0 10px; color: var(--muted); font-size: 15px; }
+.choice { display: flex; gap: 8px; }
+.choice .btn { flex: 1; padding: 12px 8px; font-size: 16px; }
+.result-title { font-size: 18px; font-weight: 700; margin: 0; }
+.result-score { margin: 0 0 10px; font-size: 14px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font: inherit; font-size: 17px; font-weight: 700; text-decoration: none;
+  padding: 13px 16px; border-radius: 12px; cursor: pointer;
+  border: 2px solid var(--ink); background: #fff; color: var(--ink);
+  box-shadow: 0 3px 0 var(--ink);
+}
+.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.small { font-size: 15px; padding: 9px 12px; }
+
+/* ── 청첩장 정보 ── */
+.info { max-width: 420px; margin: 0 auto; padding: 8px 16px 32px; }
+.sample-badge { background: #fff8d6; border: 2px dashed #e0b84a; border-radius: 12px; padding: 10px 12px; font-size: 14px; text-align: center; }
+.card { background: var(--card); border: 2px solid var(--line); border-radius: 16px; padding: 20px 18px; margin: 14px 0; text-align: center; }
+.card h2 { font-size: 18px; margin: 0 0 12px; color: var(--accent); }
+.eyebrow { letter-spacing: 3px; font-size: 12px; color: var(--muted); margin: 0; }
+.intro h1 { font-size: 26px; margin: 8px 0; }
+.big { font-size: 18px; font-weight: 700; margin: 4px 0; }
+.muted { color: var(--muted); margin: 4px 0; }
+.dday { display: inline-block; margin-top: 10px; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+.greeting { white-space: pre-line; font-size: 16px; }
+.parents p { margin: 4px 0; font-size: 16px; }
+.row-btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0 4px; }
+.guide { text-align: left; margin: 14px 0 0; font-size: 15px; }
+.guide dt { font-weight: 700; margin-top: 8px; }
+.guide dd { margin: 0; color: var(--muted); }
+.account { display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; padding: 10px 0; border-top: 1px dashed var(--line); }
+.account:first-child { border-top: 0; }
+.account p { margin: 0; font-size: 15px; }
+.account .side { font-weight: 700; }
+.actions { display: flex; flex-direction: column; gap: 10px; }
+.foot { text-align: center; color: var(--muted); font-size: 12px; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 15px;
+  opacity: 0; pointer-events: none; transition: .2s;
+}
+.toast.show { opacity: 1; transform: translateX(-50%); }

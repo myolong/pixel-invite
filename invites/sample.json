@@ -1,0 +1,30 @@
+{
+  "groom": {
+    "name": "김도윤",
+    "short": "도윤",
+    "parents": "김철수 · 박영희의 아들",
+    "phone": "010-0000-0000",
+    "look": { "outfit": "tux", "hair": "short", "skin": 0, "hairColor": 0, "color": 0, "glasses": true }
+  },
+  "bride": {
+    "name": "이서연",
+    "short": "서연",
+    "parents": "이영수 · 최미경의 딸",
+    "phone": "010-0000-0000",
+    "look": { "outfit": "dress", "hair": "long", "skin": 0, "hairColor": 1, "color": 0, "veil": true }
+  },
+  "date": "2027-05-15T12:30:00+09:00",
+  "venue": {
+    "name": "픽셀웨딩홀 3층 별빛홀",
+    "address": "서울특별시 중구 예시로 123",
+    "transit": "지하철 2호선 예시역 3번 출구에서 걸어서 5분",
+    "parking": "건물 지하 주차장 2시간 무료"
+  },
+  "greeting": "서로 다른 길을 걷던 두 사람이\n같은 길을 함께 걷기로 했습니다.\n\n작은 게임 하나 준비했어요.\n오셔서 축복해 주시면 큰 기쁨이 되겠습니다.",
+  "game": "bouquet",
+  "accounts": [
+    { "side": "신랑 측", "bank": "예시은행", "number": "000-0000-0000-00", "holder": "김도윤" },
+    { "side": "신부 측", "bank": "예시은행", "number": "000-0000-0000-00", "holder": "이서연" }
+  ],
+  "sample": true
+}
