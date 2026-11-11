@@ -12,9 +12,9 @@
   <meta property="og:image" content="https://myolong.github.io/pixel-invite/assets/og/wedding.png">
   <meta name="theme-color" content="#fff3f5">
   <link rel="preload" href="fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/invite.css?v=20261111i">
-  <link rel="stylesheet" href="css/make.css?v=20261111i">
-  <link rel="stylesheet" href="css/site.css?v=20261111i">
+  <link rel="stylesheet" href="css/invite.css?v=20261111k">
+  <link rel="stylesheet" href="css/make.css?v=20261111k">
+  <link rel="stylesheet" href="css/site.css?v=20261111k">
 </head>
 <body class="maker">
   <header class="mk-head">
@@ -70,8 +70,8 @@
     </section>
   </main>
 
-  <script src="js/invite-code.js?v=20261111i"></script>
-  <script src="js/kinds.js?v=20261111i"></script>
+  <script src="js/invite-code.js?v=20261111k"></script>
+  <script src="js/kinds.js?v=20261111k"></script>
   <script>
     'use strict';
     (async function () {
@@ -112,7 +112,7 @@
       const who = K.people.map(p => p.label).join('·');
       const steps = [
         ['정보 적기', `${K.title ? '모임·행사 이름과 ' : ''}${who} 이름${K.parents ? ', 혼주 표기' : ''}, 연락처를 적어요. 연락처는 비워도 돼요.`],
-        ['캐릭터 꾸미기', '옷 7가지(턱시도·정장·드레스·원피스·한복·티셔츠·후드티)와 색 7가지, 머리 모양, 머리색, 피부색, 안경을 골라요. 위에서 바로 미리 볼 수 있어요.'],
+        ['캐릭터 꾸미기', `옷(${K.outfits.map(o => InviteKinds.OUTFIT_NAMES[o]).join('·')})과 색, 소품(${K.accs.filter(Boolean).map(a => InviteKinds.ACC_NAMES[a]).join('·')}), 머리 모양, 피부색을 골라요. 내 사진 얼굴도 붙일 수 있어요.`],
         [`${K.when}${K.placeOptional ? '' : '와 ' + K.place}`, `${K.placeOptional ? '장소와 시간은 비워도 돼요. ' : ''}주소를 적으면 네이버·카카오 지도 버튼이 자동으로 생겨요.`],
         ['인사말과 계좌', `예시 문구 중 하나를 골라 고쳐 써요. 계좌는 필요할 때만 적어요(${K.accountSides.join('·')}).`],
         ['링크 만들기', '"초대장 링크 만들기"를 누르면 링크가 나와요. 카톡으로 보내고, 수정용 링크는 나만 보는 곳에 저장해 두세요.'],

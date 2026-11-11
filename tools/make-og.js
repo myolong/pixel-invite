@@ -7,8 +7,10 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const SITE = 'https://myolong.github.io/pixel-invite/';
 const TITLES = {
-  wedding: '결혼식 청첩장', bihon: '비혼식 초대장', ihon: '이혼식 초대장', yearend: '연말 모임 초대장',
-  newyear: '신년 모임 초대장', notice: '결혼 알림장', babyshower: '베이비샤워 초대장', event: '기념 행사 초대장',
+  wedding: '결혼식 청첩장', yearend: '연말 모임 초대장', newyear: '신년 모임 초대장', xmas: '크리스마스 파티 초대장',
+  seollal: '설 연휴 모임 초대장', chuseok: '추석 모임 초대장', notice: '결혼 알림장', bungae: '번개 모임 초대장', gather: '모임 초대장',
+  // 목록에서 빠졌지만 예전 링크용으로 남긴 종류
+  bihon: '비혼식 초대장', ihon: '이혼식 초대장', babyshower: '베이비샤워 초대장', event: '기념 행사 초대장',
 };
 const DESC = '작은 게임을 깨면 열려요. 눌러서 열어 보세요!';
 

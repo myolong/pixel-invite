@@ -164,6 +164,76 @@ const OUTFITS = {
     '....PPP..PPP....',
     '...WWWW..WWWW...',
   ])),
+  hanbokM: pad24(Array(12).fill('................').concat([
+    '...JJTTTTTTJJ...',
+    '..JJJTTOOTTJJJ..',
+    '..JJJTTOTTTJJJ..',
+    '..JJJTTTTTTJJJ..',
+    '..SSJTTTTTTJSS..',
+    '....QQQQQQQQ....',
+    '...QQQQQQQQQQ...',
+    '...QQQQ..QQQQ...',
+    '...QQQQ..QQQQ...',
+    '....QQQ..QQQ....',
+    '....qqq..qqq....',
+    '...KKKK..KKKK...',
+  ])),
+  santa: pad24(Array(12).fill('................').concat([
+    '...TTTWWWWTTT...',
+    '..TTTTTWWTTTTT..',
+    '..TTTTTWWTTTTT..',
+    '..TTTTTWWTTTTT..',
+    '..WWkkkYYkkkWW..',
+    '..SSTTTWWTTTSS..',
+    '....TTTTTTTT....',
+    '....WWWWWWWW....',
+    '....TTT..TTT....',
+    '....TTT..TTT....',
+    '....TTT..TTT....',
+    '...KKKK..KKKK...',
+  ])),
+  knit: pad24(Array(12).fill('................').concat([
+    '....CCCccCCC....',
+    '..CCCCCCCCCCCC..',
+    '..CCCCCCCCCCCC..',
+    '..CWCWCWCWCWCC..',
+    '..CCCCCCCCCCCC..',
+    '..SSccccccccSS..',
+    '....PPPPPPPP....',
+    '....PPPPPPPP....',
+    '....PPP..PPP....',
+    '....PPP..PPP....',
+    '....PPP..PPP....',
+    '...KKKK..KKKK...',
+  ])),
+  coat: pad24(Array(12).fill('................').concat([
+    '...TTTWWWWTTT...',
+    '..TTTTTWWTTTTT..',
+    '..TTTTTyTTTTTT..',
+    '..TTTTTTTTTTTT..',
+    '..TTTTTyTTTTTT..',
+    '..SSTTTTTTTTSS..',
+    '....TTTTTTTT....',
+    '....TTTyTTTT....',
+    '....TTTTTTTT....',
+    '....PPP..PPP....',
+    '....PPP..PPP....',
+    '...KKKK..KKKK...',
+  ])),
+  padding: pad24(Array(12).fill('................').concat([
+    '...CCCCccCCCC...',
+    '.CCCCCCCCCCCCCC.',
+    '.cccccccccccccc.',
+    '.CCCCCCCCCCCCCC.',
+    '.cccccccccccccc.',
+    '.SSCCCCCCCCCCSS.',
+    '....PPPPPPPP....',
+    '....PPPPPPPP....',
+    '....PPP..PPP....',
+    '....PPP..PPP....',
+    '....PPP..PPP....',
+    '...KKKK..KKKK...',
+  ])),
   casual: pad24(Array(12).fill('................').concat([
     '....CCCccCCC....',
     '..CCCCCCCCCCCC..',
@@ -263,6 +333,78 @@ HAIRS.perm = pad24([
   '...h........h...',
 ]);
 
+// 소품: 얼굴(사진 얼굴 포함) 위에 따로 그리는 겹. 키는 make 화면의 '소품'
+const ACCS = {
+  santaHat: pad24([
+    '......RRRRR.WW..',
+    '.....RRRRRRRWW..',
+    '...WWWWWWWWWW...',
+  ]),
+  antler: pad24([
+    '.A..A......A..A.',
+    '.AAAA......AAAA.',
+    '...AA......AA...',
+    '...AAAAAAAAAA...',
+  ]),
+  partyHat: pad24([
+    '.......YY.......',
+    '.......PP.......',
+    '......PpPP......',
+    '.....PPPPpP.....',
+  ]),
+  cap: pad24([
+    '................',
+    '....CCCCCCCC....',
+    '...CCCCCCCCCC...',
+    '...cccccccccccc.',
+  ]),
+  beanie: pad24([
+    '.......WW.......',
+    '....BBBBBBBB....',
+    '...BBBBBBBBBB...',
+    '...bbbbbbbbbb...',
+  ]),
+  ribbon: pad24([
+    '.........RR.RR..',
+    '.........RRRRR..',
+    '.........RR.RR..',
+  ]),
+  flower: pad24([
+    '................',
+    '................',
+    '...FGFwFGFyFGF..',
+  ]),
+  bokgeon: pad24([
+    '.....KKKKKK.....',
+    '....KKKKKKKK....',
+    '...KKKKKKKKKK...',
+    '...K........K...',
+  ]),
+  jobawi: pad24([
+    '.......RR.......',
+    '....JJJJJJJJ....',
+    '...JJRJJJJRJJ...',
+    '...J........J...',
+  ]),
+  scarf: pad24([
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '.....XXXXXX.....',
+    '....XXXXXXXX....',
+    '.........XX.....',
+  ]),
+};
+const ACC_PAL = { R: '#d8424f', W: '#ffffff', A: '#8a5a3a', Y: '#f5c542', P: '#7cc4f4', p: '#f48fb1', C: '#4a6fd1', c: '#2f4fa8', B: '#d84a4a', b: '#f4efe6', F: '#f48fb1', G: '#5bbf6a', w: '#ffffff', y: '#f5c542', K: '#2a2033', J: '#4a3266', X: '#d84a4a' };
+
 const VEIL = pad24([
   '.....VVVVVV.....',
   '....V......V....',
@@ -300,7 +442,12 @@ const BIZ_COLORS = ['#2b2e3b', '#26365e', '#5a5d66', '#7a5a3e', '#d9cfbd', '#3e5
 const ONEPIECE_COLORS = ['#e98aa5', '#f2b84b', '#7cc4a4', '#4a6fd1', '#ffffff', '#d84a4a', '#a99be8'];
 const HANBOK_COLORS = ['#d8424f', '#e98aa5', '#3b4a8c', '#f2c94c', '#7cc4a4', '#9b6bd1', '#2f6e5f'];
 const HOODIE_COLORS = ['#9aa0aa', '#4a4a52', '#f2b84b', '#7cc4a4', '#e98aa5', '#4a6fd1', '#ffffff'];
-const OUTFIT_COLORS = { tux: SUIT_COLORS, suit: BIZ_COLORS, dress: DRESS_COLORS, onepiece: ONEPIECE_COLORS, hanbok: HANBOK_COLORS, casual: CASUAL_COLORS, hoodie: HOODIE_COLORS };
+const HANBOKM_COLORS = ['#3b4a8c', '#2f6e5f', '#8c3b4a', '#c98c3a', '#5a5d66', '#7cc4a4', '#9b6bd1'];
+const SANTA_COLORS = ['#d8424f', '#2f8a4f', '#3b4a8c', '#e98aa5', '#f2b84b', '#9b6bd1', '#4a4a52'];
+const KNIT_COLORS = ['#d84a4a', '#2f8a4f', '#f2e6d0', '#4a6fd1', '#f2b84b', '#e98aa5', '#7a5a3e'];
+const COAT_COLORS = ['#c9a27a', '#4a4a52', '#26365e', '#8c3b4a', '#efe9dc', '#5a5d66', '#3e5a4a'];
+const PADDING_COLORS = ['#2a2d3a', '#f2f2f2', '#d84a4a', '#4a6fd1', '#f2b84b', '#7cc4a4', '#e98aa5'];
+const OUTFIT_COLORS = { hanbokM: HANBOKM_COLORS, santa: SANTA_COLORS, knit: KNIT_COLORS, coat: COAT_COLORS, padding: PADDING_COLORS, tux: SUIT_COLORS, suit: BIZ_COLORS, dress: DRESS_COLORS, onepiece: ONEPIECE_COLORS, hanbok: HANBOK_COLORS, casual: CASUAL_COLORS, hoodie: HOODIE_COLORS };
 const isLight = hex => { const n = parseInt(hex.slice(1), 16); return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) > 190; };
 
 const shade = (hex, f) => {
@@ -326,19 +473,24 @@ function makeCharacter(look) {
     D: cloth, d: shade(cloth, 0.88),
     G: '#2a2033', V: 'rgba(255,255,255,0.85)',
     C: cloth, c: shade(cloth, 0.85), P: '#4a5578',
-    J: '#fff6e8', O: outfit === 'hanbok' ? shade(cloth, 0.7) : cloth,
+    J: '#fff6e8', O: outfit === 'hanbok' ? shade(cloth, 0.7) : outfit === 'hanbokM' ? '#d8424f' : cloth,
+    Q: '#f3eee4', q: cloth, k: '#2a2033', Y: '#f5c542', y: shade(cloth, 0.7),
   };
   // 사진 얼굴: 픽셀 머리 대신 동그랗게 오린 사진을 머리 자리에 붙인다(drawSprite가 그림)
   const face = faceImage(look.face);
+  // 소품(예전 링크의 veil:true는 면사포로)
+  const acc = look.acc || (look.veil ? 'veil' : '');
+  const over = ACCS[acc] ? bakeSprite(ACCS[acc], ACC_PAL) : null;
   const build = head => {
     const layers = [];
-    if (look.veil) layers.push(VEIL);
+    if (acc === 'veil') layers.push(VEIL);
     if (face) layers.push(NECK, OUTFITS[outfit]);
     else {
       layers.push(head, OUTFITS[outfit], HAIRS[hair]);
       if (look.glasses) layers.push(GLASSES);
     }
     const c = bakeSprite(stackLayers(layers), pal);
+    if (over) c.over = over;
     if (face) c.face = face;
     return c;
   };
@@ -424,6 +576,33 @@ const PROPS = {
     '.wBBBw.',
     '..www..',
   ], { P: '#f48fb1', w: '#ffffff', B: '#bfe3f7' }),
+  sock: bakeSprite([
+    '.WWWW..',
+    '.RRRR..',
+    '.RrRR..',
+    '.RRRR..',
+    '.RRRRR.',
+    'RRrRRRR',
+    'RRRRRR.',
+  ], { W: '#ffffff', R: '#d8424f', r: '#5bbf6a' }),
+  songpyeon: bakeSprite([
+    '.......',
+    '..PPP..',
+    '.PPPPP.',
+    'PpPPPPP',
+    'PPPPPPP',
+    '.PPPPP.',
+    '.......',
+  ], { P: '#f2c0d0', p: '#ffffff' }),
+  bolt: bakeSprite([
+    '...YYY.',
+    '..YYY..',
+    '.YYY...',
+    'YYYYYY.',
+    '...YY..',
+    '..YY...',
+    '.Y.....',
+  ], { Y: '#f5c542' }),
   rain: bakeSprite([
     '..CCCC..',
     '.CCCCCC.',
@@ -434,4 +613,4 @@ const PROPS = {
   ], { C: '#8d93a8', c: '#6f7488', b: '#5aa0e6' }),
 };
 
-window.PixelChars = { makeCharacter, SKIN_ORDER, faceImage, FACE_RE, bakeSprite, PROPS, SKINS, HAIR_COLORS, SUIT_COLORS, DRESS_COLORS, CASUAL_COLORS, OUTFIT_COLORS };
+window.PixelChars = { ACCS, makeCharacter, SKIN_ORDER, faceImage, FACE_RE, bakeSprite, PROPS, SKINS, HAIR_COLORS, SUIT_COLORS, DRESS_COLORS, CASUAL_COLORS, OUTFIT_COLORS };
