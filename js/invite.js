@@ -10,6 +10,8 @@
   //   invite.html?d=<링크 코드>  만들기 화면에서 만든 청첩장(내용이 주소 안에 들어 있음)
   //   invite.html?c=<이름>      invites/<이름>.json
   const params = new URLSearchParams(location.search);
+  // 게임 깬 기록·최고 점수·보낸 응답은 이 창에서만 기억한다(창을 닫으면 처음부터). 예전 버전이 기기에 남긴 기록은 지운다.
+  try { Object.keys(localStorage).filter(k => /^pi-(best|clear|fail|rsvp)/.test(k)).forEach(k => localStorage.removeItem(k)); } catch (e) { /* 무시 */ }
   //   invite.html?s=<짧은 번호>  짧은 링크(내용은 Supabase에 저장, js/rsvp.js의 ShortLink)
   const shortId = params.get('s');
   let linkCode = params.get('d');
@@ -79,7 +81,7 @@
   const gameKind = GAME_CLASS[cfg.game] ? cfg.game : 'catch';
   const gated = InviteKinds.gated(cfg.kind);
   const clearKey = `pi-clear-${linkTag}`, failKey = `pi-fail-${linkTag}`;
-  const store = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { /* 저장 안 돼도 진행 */ } return null; };
+  const store = (k, v) => { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { /* 저장 안 돼도 진행 */ } return null; };
   let unlocked = !gated || store(clearKey) === '1';
   let fails = Number(store(failKey)) || 0;
   const applyGate = () => {
@@ -129,8 +131,8 @@
   function endGame(score, cleared) {
     mode = 'result';
     let best = 0;
-    try { best = Number(localStorage.getItem(bestKey)) || 0; } catch (e) { /* 저장 안 돼도 진행 */ }
-    if (score > best) { best = score; try { localStorage.setItem(bestKey, String(score)); } catch (e) { /* 무시 */ } }
+    try { best = Number(sessionStorage.getItem(bestKey)) || 0; } catch (e) { /* 저장 안 돼도 진행 */ }
+    if (score > best) { best = score; try { sessionStorage.setItem(bestKey, String(score)); } catch (e) { /* 무시 */ } }
     if (cleared && !unlocked) { unlocked = true; store(clearKey, '1'); applyGate(); }
     if (!cleared && !unlocked) { fails++; store(failKey, String(fails)); }
     $('resultTitle').textContent = cleared ? (gated ? `클리어! ${DOC}이 열렸어요` : '클리어! 와 줘서 고마워요')
@@ -527,7 +529,7 @@
       $('rsvpDoneText').textContent = a.attend ? `${a.name} 님, ${a.people}명 참석으로 전했어요.` : `${a.name} 님, 불참으로 전했어요.`;
     };
     let saved = null;
-    try { saved = JSON.parse(localStorage.getItem(store) || 'null'); } catch (e) { /* 없음 */ }
+    try { saved = JSON.parse(sessionStorage.getItem(store) || 'null'); } catch (e) { /* 없음 */ }
     if (saved && saved.name) {
       $('rsvpName').value = saved.name; $('rsvpMsg').value = saved.note || ''; sel.value = saved.people || 1; pick(!!saved.attend);
       showDone(saved);
@@ -568,7 +570,7 @@
       try {
         const ok = await Rsvp.submit(R.id, a);
         if (!ok) throw new Error('rejected');
-        try { localStorage.setItem(store, JSON.stringify(a)); } catch (e) { /* 무시 */ }
+        try { sessionStorage.setItem(store, JSON.stringify(a)); } catch (e) { /* 무시 */ }
         showDone(a);
         toast('응답을 보냈어요');
         loadList();

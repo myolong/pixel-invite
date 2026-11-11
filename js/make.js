@@ -78,6 +78,12 @@
     kind = KINDS[k] ? k : 'wedding';
     K = KINDS[kind];
     Stage.setTheme(K.scene);
+    // 종류를 바꾸면 다른 초대장: 참석 명단 번호를 새로 받아서 명단이 섞이지 않게
+    if (prev && prev !== K && (rsvp.id || rsvp.key)) {
+      rsvp = { on: rsvp.on, id: null, key: null };
+      $('done').hidden = true;
+      showRsvpAdmin();
+    }
     // 캐릭터: 종류를 바꾸면 그 종류의 기본 옷차림으로
     if (!opt.keepLooks && prev !== K) {
       const faces = { groom: looks.groom.face, bride: looks.bride.face };
@@ -279,7 +285,7 @@
   let saveTimer;
   function saveDraft() {
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(readForm())); } catch (e) { /* 저장 안 돼도 진행 */ } }, 300);
+    saveTimer = setTimeout(() => { try { sessionStorage.setItem(DRAFT_KEY, JSON.stringify(readForm())); } catch (e) { /* 저장 안 돼도 진행 */ } }, 300);
   }
   form.addEventListener('input', saveDraft);
 
@@ -423,6 +429,12 @@
     $('done').hidden = false;
     $('done').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
+  // 새 초대장: 쓰던 내용과 참석 명단 번호를 비우고 처음부터
+  $('newInvite').addEventListener('click', () => {
+    clearTimeout(saveTimer);
+    try { sessionStorage.removeItem(DRAFT_KEY); } catch (e) { /* 무시 */ }
+    location.href = 'make.html';
+  });
   $('copyLink').addEventListener('click', () => copy(inviteUrl, '초대장 링크를 복사했어요'));
   $('copyEdit').addEventListener('click', () => copy(editUrl, '수정용 링크를 복사했어요'));
   $('shareLink').addEventListener('click', async () => {
@@ -458,13 +470,14 @@
     try { loaded = fromConfig(await InviteCode.decode(params.get('d'))); } catch (e) { toast('수정용 링크를 읽지 못했어요'); }
   }
   if (!loaded) {
-    try { loaded = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { /* 없음 */ }
+    try { loaded = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { /* 없음 */ }
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) { /* 예전 버전이 기기에 남긴 임시 저장 지우기 */ }
     const askKind = params.get('k');
     if (KINDS[askKind] && (!loaded || loaded.kind !== askKind)) {
       // 쓰던 내용(이름·날짜 등)은 두고 종류만 바꾼다. 예시 인사말·캐릭터는 새 종류 것으로
       const g = loaded && loaded.greeting;
       const custom = g && !Object.values(KINDS).some(x => x.greetings.includes(g));
-      loaded = Object.assign({}, loaded, { kind: askKind, looks: null, greeting: custom ? g : '' });
+      loaded = Object.assign({}, loaded, { kind: askKind, looks: null, greeting: custom ? g : '', rsvp: null });
     }
   }
   pickOpen = !(params.get('k') || params.get('d'));
