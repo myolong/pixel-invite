@@ -10,8 +10,8 @@
   //   invite.html?d=<링크 코드>  만들기 화면에서 만든 청첩장(내용이 주소 안에 들어 있음)
   //   invite.html?c=<이름>      invites/<이름>.json
   const params = new URLSearchParams(location.search);
-  // 게임 깬 기록·최고 점수·보낸 응답은 이 창에서만 기억한다(창을 닫으면 처음부터). 예전 버전이 기기에 남긴 기록은 지운다.
-  try { Object.keys(localStorage).filter(k => /^pi-(best|clear|fail|rsvp)/.test(k)).forEach(k => localStorage.removeItem(k)); } catch (e) { /* 무시 */ }
+  // 최고 점수·보낸 응답은 이 창에서만 기억한다(창을 닫으면 처음부터). 게임 깬 기록은 기기에 남긴다. 예전 버전이 기기에 남긴 점수·응답은 지운다.
+  try { Object.keys(localStorage).filter(k => /^pi-(best|rsvp)/.test(k)).forEach(k => localStorage.removeItem(k)); } catch (e) { /* 무시 */ }
   //   invite.html?s=<짧은 번호>  짧은 링크(내용은 Supabase에 저장, js/rsvp.js의 ShortLink)
   const shortId = params.get('s');
   let linkCode = params.get('d');
@@ -81,7 +81,8 @@
   const gameKind = GAME_CLASS[cfg.game] ? cfg.game : 'catch';
   const gated = InviteKinds.gated(cfg.kind);
   const clearKey = `pi-clear-${linkTag}`, failKey = `pi-fail-${linkTag}`;
-  const store = (k, v) => { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { /* 저장 안 돼도 진행 */ } return null; };
+  // 게임을 깬 기록은 이 폰에 계속 남긴다(창을 닫았다 열어도 다시 안 깨도 됨). 초안·참석 목록·최고점은 창 단위로 초기화.
+  const store = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { /* 저장 안 돼도 진행 */ } return null; };
   // #cal: 카톡 안에서 '휴대폰 캘린더'를 눌러 바깥 브라우저로 넘어온 경우. 이미 게임을 깨고 누른 버튼이라 잠금 없이 바로 캘린더로.
   const fromCal = location.hash === '#cal';
   let unlocked = !gated || fromCal || store(clearKey) === '1';
