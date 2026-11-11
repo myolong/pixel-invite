@@ -23,20 +23,32 @@ const DESC = '작은 게임을 깨면 열려요. 눌러서 열어 보세요!';
   await p.waitForTimeout(800);
   fs.mkdirSync(path.join(ROOT, 'assets/og'), { recursive: true });
   for (const k of Object.keys(TITLES)) {
-    await p.evaluate(([k, title]) => {
+    await p.evaluate(([k, title, gated]) => {
+      // 제목을 두 줄로: 끝 낱말(초대장·청첩장·알림장)을 아랫줄로
+      const cut = title.lastIndexOf(' ');
+      const top = title.slice(0, cut), last = title.slice(cut + 1);
+      const size = Math.min(92, Math.floor(620 / Math.max(top.length, last.length)));
       document.body.innerHTML = `
-        <div id="og" style="width:1200px;height:630px;display:flex;background:#fff3f5;font-family:Galmuri11,sans-serif;color:#2a2033;overflow:hidden">
-          <canvas style="width:494px;height:630px;display:block;border-right:6px solid #2a2033"></canvas>
-          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 56px">
-            <p style="margin:0 0 18px;font-size:30px;color:#e0526e">픽셀 초대장</p>
-            <p style="margin:0;font-size:${title.length > 7 ? 64 : 76}px;font-weight:700;line-height:1.2">${title}</p>
-            <p style="margin:34px 0 0;font-size:30px;line-height:1.5;color:#7a6d80">게임을 깨면 열리는<br>재밌는 초대장이 도착했어요</p>
-            <p style="margin:40px 0 0;display:inline-block;align-self:flex-start;font-size:30px;padding:14px 26px;border:4px solid #2a2033;border-radius:16px;background:#e0526e;color:#fff;box-shadow:0 6px 0 #2a2033">눌러서 열기 ›</p>
+        <div id="og" style="position:relative;width:1200px;height:630px;font-family:Galmuri11,sans-serif;color:#2a2033;overflow:hidden;background:#ffd9e2">
+          <div style="position:absolute;inset:0;background-image:radial-gradient(#f7a8bd 3px,transparent 3px);background-size:36px 36px"></div>
+          <div style="position:absolute;left:56px;top:34px;width:420px;height:562px;background:#e0526e;border:8px solid #2a2033;border-radius:36px 36px 90px 36px;box-shadow:0 12px 0 #2a2033">
+            <div style="margin:28px auto 0;width:340px;height:380px;background:#2a2033;border-radius:18px;padding:14px;box-sizing:border-box">
+              <canvas style="width:312px;height:352px;display:block;border-radius:8px"></canvas>
+            </div>
+            <div style="position:absolute;left:44px;bottom:52px;width:84px;height:28px;background:#2a2033;border-radius:6px"></div>
+            <div style="position:absolute;left:72px;bottom:24px;width:28px;height:84px;background:#2a2033;border-radius:6px"></div>
+            <div style="position:absolute;right:46px;bottom:70px;width:50px;height:50px;background:#f5c542;border:6px solid #2a2033;border-radius:50%"></div>
+            <div style="position:absolute;right:110px;bottom:34px;width:50px;height:50px;background:#f5c542;border:6px solid #2a2033;border-radius:50%"></div>
+          </div>
+          <div style="position:absolute;left:530px;right:40px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center">
+            <p style="margin:0 0 20px;align-self:flex-start;font-size:40px;padding:8px 22px;background:#2a2033;color:#fff;border-radius:12px">${last} 도착!</p>
+            <p style="margin:0;font-size:${size}px;font-weight:700;line-height:1.15">${top}<br>${last}</p>
+            <p style="margin:26px 0 0;font-size:46px;color:#e0526e;font-weight:700">${gated ? '게임을 깨면 열려요' : '게임 한 판 하고 열어요'}</p>
           </div>
         </div>`;
       document.body.style.margin = '0';
       PixelScene.mount(document.querySelector('#og canvas'), k);
-    }, [k, TITLES[k]]);
+    }, [k, TITLES[k], !['wedding', 'notice'].includes(k)]);
     await p.waitForTimeout(700);
     await p.locator('#og').screenshot({ path: path.join(ROOT, `assets/og/${k}.png`) });
   }
