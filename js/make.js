@@ -34,15 +34,15 @@
     const blink = (t % 3.2) < 0.15;
     const bob = Math.floor(t * 2) % 2;
     const two = K.people.length > 1;
-    const pos = two ? { groom: 58, bride: 102 } : { groom: 80 };
+    const pos = two ? { groom: Stage.PAIR_X[0], bride: Stage.PAIR_X[1] } : { groom: 80 };
     Object.entries(pos).forEach(([k, x]) => {
       const s = sprites[k];
-      Stage.drawSprite(ctx, blink ? s.happy : s.stand, x, Stage.FLOOR_Y + 8 - (who === k ? bob : 0), 2);
+      Stage.drawSprite(ctx, blink ? s.happy : s.stand, x, Stage.FLOOR_Y + 8 - (who === k ? bob : 0), Stage.CHAR_SCALE);
     });
     if (two) {
       const ax = pos[who];
       ctx.fillStyle = '#e0526e';
-      for (let r = 0; r < 4; r++) ctx.fillRect(ax - 3 + r, 104 + r + bob, 7 - r * 2, 1);
+      for (let r = 0; r < 4; r++) ctx.fillRect(ax - 3 + r, 99 + r + bob, 7 - r * 2, 1);
     }
     requestAnimationFrame(frame);
   }

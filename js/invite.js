@@ -157,17 +157,17 @@
     const blink = !walking && (t % 3.2) < 0.15;
     const smile = blink || (!walking && t % 6 > 5);
     if (two) {
-      const gx = -20 + (58 - -20) * k;
-      const bx = 180 + (102 - 180) * k;
-      Stage.drawSprite(ctx, smile ? chars.groom.happy : chars.groom.stand, gx, Stage.FLOOR_Y + 8 - bob, 2);
-      Stage.drawSprite(ctx, smile ? chars.bride.happy : chars.bride.stand, bx, Stage.FLOOR_Y + 8 - bob, 2);
+      const gx = -30 + (Stage.PAIR_X[0] + 30) * k;
+      const bx = 190 + (Stage.PAIR_X[1] - 190) * k;
+      Stage.drawSprite(ctx, smile ? chars.groom.happy : chars.groom.stand, gx, Stage.FLOOR_Y + 8 - bob, Stage.CHAR_SCALE);
+      Stage.drawSprite(ctx, smile ? chars.bride.happy : chars.bride.stand, bx, Stage.FLOOR_Y + 8 - bob, Stage.CHAR_SCALE);
     } else {
-      const gx = -20 + (80 - -20) * k;
-      Stage.drawSprite(ctx, smile ? chars.groom.happy : chars.groom.stand, gx, Stage.FLOOR_Y + 8 - bob, 2);
+      const gx = -30 + (80 + 30) * k;
+      Stage.drawSprite(ctx, smile ? chars.groom.happy : chars.groom.stand, gx, Stage.FLOOR_Y + 8 - bob, Stage.CHAR_SCALE);
     }
 
     if (!walking) {
-      if (Math.random() < dt * 1.6) hearts.push({ x: 80 + (Math.random() - 0.5) * 20, y: 120, life: 2 });
+      if (Math.random() < dt * 1.6) hearts.push({ x: 80 + (Math.random() - 0.5) * 20, y: 96, life: 2 });
       for (const h of hearts) { h.life -= dt; h.y -= dt * 22; h.x += Math.sin(h.life * 4) * 0.3; }
       for (let i = hearts.length - 1; i >= 0; i--) if (hearts[i].life <= 0) hearts.splice(i, 1);
       for (const h of hearts) {
@@ -374,12 +374,12 @@
     g.imageSmoothingEnabled = false;
     Stage.drawVenue(g, 0);
     if (two) {
-      Stage.drawSprite(g, chars.groom.happy, 58, Stage.FLOOR_Y + 8, 2);
-      Stage.drawSprite(g, chars.bride.happy, 102, Stage.FLOOR_Y + 8, 2);
+      Stage.drawSprite(g, chars.groom.happy, Stage.PAIR_X[0], Stage.FLOOR_Y + 8, Stage.CHAR_SCALE);
+      Stage.drawSprite(g, chars.bride.happy, Stage.PAIR_X[1], Stage.FLOOR_Y + 8, Stage.CHAR_SCALE);
     } else {
-      Stage.drawSprite(g, chars.groom.happy, 80, Stage.FLOOR_Y + 8, 2);
+      Stage.drawSprite(g, chars.groom.happy, 80, Stage.FLOOR_Y + 8, Stage.CHAR_SCALE);
     }
-    [[70, 112], [84, 98], [92, 118], [62, 92], [100, 88]].forEach(([x, y]) => g.drawImage(PixelChars.PROPS.heart, x, y));
+    [[70, 82], [84, 68], [92, 88], [62, 62], [100, 58]].forEach(([x, y]) => g.drawImage(PixelChars.PROPS.heart, x, y));
     const img = document.createElement('img');
     img.src = c.toDataURL('image/png');
     img.alt = `${namesText} 픽셀 캐릭터`;

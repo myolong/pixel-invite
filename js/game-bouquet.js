@@ -56,8 +56,8 @@ class BouquetGame {
     this.brideX = 80 + Math.sin(this.t * (1.1 + progress)) * 34;
 
     // 신랑 이동
-    if (this.keys.left) this.targetX = Math.max(14, this.groomX - 30);
-    if (this.keys.right) this.targetX = Math.min(Stage.LW - 14, this.groomX + 30);
+    if (this.keys.left) this.targetX = Math.max(22, this.groomX - 30);
+    if (this.keys.right) this.targetX = Math.min(Stage.LW - 22, this.groomX + 30);
     if (this.stun > 0) {
       this.stun -= dt;
     } else {
@@ -91,8 +91,8 @@ class BouquetGame {
       if (o.x < 8 || o.x > Stage.LW - 8) o.vx *= -1;
       o.y += o.vy * dt;
       o.spin += dt * 4;
-      const near = Math.abs(o.x - this.groomX) < 15;
-      if (!o.done && near && o.y > Stage.FLOOR_Y - 50 && o.y < Stage.FLOOR_Y - 20) {
+      const near = Math.abs(o.x - this.groomX) < 20;
+      if (!o.done && near && o.y > Stage.FLOOR_Y - 72 && o.y < Stage.FLOOR_Y - 34) {
         o.done = true;
         this.score = Math.max(0, this.score + o.score);
         if (o.score > 0) { this.caught++; this.happy = 0.35; }
@@ -132,7 +132,7 @@ class BouquetGame {
     // 신랑
     const shake = this.stun > 0 ? (Math.floor(this.t * 30) % 2 ? 1 : -1) : 0;
     const bob = this.stun <= 0 && Math.abs(this.targetX - this.groomX) > 1 ? (Math.floor(this.t * 8) % 2) : 0;
-    Stage.drawSprite(ctx, this.happy > 0 ? groom.happy : groom.stand, this.groomX + shake, Stage.FLOOR_Y + 8 - bob, 2);
+    Stage.drawSprite(ctx, this.happy > 0 ? groom.happy : groom.stand, this.groomX + shake, Stage.FLOOR_Y + 8 - bob, Stage.CHAR_SCALE);
 
     // 점수 팝업
     for (const p of this.pops) {

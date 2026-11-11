@@ -24,10 +24,10 @@
       const tt = t + s.phase;
       Stage.setTheme(s.K.scene);
       Stage.drawVenue(s.ctx, tt * 3);
-      const xs = s.chars.length > 1 ? [58, 102] : [80];
+      const xs = s.chars.length > 1 ? Stage.PAIR_X : [80];
       const bob = Math.floor(tt * 2.5) % 2;
       const blink = tt % 3.2 < 0.15;
-      s.chars.forEach((c, i) => Stage.drawSprite(s.ctx, blink ? c.happy : c.stand, xs[i], Stage.FLOOR_Y + 8 - (i === bob ? 1 : 0), 2));
+      s.chars.forEach((c, i) => Stage.drawSprite(s.ctx, blink ? c.happy : c.stand, xs[i], Stage.FLOOR_Y + 8 - (i === bob ? 1 : 0), Stage.CHAR_SCALE));
       // 게임 소품이 떨어지는 모습
       const prop = PixelChars.PROPS[s.K.game.good];
       const fall = (tt * 40) % 150;
