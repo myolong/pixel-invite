@@ -12,9 +12,9 @@
   <meta property="og:image" content="https://myolong.github.io/pixel-invite/assets/og/wedding.png">
   <meta name="theme-color" content="#fff3f5">
   <link rel="preload" href="fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/invite.css?v=20261111q">
-  <link rel="stylesheet" href="css/make.css?v=20261111q">
-  <link rel="stylesheet" href="css/site.css?v=20261111q">
+  <link rel="stylesheet" href="css/invite.css?v=20261111r">
+  <link rel="stylesheet" href="css/make.css?v=20261111r">
+  <link rel="stylesheet" href="css/site.css?v=20261111r">
   <!-- 광고: 초대장을 만드는 사람이 보는 화면에만(손님이 여는 invite*.html에는 넣지 않음) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5781805498180631" crossorigin="anonymous"></script>
 </head>
@@ -72,8 +72,8 @@
     </section>
   </main>
 
-  <script src="js/invite-code.js?v=20261111q"></script>
-  <script src="js/kinds.js?v=20261111q"></script>
+  <script src="js/invite-code.js?v=20261111r"></script>
+  <script src="js/kinds.js?v=20261111r"></script>
   <script>
     'use strict';
     (async function () {
@@ -87,7 +87,10 @@
       const DOC = k === 'wedding' ? '청첩장' : k === 'notice' ? '알림장' : '초대장';
       const josa = (w, a, b) => ((w.charCodeAt(w.length - 1) - 0xac00) % 28 ? a : b);
 
-      document.title = `${K.name} 만들기 - 게임으로 여는 픽셀 초대장`;
+      // 검색어에 맞춘 제목(송년회 초대장 등)
+      const SEO = { yearend: '송년회·연말모임 초대장', newyear: '신년회·새해 모임 초대장', xmas: '크리스마스 파티 초대장', seollal: '설 연휴 가족모임 초대장',
+        chuseok: '추석 가족모임 초대장', bungae: '번개 모임 초대장', gather: '모임 초대장', wedding: '모바일 청첩장', notice: '결혼 알림장' };
+      document.title = `${SEO[k] || K.name} 만들기 무료 - 게임으로 여는 픽셀 초대장`;
       document.querySelector('meta[name=description]').content = `${K.desc} 가입 없이 무료로 만들어요.`;
       $('kEyebrow').textContent = K.eyebrow;
       $('kName').textContent = K.name;
