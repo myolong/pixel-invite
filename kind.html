@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>게임 초대장 - 픽셀 초대장</title>
+  <meta name="description" content="픽셀 캐릭터와 미니게임이 들어간 재밌는 초대장. 예시를 보고 바로 만들어요.">
+  <meta name="theme-color" content="#fff3f5">
+  <link rel="preload" href="fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/invite.css">
+  <link rel="stylesheet" href="css/make.css">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="maker">
+  <header class="mk-head">
+    <a class="mk-home" href="index.html">픽셀 초대장</a>
+    <span class="mk-beta">무료 베타</span>
+  </header>
+  <main class="site">
+    <a class="back" href="index.html">‹ 초대장 종류 전체</a>
+    <div class="kind-page">
+      <section class="kind-info">
+        <p class="eyebrow" id="kEyebrow"></p>
+        <h1 id="kName"></h1>
+        <p class="kind-desc" id="kDesc"></p>
+        <a class="btn primary big make-btn" id="makeBtn">이 초대장 만들기</a>
+        <h2>들어가는 것</h2>
+        <ul class="points" id="kPoints"></ul>
+        <h2>미니게임</h2>
+        <p id="kGame" class="kind-desc"></p>
+      </section>
+
+      <section class="kind-example">
+        <p class="ex-label">예시 화면 <small>(눌러서 직접 해 보세요)</small></p>
+        <div class="phone"><iframe id="exFrame" title="초대장 예시"></iframe></div>
+        <a class="ex-open" id="exOpen" target="_blank" rel="noopener">새 창으로 크게 보기 ›</a>
+      </section>
+    </div>
+
+    <section class="mk-card">
+      <h2>이렇게 만들어요</h2>
+      <ol class="how">
+        <li>이름, 날짜, 장소를 적어요</li>
+        <li>픽셀 캐릭터의 옷, 머리, 색을 꾸며요</li>
+        <li>링크를 만들어 카톡으로 보내면 끝</li>
+      </ol>
+      <a class="btn primary big make-btn" id="makeBtn2">이 초대장 만들기</a>
+    </section>
+
+    <section class="others">
+      <h2>다른 초대장</h2>
+      <div class="other-chips" id="others"></div>
+    </section>
+  </main>
+
+  <script src="js/invite-code.js"></script>
+  <script src="js/kinds.js"></script>
+  <script>
+    'use strict';
+    (async function () {
+      const { KINDS, ORDER } = InviteKinds;
+      const k = KINDS[new URLSearchParams(location.search).get('k')] ? new URLSearchParams(location.search).get('k') : 'wedding';
+      const K = KINDS[k];
+      const $ = id => document.getElementById(id);
+      document.title = `${K.name} 만들기 - 게임으로 여는 픽셀 초대장`;
+      document.querySelector('meta[name=description]').content = `${K.desc} 가입 없이 무료로 만들어요.`;
+      $('kEyebrow').textContent = K.eyebrow;
+      $('kName').textContent = K.name;
+      $('kDesc').textContent = K.desc;
+      K.points.forEach(p => { const li = document.createElement('li'); li.textContent = p; $('kPoints').append(li); });
+      const gn = K.game.goodName;
+      const wa = (gn.charCodeAt(gn.length - 1) - 0xac00) % 28 ? '과' : '와';
+      $('kGame').textContent = `${gn} 받기: 30초 동안 떨어지는 ${gn}${wa} 하트를 받고 먹구름은 피해요. 점수와 상관없이 끝나면 초대장이 열리고, 게임을 건너뛰고 바로 볼 수도 있어요.`;
+      ['makeBtn', 'makeBtn2'].forEach(id => { $(id).href = `make.html?k=${k}`; });
+      const code = await InviteCode.encode(InviteKinds.sampleConfig(k));
+      const url = `invite.html?d=${code}`;
+      $('exFrame').src = url;
+      $('exOpen').href = url;
+      ORDER.filter(x => x !== k).forEach(x => {
+        const a = document.createElement('a');
+        a.className = 'chip';
+        a.href = `kind.html?k=${x}`;
+        a.textContent = KINDS[x].name;
+        $('others').append(a);
+      });
+    })();
+  </script>
+</body>
+</html>

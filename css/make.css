@@ -75,3 +75,6 @@ body.maker { background: var(--px-bg); color: var(--px-ink); font-family: var(--
 .kind.on .kind-no { background: var(--px-accent); color: #fff; }
 .pair.one { grid-template-columns: 1fr !important; }
 .photo-note { margin: 0 4px 14px; }
+.kind-picked { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-radius: 12px; background: #ffe6ec; border: 2px solid var(--px-accent); }
+.kind-picked b { font-size: 16px; }
+.kind-picked .mini { margin: 0; }

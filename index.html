@@ -9,96 +9,53 @@
   <link rel="preload" href="fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/invite.css">
   <link rel="stylesheet" href="css/make.css">
-  <style>
-    .hero { text-align: center; padding-top: 24px; }
-    .hero h1 { font-size: 26px; line-height: 1.4; margin: 6px 0 10px; }
-    .hero p { font-size: 15px; color: var(--px-muted); margin: 0 0 16px; }
-    .hero canvas { max-width: 240px; margin: 0 auto 16px; }
-    .cta { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
-    .cta .btn { flex: none; padding: 12px 18px; }
-    .home-kinds { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .home-kinds a { display: block; height: 100%; text-decoration: none; color: var(--px-ink); }
-    .how { padding-left: 20px; margin: 0; font-size: 15px; }
-    .how li { margin: 6px 0; }
-    .mk-card h2 { font-family: 'Galmuri11', var(--sans); font-size: 17px; margin: 0 0 10px; }
-  </style>
+  <link rel="stylesheet" href="css/site.css">
 </head>
 <body class="maker">
   <header class="mk-head">
-    <span class="mk-home">픽셀 초대장</span>
+    <a class="mk-home" href="index.html">픽셀 초대장</a>
     <span class="mk-beta">무료 베타</span>
   </header>
-  <main class="mk">
-    <section class="hero">
-      <p class="eyebrow">PIXEL GAME INVITATION</p>
+  <main class="site">
+    <section class="intro">
       <h1>게임을 깨면 열리는<br>재밌는 초대장</h1>
-      <p>나를 닮은 픽셀 캐릭터와 30초 미니게임.<br>받는 사람이 웃으면서 열어보는 초대장을 만들어요.</p>
-      <canvas id="hero" aria-label="픽셀 캐릭터 무대"></canvas>
-      <div class="cta">
-        <a class="btn primary" href="make.html">초대장 만들기 (무료)</a>
-        <a class="btn" href="invite.html?c=sample">샘플 보기</a>
-      </div>
+      <p>나를 닮은 픽셀 캐릭터와 30초 미니게임. 받는 사람이 웃으면서 열어보는 초대장을 만들어요. 아래에서 종류를 골라 보세요.</p>
     </section>
 
-    <section class="mk-card">
-      <h2>이런 초대장을 만들 수 있어요</h2>
-      <ul class="home-kinds" id="kinds"></ul>
-    </section>
+    <ul class="kind-cards" id="cards"></ul>
 
-    <section class="mk-card">
+    <section class="mk-card how-card">
       <h2>이렇게 만들어요</h2>
       <ol class="how">
-        <li>초대장 종류를 고르고 이름, 날짜, 장소를 적어요</li>
-        <li>픽셀 캐릭터의 옷, 머리, 색을 꾸며요</li>
+        <li>초대장 종류를 고르고 예시를 봐요</li>
+        <li>이름, 날짜, 장소를 적고 캐릭터를 꾸며요</li>
         <li>링크를 만들어 카톡으로 보내면 끝</li>
       </ol>
-      <p class="hint">받는 사람은 게임을 하거나 건너뛰고 초대장을 봐요. 달력, 지도, 계좌 복사, 캘린더 추가가 들어 있어요. 가입이 필요 없고, 입력한 내용은 서버에 저장되지 않아요.</p>
+      <p class="hint">가입이 필요 없고, 입력한 내용은 서버에 저장되지 않고 링크 안에만 들어가요.</p>
     </section>
   </main>
 
   <script src="js/kinds.js"></script>
   <script src="js/characters.js"></script>
   <script src="js/stage.js"></script>
+  <script src="js/scene.js"></script>
   <script>
     'use strict';
-    (function () {
+    (async function () {
       const { KINDS, ORDER } = InviteKinds;
-      const list = document.getElementById('kinds');
-      ORDER.forEach((k, i) => {
+      const list = document.getElementById('cards');
+      const canvases = [];
+      ORDER.forEach(k => {
+        const K = KINDS[k];
         const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = `make.html?k=${k}`;
-        a.className = 'kind';
-        a.innerHTML = `<span class="kind-no">${i + 1}</span><b></b><small></small>`;
-        a.querySelector('b').textContent = KINDS[k].name;
-        a.querySelector('small').textContent = KINDS[k].blurb;
-        li.append(a);
+        li.innerHTML = `<a class="kind-card" href="kind.html?k=${k}"><canvas aria-hidden="true"></canvas><b></b><small></small><span class="go">예시 보기 ›</span></a>`;
+        li.querySelector('b').textContent = K.name;
+        li.querySelector('small').textContent = K.blurb;
         list.append(li);
+        canvases.push([li.querySelector('canvas'), k]);
       });
-
-      // 종류가 3초마다 바뀌는 무대
-      const canvas = document.getElementById('hero');
-      const ctx = Stage.setupCanvas(canvas);
-      let idx = 0, t = 0, last = performance.now(), chars = [];
-      const show = () => {
-        const K = KINDS[ORDER[idx]];
-        Stage.setTheme(K.scene);
-        chars = K.people.map(p => PixelChars.makeCharacter(p.look));
-      };
-      show();
-      function frame(now) {
-        const dt = Math.min(0.05, (now - last) / 1000);
-        last = now; t += dt;
-        if (t > 3) { t = 0; idx = (idx + 1) % ORDER.length; show(); }
-        Stage.drawVenue(ctx, now / 300);
-        const xs = chars.length > 1 ? [58, 102] : [80];
-        const bob = Math.floor(now / 400) % 2;
-        chars.forEach((c, i) => Stage.drawSprite(ctx, (now / 1000) % 3.2 < 0.15 ? c.happy : c.stand, xs[i], Stage.FLOOR_Y + 8 - (i === bob ? 1 : 0), 2));
-        const K = KINDS[ORDER[idx]];
-        Stage.drawText(ctx, K.name, 80, 42, 12, '#e0526e');
-        requestAnimationFrame(frame);
-      }
-      Promise.race([document.fonts.load('700 12px Galmuri11'), new Promise(r => setTimeout(r, 800))]).catch(() => {}).then(() => requestAnimationFrame(frame));
+      try { await Promise.race([document.fonts.load('700 12px Galmuri11'), new Promise(r => setTimeout(r, 800))]); } catch (e) { /* 무시 */ }
+      canvases.forEach(([c, k]) => PixelScene.mount(c, k));
     })();
   </script>
 </body>

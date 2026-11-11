@@ -1,0 +1,43 @@
+/* 첫 화면·종류 소개 페이지 */
+.site { max-width: 960px; margin: 0 auto; padding: 8px 16px 48px; }
+.mk-head { max-width: 960px; }
+.intro { text-align: center; padding: 18px 0 18px; }
+.intro h1 { font-family: 'Galmuri11', var(--sans); font-size: 26px; line-height: 1.4; margin: 0 0 10px; }
+.intro p { color: var(--px-muted); font-size: 15px; margin: 0 auto; max-width: 420px; }
+
+.kind-cards { list-style: none; padding: 0; margin: 0 0 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 640px) { .kind-cards { grid-template-columns: repeat(4, 1fr); } }
+.kind-card {
+  display: flex; flex-direction: column; height: 100%; text-decoration: none; color: var(--px-ink);
+  background: #fff; border: 2px solid var(--px-ink); border-radius: 14px; box-shadow: 0 4px 0 #f0cdd6; overflow: hidden;
+}
+.kind-card:active { transform: translateY(2px); box-shadow: 0 2px 0 #f0cdd6; }
+.kind-card canvas { border-radius: 0; box-shadow: none; border-bottom: 2px solid var(--px-ink); }
+.kind-card b { font-family: 'Galmuri11', var(--sans); font-size: 15px; padding: 10px 10px 0; }
+.kind-card small { font-size: 12px; color: var(--px-muted); line-height: 1.45; padding: 2px 10px 0; flex: 1; }
+.kind-card .go { font-size: 13px; font-weight: 700; color: var(--px-accent); padding: 6px 10px 10px; }
+.how-card h2, .mk-card h2 { font-family: 'Galmuri11', var(--sans); font-size: 17px; margin: 0 0 10px; }
+.how { padding-left: 20px; margin: 0 0 8px; font-size: 15px; }
+.how li { margin: 6px 0; }
+
+.back { display: inline-block; margin: 10px 0 4px; color: var(--px-muted); text-decoration: none; font-size: 14px; }
+.kind-page { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
+@media (min-width: 760px) { .kind-page { grid-template-columns: 1fr 360px; align-items: start; } }
+.kind-info .eyebrow { text-align: left; margin-top: 8px; }
+.kind-info h1 { font-family: 'Galmuri11', var(--sans); font-size: 26px; margin: 0 0 8px; }
+.kind-info h2 { font-family: 'Galmuri11', var(--sans); font-size: 16px; margin: 22px 0 6px; }
+.kind-desc { font-size: 15px; margin: 0; }
+.points { padding-left: 20px; margin: 0; font-size: 15px; }
+.points li { margin: 4px 0; }
+.make-btn { display: flex; width: 100%; margin-top: 16px; text-decoration: none; }
+
+.kind-example { text-align: center; }
+.ex-label { font-weight: 700; font-size: 14px; margin: 0 0 8px; }
+.ex-label small { font-weight: 400; color: var(--px-muted); }
+.phone { width: 100%; max-width: 340px; margin: 0 auto; border: 3px solid var(--px-ink); border-radius: 28px; padding: 10px 6px; background: var(--px-ink); box-shadow: 0 6px 0 #f0cdd6; }
+.phone iframe { display: block; width: 100%; height: 600px; border: 0; border-radius: 20px; background: #fff; }
+.ex-open { display: inline-block; margin-top: 10px; font-size: 14px; color: var(--px-accent); }
+
+.others h2 { font-family: 'Galmuri11', var(--sans); font-size: 16px; margin: 4px 0 8px; }
+.other-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.other-chips .chip { text-decoration: none; }
