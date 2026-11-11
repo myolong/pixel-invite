@@ -29,3 +29,7 @@
 - `invites/examples/<종류>/p1~p6.png` 예시 초대장 사진첩(픽셀 그림, 실제 사람 사진 아님)
 - `assets/shots/<종류>-1~3.jpg` 종류 페이지의 오프닝·게임·초대장 화면 캡처
 - 다시 만들기: 저장소 폴더에서 `python3 -m http.server 8765`를 켜고 `node tools/make-examples.js` (`tools/photo-gen.js`가 장면을 그림)
+
+## 배포할 때
+
+HTML의 `js/…`, `css/…` 주소 끝에 `?v=날짜` 가 붙어 있어요. 브라우저가 예전 파일을 기억해서 새 화면이 깨지는 걸 막으려는 것이라, JS·CSS를 고치면 모든 HTML의 `?v=` 값을 함께 바꿔 주세요.
