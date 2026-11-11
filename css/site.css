@@ -41,3 +41,19 @@
 .others h2 { font-family: 'Galmuri11', var(--sans); font-size: 16px; margin: 4px 0 8px; }
 .other-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .other-chips .chip { text-decoration: none; }
+
+.free-note { text-align: center; font-size: 13px; color: var(--px-muted); margin: 8px 0 0; }
+.shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.shot { margin: 0; }
+.shot img { display: block; width: 100%; border-radius: 12px; border: 2px solid var(--px-ink); }
+.shot figcaption { font-size: 12px; line-height: 1.45; margin-top: 6px; color: var(--px-muted); }
+.shot figcaption b { display: block; color: var(--px-ink); font-size: 13px; }
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 0 0 4px; }
+.steps li { counter-increment: s; position: relative; padding: 0 0 14px 38px; font-size: 14px; }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 8px; background: var(--px-accent); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: 'Galmuri11', var(--sans); }
+.steps b { display: block; font-size: 15px; }
+.steps span { color: var(--px-muted); }
+.faq details { border-top: 1px dashed #ecdde2; padding: 10px 0; }
+.faq details:first-child { border-top: 0; padding-top: 0; }
+.faq summary { font-weight: 700; cursor: pointer; font-size: 15px; }
+.faq p { margin: 6px 0 0; font-size: 14px; color: var(--px-muted); }

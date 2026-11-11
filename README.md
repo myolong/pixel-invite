@@ -23,3 +23,9 @@
 - `invites/<이름>/` 그 청첩장의 사진·영상 파일. 설정의 `cover`(`type`: `photo` 또는 `video`)와 `gallery`에 파일 이름을 적어요.
 
 글꼴: Galmuri(SIL Open Font License 1.1, `fonts/LICENSE.txt`)
+
+## 예시 사진·화면 캡처
+
+- `invites/examples/<종류>/p1~p6.png` 예시 초대장 사진첩(픽셀 그림, 실제 사람 사진 아님)
+- `assets/shots/<종류>-1~3.jpg` 종류 페이지의 오프닝·게임·초대장 화면 캡처
+- 다시 만들기: 저장소 폴더에서 `python3 -m http.server 8765`를 켜고 `node tools/make-examples.js` (`tools/photo-gen.js`가 장면을 그림)

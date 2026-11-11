@@ -208,7 +208,8 @@
   // ───────── 예식 정보 ─────────
   function fillInfo() {
     const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
-    const base = `invites/${code}/`;
+    // 사진 폴더: 기본은 invites/<이름>/, 예시 초대장은 cfg.base(같은 사이트 안의 상대 경로만)
+    const base = typeof cfg.base === 'string' && /^invites\/[a-z0-9_\/-]+\/$/i.test(cfg.base) ? cfg.base : `invites/${code}/`;
     const src = f => (/^(https?:)?\/\//.test(f) || f.startsWith('/') ? f : base + f);
 
     $('sampleBadge').hidden = !cfg.sample;
@@ -281,6 +282,7 @@
     else ddayText(K.ddayAfter, `${1 - days}일`);
 
     // 사진첩
+    if (!two) $('galleryHead').textContent = '사진첩';
     const photos = (cfg.gallery || []).map(src);
     const gal = $('gallery');
     photos.forEach((u, i) => {
