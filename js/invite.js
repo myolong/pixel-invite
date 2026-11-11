@@ -212,6 +212,7 @@
     const src = f => (/^(https?:)?\/\//.test(f) || f.startsWith('/') ? f : base + f);
 
     $('sampleBadge').hidden = !cfg.sample;
+    if (linkCode) $('sampleBadge').textContent = `예시 ${DOC}이에요. 이름, 장소, 계좌는 모두 가짜예요.`;
 
     // 커버: 사진 또는 짧은 영상
     const cover = cfg.cover || {};
@@ -346,7 +347,8 @@
       if (navigator.share) { try { await navigator.share(data); return; } catch (e) { /* 취소 */ } }
       copy(location.href, `${DOC} 주소를 복사했어요`);
     });
-    $('makeLink').href = `make.html?k=${cfg.kind || 'wedding'}`;
+    $('makeLink').href = `kind.html?k=${cfg.kind || 'wedding'}`;
+    if (window.top !== window) $('makeLink').target = '_top';
     $('replayBtn').addEventListener('click', () => {
       backToStage();
       startGame();

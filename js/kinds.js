@@ -153,11 +153,80 @@
       ],
     },
   };
+
+  // 소개 페이지 문구와 예시 초대장 내용(이름·장소·계좌는 모두 가짜)
+  const acc = (side, holder) => ({ side, bank: '예시은행', number: '000-0000-0000-00', holder });
+  const DETAIL = {
+    wedding: {
+      desc: '신랑·신부를 꼭 닮은 픽셀 캐릭터가 꽃 아치 앞에 걸어 들어오고, 하객은 신부가 던지는 부케를 받는 30초 게임을 한 뒤 청첩장을 봐요.',
+      points: ['신랑·신부 픽셀 캐릭터 꾸미기', '부케 받기 미니게임(건너뛰기 가능)', '인사말·혼주, 예식 달력과 디데이', '지도 링크, 신랑 측·신부 측 계좌 복사'],
+      sample: { groom: { name: '김도윤', short: '도윤', parents: '김철수 · 박영희의 아들' }, bride: { name: '이서연', short: '서연', parents: '이영수 · 최미경의 딸' },
+        date: '2027-05-15T12:30:00+09:00', venue: { name: '픽셀웨딩홀 3층 별빛홀', address: '서울특별시 중구 예시로 123', transit: '지하철 2호선 예시역 3번 출구에서 걸어서 5분' },
+        accounts: [acc('신랑 측', '김도윤'), acc('신부 측', '이서연')] },
+    },
+    bihon: {
+      desc: '결혼 대신 나 자신과의 삶을 축하하는 비혼식 초대장이에요. 주인공 캐릭터가 무대에 서고, 친구가 던지는 축하 케이크를 받는 게임으로 시작해요.',
+      points: ['주인공 한 명의 픽셀 캐릭터', '케이크 받기 미니게임', '가벼운 인사말 예시', '장소 안내와 마음 전할 계좌(선택)'],
+      sample: { groom: { name: '한지수', short: '지수' }, date: '2027-03-20T18:00:00+09:00',
+        venue: { name: '예시레스토랑 2층 룸', address: '서울특별시 마포구 예시로 45' } },
+    },
+    ihon: {
+      desc: '이혼을 무겁지 않게, 새 출발을 응원받는 파티로 알리는 초대장이에요. 반짝이는 별을 받는 게임으로 분위기를 가볍게 열어요.',
+      points: ['주인공 한 명의 픽셀 캐릭터', '별 받기 미니게임', '"새 출발 파티" 톤의 인사말 예시', '장소 안내'],
+      sample: { groom: { name: '박태오', short: '태오' }, date: '2027-02-13T19:00:00+09:00',
+        venue: { name: '예시펍 단체석', address: '서울특별시 용산구 예시로 7' } },
+    },
+    yearend: {
+      desc: '송년회·연말 파티 초대장이에요. 눈 내리는 무대에서 선물 상자를 받는 게임을 하고, 모임 날짜와 장소, 회비 계좌를 확인해요.',
+      points: ['모임 이름과 대표 캐릭터', '눈 내리는 겨울 무대, 선물 받기 게임', '디데이와 캘린더 추가', '회비 계좌 복사'],
+      sample: { title: '2026 우리 반 송년회', groom: { name: '총무 민준', short: '민준' }, date: '2026-12-27T18:30:00+09:00',
+        venue: { name: '예시고깃집 단체석', address: '서울특별시 강남구 예시로 88', parking: '건물 뒤 공영주차장' },
+        accounts: [acc('회비', '이민준')] },
+    },
+    newyear: {
+      desc: '신년회·새해 첫 모임 초대장이에요. 복주머니를 받는 게임으로 새해 인사를 건네고, 모임 정보를 한 장에 담아요.',
+      points: ['모임 이름과 대표 캐릭터', '복주머니 받기 게임', '새해 인사말 예시', '장소·회비 안내'],
+      sample: { title: '2027 새해 첫 모임', groom: { name: '회장 서윤', short: '서윤' }, date: '2027-01-09T12:00:00+09:00',
+        venue: { name: '예시한정식 2층', address: '서울특별시 종로구 예시로 12' }, accounts: [acc('회비', '정서윤')] },
+    },
+    notice: {
+      desc: '결혼식을 생략하거나 가족끼리만 치를 때, 결혼 소식을 전하는 알림장이에요. 예식장 정보 없이 날짜와 인사만 담을 수 있어요.',
+      points: ['신랑·신부 픽셀 캐릭터', '부케 받기 미니게임', '장소·시간은 선택(비우면 숨김)', '"부부가 된 지 ○일" 표시와 축하 계좌'],
+      sample: { groom: { name: '오준호', short: '준호' }, bride: { name: '윤하린', short: '하린' }, date: '2026-10-03T12:00:00+09:00', noTime: true,
+        accounts: [acc('신랑 측', '오준호'), acc('신부 측', '윤하린')] },
+    },
+    babyshower: {
+      desc: '태어날 아기를 함께 기다리는 베이비샤워 초대장이에요. 예비 엄마·아빠 캐릭터와 파스텔 무대, 젖병 받기 게임이 들어가요.',
+      points: ['예비 엄마·아빠 캐릭터(한 명만도 가능)', '파스텔 무대, 젖병 받기 게임', '디데이와 장소 안내', '선물 대신 마음 전할 계좌(선택)'],
+      sample: { groom: { name: '최유나', short: '유나' }, bride: { name: '강민재', short: '민재' }, date: '2027-04-10T14:00:00+09:00',
+        venue: { name: '예시카페 파티룸', address: '경기도 성남시 예시로 21' } },
+    },
+    event: {
+      desc: '돌잔치, 생일, 집들이, 개업, 은퇴 기념처럼 어떤 행사든 쓸 수 있는 초대장이에요. 행사 이름을 적고 케이크 받기 게임으로 시작해요.',
+      points: ['행사 이름과 주인공 캐릭터', '케이크 받기 게임', '행사에 맞게 고치는 인사말', '장소·계좌 안내'],
+      sample: { title: '하윤이 첫 돌잔치', groom: { name: '하윤이네', short: '하윤이네' }, date: '2027-06-05T11:30:00+09:00',
+        venue: { name: '예시뷔페 2층 연회장', address: '서울특별시 송파구 예시로 300', parking: '지하 주차장 3시간 무료' } },
+    },
+  };
+  Object.entries(DETAIL).forEach(([k, d]) => Object.assign(KINDS[k], d));
+
+  // 예시 초대장 설정(InviteCode로 링크를 만들 수 있다)
+  const sampleConfig = k => {
+    const K = KINDS[k];
+    const c = JSON.parse(JSON.stringify(K.sample));
+    c.kind = k;
+    c.sample = true;
+    c.greeting = K.greetings[0];
+    c.groom.look = K.people[0].look;
+    if (c.bride && K.people[1]) c.bride.look = K.people[1].look;
+    return c;
+  };
+
   const ORDER = ['wedding', 'bihon', 'ihon', 'yearend', 'newyear', 'notice', 'babyshower', 'event'];
 
   const get = k => KINDS[k] || KINDS.wedding;
   // "{names}", "{title}", "{n}" 바꾸기
   const fill = (s, v) => String(s || '').replace(/\{(\w+)\}/g, (_, k) => (v[k] != null ? v[k] : ''));
 
-  window.InviteKinds = { KINDS, ORDER, get, fill };
+  window.InviteKinds = { KINDS, ORDER, get, fill, sampleConfig };
 })();

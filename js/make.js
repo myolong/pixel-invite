@@ -48,7 +48,12 @@
   }
 
   // ── 종류 고르기
+  let pickOpen = true;
+  $('kindChange').addEventListener('click', () => { pickOpen = true; renderKinds(); });
   function renderKinds() {
+    $('kindPicked').hidden = pickOpen;
+    $('kindGrid').hidden = !pickOpen;
+    $('kindPickedName').textContent = K.name;
     const grid = $('kindGrid');
     grid.innerHTML = '';
     ORDER.forEach((k, i) => {
@@ -60,7 +65,7 @@
       b.innerHTML = `<span class="kind-no">${i + 1}</span><b></b><small></small>`;
       b.querySelector('b').textContent = KINDS[k].name;
       b.querySelector('small').textContent = KINDS[k].blurb;
-      b.addEventListener('click', () => { if (k !== kind) { setKind(k); saveDraft(); } });
+      b.addEventListener('click', () => { pickOpen = false; if (k !== kind) { setKind(k); saveDraft(); } else renderKinds(); });
       grid.append(b);
     });
   }
@@ -333,8 +338,14 @@
   if (!loaded) {
     try { loaded = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { /* 없음 */ }
     const askKind = params.get('k');
-    if (KINDS[askKind] && (!loaded || loaded.kind !== askKind)) loaded = { kind: askKind };
+    if (KINDS[askKind] && (!loaded || loaded.kind !== askKind)) {
+      // 쓰던 내용(이름·날짜 등)은 두고 종류만 바꾼다. 예시 인사말·캐릭터는 새 종류 것으로
+      const g = loaded && loaded.greeting;
+      const custom = g && !Object.values(KINDS).some(x => x.greetings.includes(g));
+      loaded = Object.assign({}, loaded, { kind: askKind, looks: null, greeting: custom ? g : '' });
+    }
   }
+  pickOpen = !(params.get('k') || params.get('d'));
   const startKind = loaded && KINDS[loaded.kind] ? loaded.kind : 'wedding';
   if (loaded) applyDraft(loaded);
   K = null; // 처음 한 번은 종류 기본값을 채우도록
