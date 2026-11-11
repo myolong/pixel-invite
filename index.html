@@ -3,20 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>픽셀 초대장 - 게임을 깨면 열리는 재밌는 초대장 만들기</title>
-  <meta name="description" content="결혼식·연말 모임·신년 모임·크리스마스 파티·설 연휴 모임·추석 모임·결혼 알림장·번개 모임 등 각종 초대장을 픽셀 캐릭터와 미니게임으로 만들어요. 가입 없이 무료.">
+  <title>송년회 초대장 만들기 무료 - 연말모임·신년회 모바일 초대장 | 픽셀 초대장</title>
+  <meta name="description" content="송년회·연말모임 초대장을 무료로 1분 만에 만들어요. 회비 계좌, 참석 여부 받기, 지도, 캘린더 추가까지 링크 하나로. 미니게임을 깨야 열리는 재밌는 픽셀 초대장. 신년회·크리스마스 파티·설·추석 가족모임도 돼요.">
+  <link rel="canonical" href="https://myolong.github.io/pixel-invite/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="픽셀 초대장">
-  <meta property="og:title" content="픽셀 초대장 - 게임을 깨면 열리는 초대장 만들기">
-  <meta property="og:description" content="결혼식·모임·행사 초대장을 픽셀 캐릭터와 미니게임으로. 가입 없이 무료.">
-  <meta property="og:image" content="https://myolong.github.io/pixel-invite/assets/og/wedding.png">
+  <meta property="og:title" content="송년회 초대장, 게임으로 열게 해 보세요">
+  <meta property="og:description" content="회비·참석 여부·지도까지 링크 하나로. 가입 없이 무료.">
+  <meta property="og:image" content="https://myolong.github.io/pixel-invite/assets/og/yearend.png">
   <meta name="theme-color" content="#fff3f5">
   <link rel="preload" href="fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/invite.css?v=20261111q">
-  <link rel="stylesheet" href="css/make.css?v=20261111q">
-  <link rel="stylesheet" href="css/site.css?v=20261111q">
+  <link rel="stylesheet" href="css/invite.css?v=20261111r">
+  <link rel="stylesheet" href="css/make.css?v=20261111r">
+  <link rel="stylesheet" href="css/site.css?v=20261111r">
   <!-- 광고: 초대장을 만드는 사람이 보는 화면에만(손님이 여는 invite*.html에는 넣지 않음) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5781805498180631" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "송년회 초대장 정말 무료인가요?", "acceptedAnswer": {"@type": "Answer", "text": "네. 가입 없이 무료로 만들고 카톡으로 보낼 수 있어요."}}, {"@type": "Question", "name": "참석 인원을 셀 수 있나요?", "acceptedAnswer": {"@type": "Answer", "text": "받은 사람이 참석·불참과 인원을 보내면 명단과 합계가 바로 나와요. 송년회 같은 모임 초대장은 받은 사람도 명단을 볼 수 있어요."}}, {"@type": "Question", "name": "회비는 어떻게 안내하나요?", "acceptedAnswer": {"@type": "Answer", "text": "계좌번호와 1인 금액을 적으면 초대장에 복사 버튼과 함께 나와요."}}, {"@type": "Question", "name": "게임을 못 깨면 초대장을 못 보나요?", "acceptedAnswer": {"@type": "Answer", "text": "모임 초대장은 게임을 깨야 열려요. 세 번 넘게 못 깨면 다음 판이 쉬워져서 누구나 열 수 있어요."}}, {"@type": "Question", "name": "카톡에 보내면 미리보기가 나오나요?", "acceptedAnswer": {"@type": "Answer", "text": "네. 초대장 종류 제목과 그림이 함께 나와요."}}]}</script>
 </head>
 <body class="maker">
   <header class="mk-head">
@@ -25,34 +27,65 @@
   </header>
   <main class="site">
     <section class="intro">
-      <h1>게임을 깨면 열리는<br>재밌는 초대장</h1>
-      <p>나를 닮은 픽셀 캐릭터와 30초 미니게임. 받는 사람이 웃으면서 열어보는 초대장을 만들어요. 아래에서 종류를 골라 보세요.</p>
+      <p class="intro-tag">2026 송년회 시즌</p>
+      <h1>송년회 초대장,<br>게임으로 열게 해 보세요</h1>
+      <p>단톡방 공지 대신 링크 하나. 미니게임을 깨면 초대장이 열리고, 회비 계좌와 참석 여부까지 한 번에 받아요. 가입 없이 무료예요.</p>
+      <div class="intro-cta">
+        <a class="btn primary" href="make.html?k=yearend">송년회 초대장 만들기</a>
+        <a class="btn" href="kind.html?k=yearend">예시 먼저 보기</a>
+      </div>
     </section>
 
+    <h2 class="group-title">모임 초대장</h2>
     <ul class="kind-cards" id="cards"></ul>
+
+    <section class="mk-card feature-card">
+      <h2>모임 총무가 편해지는 기능</h2>
+      <ul class="points">
+        <li><b>회비 안내</b> 계좌번호와 1인 금액을 적어 두면 한 번에 복사해요.</li>
+        <li><b>참석 여부 받기</b> 참석·불참과 인원을 받고, 모임 초대장은 명단을 모두가 같이 봐요.</li>
+        <li><b>장소·시간</b> 네이버 지도·카카오맵 버튼, 디데이, 캘린더 추가.</li>
+        <li><b>게임 잠금</b> 받기·블록 쌓기·물총 쏘기 중 하나를 깨야 열려요. 단톡방이 들썩여요.</li>
+      </ul>
+    </section>
+
+    <h2 class="group-title">결혼 소식</h2>
+    <ul class="kind-cards" id="cardsWed"></ul>
 
     <section class="mk-card how-card">
       <h2>이렇게 만들어요</h2>
       <ol class="how">
         <li>초대장 종류를 고르고 예시를 봐요</li>
-        <li>이름, 날짜, 장소를 적고 캐릭터를 꾸며요</li>
-        <li>링크를 만들어 카톡으로 보내면 끝</li>
+        <li>모임 이름, 날짜, 장소, 회비를 적고 캐릭터를 꾸며요</li>
+        <li>링크를 만들어 카톡 단톡방에 올리면 끝</li>
       </ol>
-      <p class="hint">가입이 필요 없고, 입력한 내용은 서버에 저장되지 않고 링크 안에만 들어가요.</p>
+      <p class="hint">가입이 필요 없어요.</p>
+    </section>
+
+    <section class="mk-card faq">
+      <h2>자주 묻는 질문</h2>
+      <details><summary>송년회 초대장 정말 무료인가요?</summary><p>네. 가입 없이 무료로 만들고 카톡으로 보낼 수 있어요.</p></details>
+      <details><summary>참석 인원을 셀 수 있나요?</summary><p>받은 사람이 참석·불참과 인원을 보내면 명단과 합계가 바로 나와요. 송년회 같은 모임 초대장은 받은 사람도 명단을 볼 수 있어요.</p></details>
+      <details><summary>회비는 어떻게 안내하나요?</summary><p>계좌번호와 "1인 30,000원"처럼 금액을 적으면 초대장에 복사 버튼과 함께 나와요.</p></details>
+      <details><summary>게임을 못 깨면 초대장을 못 보나요?</summary><p>모임 초대장은 게임을 깨야 열려요. 세 번 넘게 못 깨면 다음 판이 쉬워져서 누구나 열 수 있어요.</p></details>
+      <details><summary>카톡에 보내면 미리보기가 나오나요?</summary><p>네. "연말 모임 초대장" 제목과 그림이 함께 나와요.</p></details>
     </section>
   </main>
 
-  <script src="js/kinds.js?v=20261111q"></script>
-  <script src="js/characters.js?v=20261111q"></script>
-  <script src="js/stage.js?v=20261111q"></script>
-  <script src="js/scene.js?v=20261111q"></script>
+  <script src="js/kinds.js?v=20261111r"></script>
+  <script src="js/characters.js?v=20261111r"></script>
+  <script src="js/stage.js?v=20261111r"></script>
+  <script src="js/scene.js?v=20261111r"></script>
   <script>
     'use strict';
     (async function () {
       const { KINDS, ORDER } = InviteKinds;
-      const list = document.getElementById('cards');
       const canvases = [];
-      ORDER.forEach(k => {
+      // 모임 초대장을 앞에, 결혼 소식은 아래 따로
+      const WED = ['wedding', 'notice'];
+      const GROUPS = [['cards', ['yearend', 'xmas', 'newyear', 'seollal', 'chuseok', 'bungae', 'gather']], ['cardsWed', WED]];
+      GROUPS.forEach(([id, ks]) => ks.filter(k => ORDER.includes(k)).forEach(k => {
+        const list = document.getElementById(id);
         const K = KINDS[k];
         const li = document.createElement('li');
         li.innerHTML = `<a class="kind-card" href="kind.html?k=${k}"><canvas aria-hidden="true"></canvas><b></b><small></small><span class="go">예시 보기 ›</span></a>`;
@@ -60,7 +93,7 @@
         li.querySelector('small').textContent = K.blurb;
         list.append(li);
         canvases.push([li.querySelector('canvas'), k]);
-      });
+      }));
       try { await Promise.race([document.fonts.load('700 12px Galmuri11'), new Promise(r => setTimeout(r, 800))]); } catch (e) { /* 무시 */ }
       canvases.forEach(([c, k]) => PixelScene.mount(c, k));
     })();
