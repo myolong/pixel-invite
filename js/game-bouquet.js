@@ -2,6 +2,40 @@
 // opts: { good: PROPS 이름, hint: 시작 안내 문구 }
 'use strict';
 
+// 게임 안 캐릭터 크기(무대·사진은 Stage.CHAR_SCALE, 게임은 움직일 자리가 넓도록 예전 크기)
+const GAME_SCALE = 2;
+
+// 세 게임이 같이 쓰는 위쪽 정보 줄
+const GameHud = {
+  bar(ctx, ratio, warn) {
+    const barW = Stage.LW - 24;
+    ctx.fillStyle = '#2a2033';
+    ctx.fillRect(11, 21, barW + 2, 6);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(12, 22, barW, 4);
+    ctx.fillStyle = warn ? '#e0526e' : '#7cc47f';
+    ctx.fillRect(12, 22, Math.round(barW * Math.max(0, Math.min(1, ratio))), 4);
+  },
+  score(ctx, left, right) {
+    Stage.drawText(ctx, left, 12, 36, 9, '#2a2033', 'left');
+    Stage.drawText(ctx, right, Stage.LW - 12, 36, 8, '#7a6d80', 'right');
+  },
+  hint(ctx, t, big, small, y = 116) {
+    if (t >= 2.2) return;
+    ctx.globalAlpha = Math.min(1, (2.2 - t) * 2);
+    Stage.drawText(ctx, big, 80, y, 11, '#e0526e');
+    Stage.drawText(ctx, small, 80, y + 16, 8, '#2a2033');
+    ctx.globalAlpha = 1;
+  },
+  pops(ctx, pops) {
+    for (const p of pops) {
+      ctx.globalAlpha = Math.min(1, p.life * 2);
+      Stage.drawText(ctx, p.text, p.x, p.y, 9, p.good ? '#e0526e' : '#5a6fb0');
+      ctx.globalAlpha = 1;
+    }
+  },
+};
+
 const BOUQUET_RULES = {
   seconds: 30,
   goal: 150,            // 이 점수를 넘으면 "클리어"
@@ -18,6 +52,8 @@ class BouquetGame {
     this.onEnd = onEnd;
     this.good = PixelChars.PROPS[opts.good] ? opts.good : 'bouquet';
     this.hint = opts.hint || '부케를 받아 주세요!';
+    this.easy = !!opts.easy;  // 여러 번 실패하면 목표를 낮춘다
+    this.goal = Math.round(BOUQUET_RULES.goal * (this.easy ? 0.6 : 1));
     this.reset();
   }
 
@@ -39,6 +75,11 @@ class BouquetGame {
   }
 
   pointer(x) { this.targetX = Math.max(14, Math.min(Stage.LW - 14, x)); }
+  down(p) { this.pointer(p.x); }
+  move(p) { this.pointer(p.x); }
+  up() {}
+  key(k, on) { if (k === 'ArrowLeft') this.keys.left = on; if (k === 'ArrowRight') this.keys.right = on; }
+  summary(best) { return `점수 ${this.score}점 · 받은 선물 ${this.caught}개 · 내 최고 ${best}점`; }
 
   pick() {
     let r = Math.random();
@@ -56,8 +97,8 @@ class BouquetGame {
     this.brideX = 80 + Math.sin(this.t * (1.1 + progress)) * 34;
 
     // 신랑 이동
-    if (this.keys.left) this.targetX = Math.max(22, this.groomX - 30);
-    if (this.keys.right) this.targetX = Math.min(Stage.LW - 22, this.groomX + 30);
+    if (this.keys.left) this.targetX = Math.max(14, this.groomX - 30);
+    if (this.keys.right) this.targetX = Math.min(Stage.LW - 14, this.groomX + 30);
     if (this.stun > 0) {
       this.stun -= dt;
     } else {
@@ -91,8 +132,8 @@ class BouquetGame {
       if (o.x < 8 || o.x > Stage.LW - 8) o.vx *= -1;
       o.y += o.vy * dt;
       o.spin += dt * 4;
-      const near = Math.abs(o.x - this.groomX) < 20;
-      if (!o.done && near && o.y > Stage.FLOOR_Y - 72 && o.y < Stage.FLOOR_Y - 34) {
+      const near = Math.abs(o.x - this.groomX) < 15;
+      if (!o.done && near && o.y > Stage.FLOOR_Y - 50 && o.y < Stage.FLOOR_Y - 20) {
         o.done = true;
         this.score = Math.max(0, this.score + o.score);
         if (o.score > 0) { this.caught++; this.happy = 0.35; }
@@ -108,7 +149,7 @@ class BouquetGame {
     if (this.time <= 0) {
       this.time = 0;
       this.over = true;
-      this.onEnd(this.score, this.score >= BOUQUET_RULES.goal);
+      this.onEnd(this.score, this.score >= this.goal);
     }
   }
 
@@ -132,7 +173,7 @@ class BouquetGame {
     // 신랑
     const shake = this.stun > 0 ? (Math.floor(this.t * 30) % 2 ? 1 : -1) : 0;
     const bob = this.stun <= 0 && Math.abs(this.targetX - this.groomX) > 1 ? (Math.floor(this.t * 8) % 2) : 0;
-    Stage.drawSprite(ctx, this.happy > 0 ? groom.happy : groom.stand, this.groomX + shake, Stage.FLOOR_Y + 8 - bob, Stage.CHAR_SCALE);
+    Stage.drawSprite(ctx, this.happy > 0 ? groom.happy : groom.stand, this.groomX + shake, Stage.FLOOR_Y + 8 - bob, GAME_SCALE);
 
     // 점수 팝업
     for (const p of this.pops) {
@@ -141,25 +182,13 @@ class BouquetGame {
       ctx.globalAlpha = 1;
     }
 
-    // 상단 정보: 남은 시간 막대 + 점수
-    const barW = Stage.LW - 24;
-    ctx.fillStyle = '#2a2033';
-    ctx.fillRect(11, 21, barW + 2, 6);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(12, 22, barW, 4);
-    ctx.fillStyle = this.time < 6 ? '#e0526e' : '#7cc47f';
-    ctx.fillRect(12, 22, Math.round(barW * (this.time / BOUQUET_RULES.seconds)), 4);
-    Stage.drawText(ctx, `점수 ${this.score}`, 12, 36, 9, '#2a2033', 'left');
-    Stage.drawText(ctx, `목표 ${BOUQUET_RULES.goal}`, Stage.LW - 12, 36, 8, '#7a6d80', 'right');
-
-    if (this.t < 2.2) {
-      ctx.globalAlpha = Math.min(1, (2.2 - this.t) * 2);
-      Stage.drawText(ctx, this.hint, 80, 116, 11, '#e0526e');
-      Stage.drawText(ctx, '좌우로 밀어서 움직여요', 80, 132, 8, '#2a2033');
-      ctx.globalAlpha = 1;
-    }
+    GameHud.bar(ctx, this.time / BOUQUET_RULES.seconds, this.time < 6);
+    GameHud.score(ctx, `점수 ${this.score}`, `목표 ${this.goal}`);
+    GameHud.hint(ctx, this.t, this.hint, '좌우로 밀어서 움직여요');
   }
 }
 
 window.BouquetGame = BouquetGame;
+window.GameHud = GameHud;
+window.GAME_SCALE = GAME_SCALE;
 window.BOUQUET_RULES = BOUQUET_RULES;
