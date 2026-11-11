@@ -1,4 +1,5 @@
-// 미니게임: 부케 받기 — 아치 위 신부가 던지는 부케를 신랑이 받는다(30초).
+// 미니게임: 받기 — 아치 위 한 사람이 던지는 소품(부케·케이크·선물 등)을 아래 사람이 받는다(30초).
+// opts: { good: PROPS 이름, hint: 시작 안내 문구 }
 'use strict';
 
 const BOUQUET_RULES = {
@@ -12,9 +13,11 @@ const BOUQUET_RULES = {
 };
 
 class BouquetGame {
-  constructor(chars, onEnd) {
-    this.chars = chars;         // { groom:{stand,happy}, bride:{stand,happy} }
+  constructor(chars, onEnd, opts = {}) {
+    this.chars = chars;         // { groom: 받는 사람, bride: 던지는 사람 } 각각 {stand,happy}
     this.onEnd = onEnd;
+    this.good = PixelChars.PROPS[opts.good] ? opts.good : 'bouquet';
+    this.hint = opts.hint || '부케를 받아 주세요!';
     this.reset();
   }
 
@@ -70,6 +73,7 @@ class BouquetGame {
       const it = this.pick();
       this.items.push({
         ...it,
+        kind: it.kind === 'bouquet' ? this.good : it.kind,
         x: this.brideX,
         y: 50,
         vx: (Math.random() - 0.5) * (30 + progress * 40),
@@ -120,7 +124,7 @@ class BouquetGame {
       const img = PixelChars.PROPS[o.kind];
       ctx.save();
       ctx.translate(Math.round(o.x), Math.round(o.y));
-      if (o.kind === 'bouquet') ctx.rotate(Math.sin(o.spin) * 0.4);
+      if (o.kind === this.good) ctx.rotate(Math.sin(o.spin) * 0.4);
       ctx.drawImage(img, -img.width, -img.height, img.width * 2, img.height * 2);
       ctx.restore();
     }
@@ -150,7 +154,7 @@ class BouquetGame {
 
     if (this.t < 2.2) {
       ctx.globalAlpha = Math.min(1, (2.2 - this.t) * 2);
-      Stage.drawText(ctx, '부케를 받아 주세요!', 80, 116, 11, '#e0526e');
+      Stage.drawText(ctx, this.hint, 80, 116, 11, '#e0526e');
       Stage.drawText(ctx, '좌우로 밀어서 움직여요', 80, 132, 8, '#2a2033');
       ctx.globalAlpha = 1;
     }

@@ -1,51 +1,31 @@
-// 만들기 화면: 입력 → 캐릭터 꾸미기 → 청첩장 링크(invite.html?d=...) 만들기
+// 만들기 화면: 종류 고르기 → 입력 → 캐릭터 꾸미기 → 초대장 링크(invite.html?d=...) 만들기
 'use strict';
 
 (async function maker() {
   const $ = id => document.getElementById(id);
   const form = $('form');
   const DRAFT_KEY = 'pi-make-draft';
+  const { KINDS, ORDER } = InviteKinds;
+  const SLOTS = ['groom', 'bride'];
   let toastTimer;
 
-  const GREETINGS = [
-    '서로 다른 길을 걷던 두 사람이\n이제 같은 길을 함께 걸으려 합니다.\n\n귀한 걸음 하시어\n저희의 시작을 축복해 주시면\n더없는 기쁨으로 간직하겠습니다.',
-    '오랜 시간 서로의 곁을 지켜 온 두 사람이\n이제 한 가족이 되려 합니다.\n\n바쁘시더라도 오셔서\n따뜻한 마음으로 축하해 주세요.',
-    '봄날의 햇살처럼 따뜻한 사람을 만나\n평생을 약속하려 합니다.\n\n소중한 분들을 모시고\n첫걸음을 내딛고 싶습니다.\n오셔서 자리를 빛내 주세요.',
-    '저희 두 사람, 결혼합니다!\n\n게임 한 판 하시고\n예식장에서 웃으며 만나요.',
-  ];
+  // ── 상태
+  let kind = 'wedding';
+  let K = KINDS[kind];
   let greetingIdx = 0;
-
-  // ── 캐릭터 상태
-  const looks = {
-    groom: { outfit: 'tux', hair: 'short', skin: 0, hairColor: 0, color: 0, glasses: false },
-    bride: { outfit: 'dress', hair: 'long', skin: 0, hairColor: 1, color: 0, veil: true },
-  };
+  const clone = o => JSON.parse(JSON.stringify(o));
+  const looks = { groom: clone(K.people[0].look), bride: clone(K.people[1].look) };
   let who = 'groom';
   let accounts = [];
-
-  // ── 저장된 내용 불러오기: make.html?d=<링크 코드>(수정용 링크) → 이 기기의 임시 저장
-  const editCode = new URLSearchParams(location.search).get('d');
-  let loaded = null;
-  if (editCode) {
-    try { loaded = fromConfig(await InviteCode.decode(editCode)); } catch (e) { toast('수정용 링크를 읽지 못했어요'); }
-  }
-  if (!loaded) {
-    try { loaded = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { /* 없음 */ }
-  }
-  if (loaded) applyDraft(loaded);
-  else {
-    form.greeting.value = GREETINGS[0];
-    accounts = [{ side: '신랑 측', bank: '', number: '', holder: '' }, { side: '신부 측', bank: '', number: '', holder: '' }];
-  }
-  renderAccounts();
+  let sprites = {};
 
   // ── 미리보기
   const canvas = $('preview');
   const ctx = Stage.setupCanvas(canvas);
   let t = 0, last = performance.now();
-  let sprites = {};
-  const rebuild = () => { sprites = { groom: PixelChars.makeCharacter(looks.groom), bride: PixelChars.makeCharacter(looks.bride) }; };
-  rebuild();
+  function rebuild() {
+    sprites = { groom: PixelChars.makeCharacter(looks.groom), bride: PixelChars.makeCharacter(looks.bride) };
+  }
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
@@ -53,18 +33,103 @@
     Stage.drawVenue(ctx, t * 3);
     const blink = (t % 3.2) < 0.15;
     const bob = Math.floor(t * 2) % 2;
-    Stage.drawSprite(ctx, blink ? sprites.groom.happy : sprites.groom.stand, 58, Stage.FLOOR_Y + 8 - (who === 'groom' ? bob : 0), 2);
-    Stage.drawSprite(ctx, blink ? sprites.bride.happy : sprites.bride.stand, 102, Stage.FLOOR_Y + 8 - (who === 'bride' ? bob : 0), 2);
-    // 지금 꾸미는 사람 위 화살표
-    const ax = who === 'groom' ? 58 : 102;
-    ctx.fillStyle = '#e0526e';
-    for (let r = 0; r < 4; r++) ctx.fillRect(ax - 3 + r, 104 + r + bob, 7 - r * 2, 1);
+    const two = K.people.length > 1;
+    const pos = two ? { groom: 58, bride: 102 } : { groom: 80 };
+    Object.entries(pos).forEach(([k, x]) => {
+      const s = sprites[k];
+      Stage.drawSprite(ctx, blink ? s.happy : s.stand, x, Stage.FLOOR_Y + 8 - (who === k ? bob : 0), 2);
+    });
+    if (two) {
+      const ax = pos[who];
+      ctx.fillStyle = '#e0526e';
+      for (let r = 0; r < 4; r++) ctx.fillRect(ax - 3 + r, 104 + r + bob, 7 - r * 2, 1);
+    }
     requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
 
-  // ── 꾸미기 패널
+  // ── 종류 고르기
+  function renderKinds() {
+    const grid = $('kindGrid');
+    grid.innerHTML = '';
+    ORDER.forEach((k, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'kind' + (k === kind ? ' on' : '');
+      b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', k === kind);
+      b.innerHTML = `<span class="kind-no">${i + 1}</span><b></b><small></small>`;
+      b.querySelector('b').textContent = KINDS[k].name;
+      b.querySelector('small').textContent = KINDS[k].blurb;
+      b.addEventListener('click', () => { if (k !== kind) { setKind(k); saveDraft(); } });
+      grid.append(b);
+    });
+  }
+
+  function setKind(k, opt = {}) {
+    const prev = K;
+    kind = KINDS[k] ? k : 'wedding';
+    K = KINDS[kind];
+    Stage.setTheme(K.scene);
+    // 캐릭터: 종류를 바꾸면 그 종류의 기본 옷차림으로
+    if (!opt.keepLooks && prev !== K) {
+      looks.groom = clone(K.people[0].look);
+      looks.bride = clone((K.people[1] || KINDS.wedding.people[1]).look);
+    }
+    // 인사말: 비어 있거나 예시 문구 그대로면 새 종류의 예시로
+    const g = form.greeting.value.replace(/\r/g, '').trim();
+    const isPreset = !g || Object.values(KINDS).some(x => x.greetings.includes(g));
+    if (!opt.keepGreeting && isPreset) { greetingIdx = 0; form.greeting.value = K.greetings[0]; }
+    // 계좌 구분
+    const sides = K.accountSides;
+    accounts.forEach((a, i) => { if (!sides.includes(a.side)) a.side = sides[i % sides.length]; });
+    if (!accounts.length) accounts = sides.map(side => ({ side, bank: '', number: '', holder: '' }));
+
+    // 이름표
+    const two = K.people.length > 1;
+    $('whoLegend').textContent = two ? K.people.map(p => p.label).join('·') : (K.title ? '모임과 대표' : K.people[0].label);
+    $('titleRow').hidden = !K.title;
+    form.title.placeholder = K.titleHint || '';
+    $('slot0Label').textContent = K.people[0].label;
+    $('slot1').hidden = !two;
+    $('pair').classList.toggle('one', !two);
+    if (two) {
+      $('slot1Label').textContent = K.people[1].label + (K.people[1].optional ? ' (선택)' : '');
+      $('slot1Req').hidden = !!K.people[1].optional;
+    }
+    form.querySelectorAll('.parents-row').forEach(e => { e.hidden = !K.parents; });
+    form.elements['groom.name'].placeholder = two ? '김도윤' : '이름 또는 닉네임';
+    form.elements['bride.name'].placeholder = '이서연';
+    $('whenLabel').textContent = K.when;
+    $('placeLabel').textContent = K.place + (K.placeOptional ? ' (선택)' : '');
+    $('placeReq').hidden = !!K.placeOptional;
+    $('timeReq').hidden = !!K.placeOptional;
+    form.elements['venue.name'].placeholder = K.placeHint;
+    if (!two) who = 'groom';
+    renderKinds();
+    renderTabs();
+    renderLook();
+    renderAccounts();
+    rebuild();
+  }
+
+  // ── 꾸미기
+  function renderTabs() {
+    const tabs = $('whoTabs');
+    tabs.innerHTML = '';
+    tabs.hidden = K.people.length < 2;
+    K.people.forEach((p, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'who' + (SLOTS[i] === who ? ' on' : '');
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', SLOTS[i] === who);
+      b.textContent = p.label;
+      b.addEventListener('click', () => { who = SLOTS[i]; renderTabs(); renderLook(); });
+      tabs.append(b);
+    });
+  }
   const HAIR_NAMES = { short: '짧은 머리', bun: '올림머리', bob: '단발', long: '긴 머리' };
+  const OUTFIT_NAMES = { tux: '턱시도', dress: '드레스', casual: '평상복' };
   function renderLook() {
     const L = looks[who];
     const panel = $('lookPanel');
@@ -89,67 +154,61 @@
       g.append(h, row);
       panel.append(g);
     };
-    group('머리 모양', Object.keys(HAIR_NAMES).map(k => ({ value: k, label: HAIR_NAMES[k] })), L.hair, v => { L.hair = v; });
-    group('머리색', PixelChars.HAIR_COLORS.map((c, i) => ({ value: i, color: c })), L.hairColor, v => { L.hairColor = v; }, true);
-    group('피부색', PixelChars.SKINS.map((c, i) => ({ value: i, color: c })), L.skin, v => { L.skin = v; }, true);
-    group(L.outfit === 'dress' ? '드레스 색' : '턱시도 색',
-      (L.outfit === 'dress' ? PixelChars.DRESS_COLORS : PixelChars.SUIT_COLORS).map((c, i) => ({ value: i, color: c })),
-      L.color, v => { L.color = v; }, true);
-    group('옷', [{ value: 'tux', label: '턱시도' }, { value: 'dress', label: '드레스' }], L.outfit, v => {
+    group('옷', Object.keys(OUTFIT_NAMES).map(k => ({ value: k, label: OUTFIT_NAMES[k] })), L.outfit, v => {
       if (L.outfit !== v) L.color = 0;
       L.outfit = v;
     });
-    const extras = [{ value: true, label: '쓰기' }, { value: false, label: '안 쓰기' }];
-    group('안경', extras, !!L.glasses, v => { L.glasses = v; });
-    group('베일', extras, !!L.veil, v => { L.veil = v; });
+    group('옷 색', (PixelChars.OUTFIT_COLORS[L.outfit] || PixelChars.SUIT_COLORS).map((c, i) => ({ value: i, color: c })), L.color, v => { L.color = v; }, true);
+    group('머리 모양', Object.keys(HAIR_NAMES).map(k => ({ value: k, label: HAIR_NAMES[k] })), L.hair, v => { L.hair = v; });
+    group('머리색', PixelChars.HAIR_COLORS.map((c, i) => ({ value: i, color: c })), L.hairColor, v => { L.hairColor = v; }, true);
+    group('피부색', PixelChars.SKINS.map((c, i) => ({ value: i, color: c })), L.skin, v => { L.skin = v; }, true);
+    const yesNo = [{ value: true, label: '쓰기' }, { value: false, label: '안 쓰기' }];
+    group('안경', yesNo, !!L.glasses, v => { L.glasses = v; });
+    group('베일', yesNo, !!L.veil, v => { L.veil = v; });
   }
-  document.querySelectorAll('.who').forEach(b => b.addEventListener('click', () => {
-    who = b.dataset.who;
-    document.querySelectorAll('.who').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); });
-    renderLook();
-  }));
-  renderLook();
 
   // ── 계좌
   function renderAccounts() {
     const box = $('accounts');
     box.innerHTML = '';
+    const sides = K.accountSides;
     accounts.forEach((a, i) => {
       const row = document.createElement('div');
       row.className = 'acc';
-      row.innerHTML = `
-        <select aria-label="누구 쪽 계좌">
-          ${['신랑 측', '신부 측'].map(s => `<option${s === a.side ? ' selected' : ''}>${s}</option>`).join('')}
-        </select>
-        <input placeholder="은행" maxlength="12" aria-label="은행">
-        <input placeholder="계좌번호" maxlength="30" inputmode="numeric" aria-label="계좌번호">
-        <input placeholder="예금주" maxlength="12" aria-label="예금주">
-        <button type="button" class="del" aria-label="이 계좌 지우기">✕</button>`;
-      const [sel, bank, num, holder] = row.querySelectorAll('select, input');
-      bank.value = a.bank; num.value = a.number; holder.value = a.holder;
+      const sel = document.createElement('select');
+      sel.setAttribute('aria-label', '구분');
+      sides.concat(sides.includes(a.side) ? [] : [a.side]).forEach(s => sel.add(new Option(s, s, false, s === a.side)));
+      const inp = (ph, val, max) => { const e = document.createElement('input'); e.placeholder = ph; e.maxLength = max || 12; e.value = val; e.setAttribute('aria-label', ph); return e; };
+      const bank = inp('은행', a.bank), num = inp('계좌번호', a.number, 30), holder = inp('예금주', a.holder);
+      num.inputMode = 'numeric';
+      const del = document.createElement('button');
+      del.type = 'button'; del.className = 'del'; del.textContent = '✕'; del.setAttribute('aria-label', '이 계좌 지우기');
+      row.append(sel, bank, num, holder, del);
       const sync = () => { a.side = sel.value; a.bank = bank.value; a.number = num.value; a.holder = holder.value; saveDraft(); };
       [sel, bank, num, holder].forEach(e => e.addEventListener('input', sync));
-      row.querySelector('.del').addEventListener('click', () => { accounts.splice(i, 1); renderAccounts(); saveDraft(); });
+      del.addEventListener('click', () => { accounts.splice(i, 1); renderAccounts(); saveDraft(); });
       box.append(row);
     });
     $('addAccount').hidden = accounts.length >= 6;
   }
   $('addAccount').addEventListener('click', () => {
-    accounts.push({ side: accounts.length % 2 ? '신부 측' : '신랑 측', bank: '', number: '', holder: '' });
+    const sides = K.accountSides;
+    accounts.push({ side: sides[accounts.length % sides.length], bank: '', number: '', holder: '' });
     renderAccounts();
   });
   $('nextGreeting').addEventListener('click', () => {
-    greetingIdx = (greetingIdx + 1) % GREETINGS.length;
-    form.greeting.value = GREETINGS[greetingIdx];
+    greetingIdx = (greetingIdx + 1) % K.greetings.length;
+    form.greeting.value = K.greetings[greetingIdx];
     saveDraft();
   });
 
   // ── 임시 저장
   function readForm() {
     const v = n => (form.elements[n].value || '').trim();
+    const person = k => ({ name: v(`${k}.name`), short: v(`${k}.short`), parents: v(`${k}.parents`), phone: v(`${k}.phone`) });
     return {
-      groom: { name: v('groom.name'), short: v('groom.short'), parents: v('groom.parents'), phone: v('groom.phone') },
-      bride: { name: v('bride.name'), short: v('bride.short'), parents: v('bride.parents'), phone: v('bride.phone') },
+      kind, title: v('title'),
+      groom: person('groom'), bride: person('bride'),
       day: v('day'), time: v('time'),
       venue: { name: v('venue.name'), address: v('venue.address'), transit: v('venue.transit'), parking: v('venue.parking') },
       greeting: form.greeting.value.replace(/\r/g, '').trim(),
@@ -157,13 +216,19 @@
     };
   }
   function applyDraft(d) {
+    if (KINDS[d.kind]) { kind = d.kind; K = KINDS[kind]; }
     const set = (n, val) => { if (form.elements[n] && val != null) form.elements[n].value = val; };
-    ['groom', 'bride'].forEach(k => ['name', 'short', 'parents', 'phone'].forEach(f => set(`${k}.${f}`, d[k] && d[k][f])));
+    set('title', d.title);
+    SLOTS.forEach(k => ['name', 'short', 'parents', 'phone'].forEach(f => set(`${k}.${f}`, d[k] && d[k][f])));
     set('day', d.day); set('time', d.time);
     ['name', 'address', 'transit', 'parking'].forEach(f => set(`venue.${f}`, d.venue && d.venue[f]));
-    set('greeting', d.greeting || GREETINGS[0]);
-    if (Array.isArray(d.accounts)) accounts = d.accounts.map(a => ({ side: a.side || '신랑 측', bank: a.bank || '', number: a.number || '', holder: a.holder || '' }));
-    if (d.looks) ['groom', 'bride'].forEach(k => Object.assign(looks[k], d.looks[k] || {}));
+    set('greeting', d.greeting);
+    if (Array.isArray(d.accounts)) accounts = d.accounts.map(a => ({ side: a.side || '', bank: a.bank || '', number: a.number || '', holder: a.holder || '' }));
+    if (d.looks) {
+      SLOTS.forEach((k, i) => {
+        if (d.looks[k]) looks[k] = Object.assign(clone((K.people[i] || KINDS.wedding.people[i]).look), d.looks[k]);
+      });
+    }
   }
   let saveTimer;
   function saveDraft() {
@@ -172,23 +237,32 @@
   }
   form.addEventListener('input', saveDraft);
 
-  // 청첩장 설정(JSON) ↔ 입력 내용
+  // 초대장 설정(JSON) ↔ 입력 내용
+  const clean = o => Object.fromEntries(Object.entries(o).filter(([, x]) => x !== '' && x != null && x !== false));
   function toConfig(d) {
-    const clean = o => Object.fromEntries(Object.entries(o).filter(([, x]) => x !== '' && x != null));
-    return {
-      groom: clean({ ...d.groom, look: d.looks.groom }),
-      bride: clean({ ...d.bride, look: d.looks.bride }),
-      date: `${d.day}T${d.time}:00+09:00`,
+    const two = K.people.length > 1 && d.bride.name;
+    const person = (p, lk) => {
+      const o = { ...p, look: lk };
+      if (!K.parents) delete o.parents;
+      return clean(o);
+    };
+    return clean({
+      kind,
+      title: K.title ? d.title : '',
+      groom: person(d.groom, d.looks.groom),
+      bride: two ? person(d.bride, d.looks.bride) : null,
+      date: `${d.day}T${d.time || '12:00'}:00+09:00`,
+      noTime: !d.time,
       venue: clean(d.venue),
       greeting: d.greeting,
       accounts: d.accounts.filter(a => a.number.trim()).map(a => clean({ side: a.side, bank: a.bank.trim(), number: a.number.trim(), holder: a.holder.trim() })),
-      game: 'bouquet',
-    };
+    });
   }
   function fromConfig(c) {
     const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(c.date || '') || [];
     return {
-      groom: c.groom, bride: c.bride, day: m[1], time: m[2], venue: c.venue,
+      kind: c.kind || 'wedding', title: c.title || '',
+      groom: c.groom || {}, bride: c.bride || {}, day: m[1], time: c.noTime ? '' : m[2], venue: c.venue || {},
       greeting: c.greeting, accounts: c.accounts || [],
       looks: { groom: (c.groom || {}).look, bride: (c.bride || {}).look },
     };
@@ -201,17 +275,16 @@
     e.preventDefault();
     const d = readForm();
     const missing = [];
-    if (!d.groom.name) missing.push('신랑 이름');
-    if (!d.bride.name) missing.push('신부 이름');
-    if (!d.day) missing.push('날짜');
-    if (!d.time) missing.push('시간');
-    if (!d.venue.name) missing.push('예식장 이름');
+    if (K.title && !d.title) missing.push('모임·행사 이름');
+    if (!d.groom.name) missing.push(`${K.people[0].label} 이름`);
+    if (K.people.length > 1 && !K.people[1].optional && !d.bride.name) missing.push(`${K.people[1].label} 이름`);
+    if (!d.day) missing.push(K.when);
+    if (!K.placeOptional && !d.time) missing.push('시간');
+    if (!K.placeOptional && !d.venue.name) missing.push(K.place);
     const err = $('err');
     if (missing.length) {
       err.textContent = `아직 비어 있어요: ${missing.join(', ')}`;
       err.hidden = false;
-      const first = form.querySelector(':invalid');
-      if (first) first.focus();
       return;
     }
     err.hidden = true;
@@ -223,13 +296,15 @@
     $('done').hidden = false;
     $('done').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
-  $('copyLink').addEventListener('click', () => copy(inviteUrl, '청첩장 링크를 복사했어요'));
+  $('copyLink').addEventListener('click', () => copy(inviteUrl, '초대장 링크를 복사했어요'));
   $('copyEdit').addEventListener('click', () => copy(editUrl, '수정용 링크를 복사했어요'));
   $('shareLink').addEventListener('click', async () => {
     const d = readForm();
-    const title = `${d.groom.short || d.groom.name} ♥ ${d.bride.short || d.bride.name} 결혼합니다`;
-    if (navigator.share) { try { await navigator.share({ title, text: '게임을 깨면 청첩장이 열려요', url: inviteUrl }); return; } catch (e) { /* 취소 */ } }
-    copy(inviteUrl, '청첩장 링크를 복사했어요');
+    const names = K.people.length > 1 && d.bride.name
+      ? `${d.groom.short || d.groom.name} ♥ ${d.bride.short || d.bride.name}` : (d.groom.short || d.groom.name);
+    const title = InviteKinds.fill(K.pageTitle, { names, title: d.title || names });
+    if (navigator.share) { try { await navigator.share({ title, text: '게임을 깨면 초대장이 열려요', url: inviteUrl }); return; } catch (e) { /* 취소 */ } }
+    copy(inviteUrl, '초대장 링크를 복사했어요');
   });
 
   async function copy(text, msg) {
@@ -248,4 +323,21 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => el.classList.remove('show'), 1600);
   }
+
+  // ── 시작: make.html?d=<코드>(수정용 링크) → 이 기기의 임시 저장 → make.html?k=<종류>
+  const params = new URLSearchParams(location.search);
+  let loaded = null;
+  if (params.get('d')) {
+    try { loaded = fromConfig(await InviteCode.decode(params.get('d'))); } catch (e) { toast('수정용 링크를 읽지 못했어요'); }
+  }
+  if (!loaded) {
+    try { loaded = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { /* 없음 */ }
+    const askKind = params.get('k');
+    if (KINDS[askKind] && (!loaded || loaded.kind !== askKind)) loaded = { kind: askKind };
+  }
+  const startKind = loaded && KINDS[loaded.kind] ? loaded.kind : 'wedding';
+  if (loaded) applyDraft(loaded);
+  K = null; // 처음 한 번은 종류 기본값을 채우도록
+  setKind(startKind, { keepLooks: !!(loaded && loaded.looks), keepGreeting: !!(loaded && loaded.greeting) });
+  requestAnimationFrame(frame);
 })();

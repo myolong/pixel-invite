@@ -108,6 +108,20 @@ const OUTFITS = {
     '..DDDDDDDDDDDD..',
     '.dDDDDDDDDDDDDd.',
   ])),
+  casual: pad24(Array(12).fill('................').concat([
+    '....CCCccCCC....',
+    '..CCCCCCCCCCCC..',
+    '..CCCCCCCCCCCC..',
+    '..CCCCCCCCCCCC..',
+    '..CCcCCCCCCcCC..',
+    '..SSCCCCCCCCSS..',
+    '....PPPPPPPP....',
+    '....PPPPPPPP....',
+    '....PPP..PPP....',
+    '....PPP..PPP....',
+    '....PPP..PPP....',
+    '...KKKK..KKKK...',
+  ])),
 };
 
 const HAIRS = {
@@ -187,6 +201,8 @@ const SKINS = ['#f6d2b4', '#e8b48f', '#c98c64'];
 const HAIR_COLORS = ['#2b2230', '#5a3a28', '#a0663a', '#d9b25a', '#c75b6a'];
 const SUIT_COLORS = ['#2a2d3a', '#3b4a6b', '#efe9dc'];
 const DRESS_COLORS = ['#ffffff', '#f6e3ec', '#e9eefb'];
+const CASUAL_COLORS = ['#f2b84b', '#7cc4a4', '#e98aa5', '#d84a4a', '#a99be8'];
+const OUTFIT_COLORS = { tux: SUIT_COLORS, dress: DRESS_COLORS, casual: CASUAL_COLORS };
 
 const shade = (hex, f) => {
   const n = parseInt(hex.slice(1), 16);
@@ -194,16 +210,15 @@ const shade = (hex, f) => {
   return '#' + [16, 8, 0].map(s => ch(s).toString(16).padStart(2, '0')).join('');
 };
 
-// look: { outfit:'tux'|'dress', hair:'short'|'long'|'bob'|'bun', skin:0.., hairColor:0.., color:0.., glasses:bool, veil:bool }
+// look: { outfit:'tux'|'dress'|'casual', hair:'short'|'long'|'bob'|'bun', skin:0.., hairColor:0.., color:0.., glasses:bool, veil:bool }
 // 반환: { stand, happy } 두 장의 굽힌 캔버스
 function makeCharacter(look) {
   const outfit = OUTFITS[look.outfit] ? look.outfit : 'tux';
   const hair = HAIRS[look.hair] ? look.hair : 'short';
   const skin = SKINS[look.skin] || SKINS[0];
   const hairCol = HAIR_COLORS[look.hairColor] || HAIR_COLORS[0];
-  const cloth = outfit === 'dress'
-    ? (DRESS_COLORS[look.color] || DRESS_COLORS[0])
-    : (SUIT_COLORS[look.color] || SUIT_COLORS[0]);
+  const cols = OUTFIT_COLORS[outfit];
+  const cloth = cols[look.color] || cols[0];
   const lightSuit = outfit === 'tux' && look.color === 2;
   const pal = {
     S: skin, E: '#2a2033', B: '#f29aa8', M: '#c2526a',
@@ -211,6 +226,7 @@ function makeCharacter(look) {
     T: cloth, t: shade(cloth, lightSuit ? 0.85 : 1.35), W: '#ffffff', R: lightSuit ? '#3b4a6b' : '#d8424f', K: '#2a2033',
     D: cloth, d: shade(cloth, 0.88),
     G: '#2a2033', V: 'rgba(255,255,255,0.85)',
+    C: cloth, c: shade(cloth, 0.85), P: '#4a5578',
   };
   const build = head => {
     const layers = [];
@@ -241,6 +257,51 @@ const PROPS = {
     '..RRR..',
     '...R...',
   ], { R: '#ef5b74', r: '#ffd0d8' }),
+  cake: bakeSprite([
+    '...F...',
+    '...w...',
+    '.WWWWW.',
+    'WpWpWpW',
+    'CCCCCCC',
+    'CCCCCCC',
+    'BBBBBBB',
+  ], { F: '#f5c542', w: '#ffffff', W: '#ffffff', p: '#f48fb1', C: '#f7c9a5', B: '#c98c64' }),
+  star: bakeSprite([
+    '...Y...',
+    '..YYY..',
+    'YYYyYYY',
+    '.YYYYY.',
+    '..YYY..',
+    '.YY.YY.',
+    'Y.....Y',
+  ], { Y: '#f5c542', y: '#fff3b0' }),
+  gift: bakeSprite([
+    '.R...R.',
+    '..R.R..',
+    'GGGRGGG',
+    'GgGRGgG',
+    'GGGRGGG',
+    'GgGRGgG',
+    'GGGRGGG',
+  ], { G: '#5bbf6a', g: '#8fd99a', R: '#d8424f' }),
+  pouch: bakeSprite([
+    '..Y.Y..',
+    '...Y...',
+    '.RRRRR.',
+    'RRRYRRR',
+    'RRYYYRR',
+    'RRRYRRR',
+    '.RRRRR.',
+  ], { R: '#d8424f', Y: '#f5c542' }),
+  bottle: bakeSprite([
+    '...P...',
+    '..PPP..',
+    '.wwwww.',
+    '.wBBBw.',
+    '.wBBBw.',
+    '.wBBBw.',
+    '..www..',
+  ], { P: '#f48fb1', w: '#ffffff', B: '#bfe3f7' }),
   rain: bakeSprite([
     '..CCCC..',
     '.CCCCCC.',
@@ -251,4 +312,4 @@ const PROPS = {
   ], { C: '#8d93a8', c: '#6f7488', b: '#5aa0e6' }),
 };
 
-window.PixelChars = { makeCharacter, bakeSprite, PROPS, SKINS, HAIR_COLORS, SUIT_COLORS, DRESS_COLORS };
+window.PixelChars = { makeCharacter, bakeSprite, PROPS, SKINS, HAIR_COLORS, SUIT_COLORS, DRESS_COLORS, CASUAL_COLORS, OUTFIT_COLORS };

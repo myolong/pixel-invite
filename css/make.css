@@ -61,3 +61,17 @@ body.maker { background: var(--px-bg); color: var(--px-ink); font-family: var(--
 .mk-note h2 { font-size: 15px; color: var(--px-ink); margin: 8px 0 4px; }
 .mk-note ul { padding-left: 18px; margin: 0; }
 .mk-note li { margin: 4px 0; }
+
+.mk [hidden] { display: none !important; }
+.kinds { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.kind {
+  position: relative; text-align: left; font: inherit; color: var(--px-ink); cursor: pointer;
+  padding: 10px 10px 10px 36px; border-radius: 12px; border: 1.5px solid #d9c9cf; background: #fff;
+}
+.kind b { display: block; font-size: 15px; }
+.kind small { display: block; font-size: 12px; color: var(--px-muted); line-height: 1.4; margin-top: 2px; }
+.kind-no { position: absolute; left: 10px; top: 11px; width: 20px; height: 20px; border-radius: 6px; background: #f3e6ea; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.kind.on { border: 2px solid var(--px-accent); background: #ffe6ec; box-shadow: 0 3px 0 var(--px-accent); }
+.kind.on .kind-no { background: var(--px-accent); color: #fff; }
+.pair.one { grid-template-columns: 1fr !important; }
+.photo-note { margin: 0 4px 14px; }

@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>게임 청첩장 만들기 - 무료 베타</title>
-  <meta name="description" content="이름과 예식 정보를 넣고 픽셀 신랑·신부를 꾸미면, 게임을 깨면 열리는 모바일 청첩장 링크가 바로 만들어져요. 가입 없이 무료.">
+  <title>게임 초대장 만들기 - 픽셀 초대장</title>
+  <meta name="description" content="결혼식·비혼식·이혼식·연말 모임·신년 모임·결혼 알림장·베이비샤워·기념 행사 초대장을 픽셀 캐릭터와 미니게임으로. 가입 없이 무료로 링크를 만들어요.">
   <meta name="theme-color" content="#fff3f5">
   <link rel="preload" href="fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/invite.css">
@@ -12,31 +12,38 @@
 </head>
 <body class="maker">
   <header class="mk-head">
-    <a class="mk-home" href="index.html">게임 청첩장</a>
+    <a class="mk-home" href="index.html">픽셀 초대장</a>
     <span class="mk-beta">무료 베타</span>
   </header>
 
   <main class="mk">
-    <h1>내 게임 청첩장 만들기</h1>
-    <p class="mk-lead">빈칸을 채우고 캐릭터를 꾸민 뒤 맨 아래 <b>청첩장 링크 만들기</b>를 누르세요. 가입은 필요 없어요.</p>
+    <h1>게임 초대장 만들기</h1>
+    <p class="mk-lead">종류를 고르고 빈칸을 채운 뒤 맨 아래 <b>초대장 링크 만들기</b>를 누르세요. 가입은 필요 없어요.</p>
 
     <form id="form" novalidate>
-      <!-- 1. 두 사람 -->
+      <!-- 0. 종류 -->
       <fieldset class="mk-card">
-        <legend><span class="step">1</span> 두 사람</legend>
-        <div class="pair">
-          <div>
-            <h3>신랑</h3>
-            <label>이름 <b class="req">*</b><input name="groom.name" required maxlength="20" placeholder="김도윤" autocomplete="off"></label>
-            <label>부르는 이름<input name="groom.short" maxlength="10" placeholder="도윤 (비우면 이름 그대로)"></label>
-            <label>혼주 표기<input name="groom.parents" maxlength="40" placeholder="김철수 · 박영희의 아들"></label>
+        <legend><span class="step">1</span> 어떤 초대장인가요?</legend>
+        <div class="kinds" id="kindGrid" role="radiogroup" aria-label="초대장 종류"></div>
+      </fieldset>
+
+      <!-- 1. 누구 -->
+      <fieldset class="mk-card">
+        <legend><span class="step">2</span> <span id="whoLegend">두 사람</span></legend>
+        <label id="titleRow">모임·행사 이름 <b class="req">*</b><input name="title" maxlength="30" autocomplete="off"></label>
+        <div class="pair" id="pair">
+          <div id="slot0">
+            <h3 id="slot0Label">신랑</h3>
+            <label>이름 <b class="req">*</b><input name="groom.name" maxlength="20" autocomplete="off"></label>
+            <label>부르는 이름<input name="groom.short" maxlength="10" placeholder="비우면 이름 그대로"></label>
+            <label class="parents-row">혼주 표기<input name="groom.parents" maxlength="40" placeholder="김철수 · 박영희의 아들"></label>
             <label>연락처<input name="groom.phone" type="tel" maxlength="20" placeholder="비우면 안 보여요"></label>
           </div>
-          <div>
-            <h3>신부</h3>
-            <label>이름 <b class="req">*</b><input name="bride.name" required maxlength="20" placeholder="이서연" autocomplete="off"></label>
-            <label>부르는 이름<input name="bride.short" maxlength="10" placeholder="서연 (비우면 이름 그대로)"></label>
-            <label>혼주 표기<input name="bride.parents" maxlength="40" placeholder="이영수 · 최미경의 딸"></label>
+          <div id="slot1">
+            <h3 id="slot1Label">신부</h3>
+            <label>이름 <b class="req" id="slot1Req">*</b><input name="bride.name" maxlength="20" autocomplete="off"></label>
+            <label>부르는 이름<input name="bride.short" maxlength="10" placeholder="비우면 이름 그대로"></label>
+            <label class="parents-row">혼주 표기<input name="bride.parents" maxlength="40" placeholder="이영수 · 최미경의 딸"></label>
             <label>연락처<input name="bride.phone" type="tel" maxlength="20" placeholder="비우면 안 보여요"></label>
           </div>
         </div>
@@ -44,23 +51,20 @@
 
       <!-- 2. 캐릭터 -->
       <fieldset class="mk-card">
-        <legend><span class="step">2</span> 픽셀 캐릭터 꾸미기</legend>
+        <legend><span class="step">3</span> 픽셀 캐릭터 꾸미기</legend>
         <div class="preview-box"><canvas id="preview" aria-label="캐릭터 미리보기"></canvas></div>
-        <div class="who-tabs" role="tablist">
-          <button type="button" class="who on" data-who="groom" role="tab" aria-selected="true">신랑</button>
-          <button type="button" class="who" data-who="bride" role="tab" aria-selected="false">신부</button>
-        </div>
+        <div class="who-tabs" id="whoTabs" role="tablist"></div>
         <div id="lookPanel" class="look"></div>
       </fieldset>
 
-      <!-- 3. 예식 -->
+      <!-- 3. 일시·장소 -->
       <fieldset class="mk-card">
-        <legend><span class="step">3</span> 예식 정보</legend>
+        <legend><span class="step">4</span> 일시와 장소</legend>
         <div class="row2">
-          <label>날짜 <b class="req">*</b><input name="day" type="date" required></label>
-          <label>시간 <b class="req">*</b><input name="time" type="time" required step="600" value="12:00"></label>
+          <label><span id="whenLabel">날짜</span> <b class="req">*</b><input name="day" type="date"></label>
+          <label>시간 <b class="req" id="timeReq">*</b><input name="time" type="time" step="600" value="12:00"></label>
         </div>
-        <label>예식장 이름과 홀 <b class="req">*</b><input name="venue.name" required maxlength="40" placeholder="○○웨딩홀 3층 그랜드홀"></label>
+        <label><span id="placeLabel">장소</span> <b class="req" id="placeReq">*</b><input name="venue.name" maxlength="40"></label>
         <label>주소<input name="venue.address" maxlength="80" placeholder="도로명 주소 (지도 버튼에 쓰여요)"></label>
         <label>대중교통 안내<input name="venue.transit" maxlength="80" placeholder="○호선 ○○역 3번 출구에서 걸어서 5분"></label>
         <label>주차 안내<input name="venue.parking" maxlength="80" placeholder="건물 지하 주차장 2시간 무료"></label>
@@ -68,32 +72,28 @@
 
       <!-- 4. 인사말 -->
       <fieldset class="mk-card">
-        <legend><span class="step">4</span> 인사말</legend>
+        <legend><span class="step">5</span> 인사말</legend>
         <textarea name="greeting" rows="7" maxlength="400"></textarea>
         <button type="button" class="mini" id="nextGreeting">다른 예시 문구로 바꾸기</button>
       </fieldset>
 
       <!-- 5. 계좌 -->
       <fieldset class="mk-card">
-        <legend><span class="step">5</span> 마음 전하실 곳 <small>(선택)</small></legend>
+        <legend><span class="step">6</span> 계좌 <small>(선택)</small></legend>
         <div id="accounts"></div>
         <button type="button" class="mini" id="addAccount">계좌 추가</button>
       </fieldset>
 
-      <!-- 6. 사진 -->
-      <fieldset class="mk-card">
-        <legend><span class="step">6</span> 사진</legend>
-        <p class="hint">무료 베타에서는 사진 대신 <b>두 사람의 픽셀 캐릭터</b>가 대표 사진 자리에 들어가요. 웨딩 사진·영상 올리기는 준비 중이에요.</p>
-      </fieldset>
+      <p class="hint photo-note">무료 베타에서는 사진 대신 <b>픽셀 캐릭터</b>가 대표 그림 자리에 들어가요. 사진·영상 올리기는 준비 중이에요.</p>
 
       <p class="err" id="err" role="alert" hidden></p>
-      <button type="submit" class="btn primary big">청첩장 링크 만들기</button>
+      <button type="submit" class="btn primary big">초대장 링크 만들기</button>
     </form>
 
     <section class="mk-card done" id="done" hidden>
-      <h2>청첩장이 완성됐어요</h2>
-      <p class="hint">아래 링크에 청첩장 내용이 모두 들어 있어요. 이 링크를 카톡으로 보내면 돼요.</p>
-      <input id="outLink" readonly aria-label="청첩장 링크">
+      <h2>초대장이 완성됐어요</h2>
+      <p class="hint">아래 링크에 초대장 내용이 모두 들어 있어요. 이 링크를 카톡으로 보내면 돼요.</p>
+      <input id="outLink" readonly aria-label="초대장 링크">
       <div class="choice">
         <a class="btn primary" id="openLink" target="_blank" rel="noopener">미리 보기</a>
         <button class="btn" type="button" id="copyLink">링크 복사</button>
@@ -102,16 +102,16 @@
       <div class="keep">
         <p><b>수정할 때 필요한 링크</b>예요. 나만 볼 수 있는 곳(나와의 채팅, 메모)에 꼭 저장해 두세요.</p>
         <button class="lbtn" type="button" id="copyEdit">수정용 링크 복사</button>
-        <p class="hint small">내용을 고치면 청첩장 링크도 새로 바뀌어요. 이미 보낸 링크는 고치기 전 내용 그대로 보여요.</p>
+        <p class="hint small">내용을 고치면 초대장 링크도 새로 바뀌어요. 이미 보낸 링크는 고치기 전 내용 그대로 보여요.</p>
       </div>
     </section>
 
     <section class="mk-note">
       <h2>알아 두세요</h2>
       <ul>
-        <li>입력한 내용은 저희 서버에 저장되지 않고 <b>링크 안에만</b> 들어가요. 링크를 받은 사람은 누구나 볼 수 있으니, 계좌·연락처는 필요한 것만 적어 주세요.</li>
+        <li>입력한 내용은 서버에 저장되지 않고 <b>링크 안에만</b> 들어가요. 링크를 받은 사람은 누구나 볼 수 있으니, 계좌·연락처는 필요한 것만 적어 주세요.</li>
         <li>쓰던 내용은 이 기기에만 임시로 저장돼서 다시 들어와도 이어서 쓸 수 있어요.</li>
-        <li>하객은 게임을 건너뛰고 바로 청첩장을 볼 수도 있어요.</li>
+        <li>받는 사람은 게임을 건너뛰고 바로 초대장을 볼 수도 있어요.</li>
       </ul>
     </section>
   </main>
@@ -119,6 +119,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="js/invite-code.js"></script>
+  <script src="js/kinds.js"></script>
   <script src="js/characters.js"></script>
   <script src="js/stage.js"></script>
   <script src="js/make.js"></script>
