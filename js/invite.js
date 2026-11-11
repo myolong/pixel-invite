@@ -160,55 +160,117 @@
 
   // ───────── 예식 정보 ─────────
   function fillInfo() {
+    const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+    const base = `invites/${code}/`;
+    const src = f => (/^(https?:)?\/\//.test(f) || f.startsWith('/') ? f : base + f);
+
     $('sampleBadge').hidden = !cfg.sample;
-    $('coupleNames').textContent = `${cfg.groom.name} · ${cfg.bride.name}`;
-    $('dateText').textContent = `${dateText} ${timeText}`;
-    $('venueShort').textContent = cfg.venue.name;
+
+    // 커버: 사진 또는 짧은 영상
+    const cover = cfg.cover || {};
+    const media = $('coverMedia');
+    if (cover.type === 'video' && cover.src) {
+      const v = el('video');
+      Object.assign(v, { src: src(cover.src), autoplay: true, muted: true, loop: true, playsInline: true });
+      v.setAttribute('playsinline', '');
+      if (cover.poster) v.poster = src(cover.poster);
+      media.append(v);
+    } else if (cover.src) {
+      const img = el('img');
+      img.src = src(cover.src); img.alt = `${gShort}와 ${bShort}의 웨딩 사진`;
+      media.append(img);
+    } else {
+      media.hidden = true;
+    }
+    $('cGroom').textContent = gShort;
+    $('cBride').textContent = bShort;
+    $('coverDate').textContent = `${dateText} ${timeText}`;
+    $('coverVenue').textContent = cfg.venue.name;
+
+    // 인사말과 혼주
+    $('greeting').textContent = cfg.greeting || '';
+    const parentLine = (id, who) => {
+      if (!who.parents) return;
+      const p = $(id);
+      p.append(document.createTextNode(who.parents), el('b', '', who.short || who.name));
+    };
+    parentLine('groomParents', cfg.groom);
+    parentLine('brideParents', cfg.bride);
+
+    // 달력
+    $('calTitle').textContent = `${W.y}. ${pad(W.m)}`;
+    const cal = $('cal');
+    WEEK.forEach((w, i) => cal.append(el('span', 'head' + (i === 0 ? ' sun' : ''), w)));
+    const first = new Date(Date.UTC(W.y, W.m - 1, 1)).getUTCDay();
+    const last = new Date(Date.UTC(W.y, W.m, 0)).getUTCDate();
+    for (let i = 0; i < first; i++) cal.append(el('span'));
+    for (let d = 1; d <= last; d++) {
+      const wd = (first + d - 1) % 7;
+      cal.append(el('span', [wd === 0 ? 'sun' : '', d === W.d ? 'day-on' : ''].join(' ').trim(), d));
+    }
     const N = kst(new Date());
     const days = Math.round((Date.UTC(W.y, W.m - 1, W.d) - Date.UTC(N.y, N.m - 1, N.d)) / 864e5);
-    $('dday').textContent = days > 0 ? `D-${days}` : days === 0 ? '오늘이에요!' : '감사합니다';
-    $('greeting').textContent = cfg.greeting || '';
-    $('groomParents').textContent = cfg.groom.parents ? `${cfg.groom.parents} ${cfg.groom.name}` : '';
-    $('brideParents').textContent = cfg.bride.parents ? `${cfg.bride.parents} ${cfg.bride.name}` : '';
+    const dl = $('ddayLine');
+    if (days > 0) dl.append(`${gShort} ♥ ${bShort}의 결혼식이 `, el('b', '', `${days}일`), ' 남았어요');
+    else dl.textContent = days === 0 ? '오늘, 결혼합니다' : '함께해 주셔서 감사합니다';
+
+    // 사진첩
+    const photos = (cfg.gallery || []).map(src);
+    const gal = $('gallery');
+    photos.forEach((u, i) => {
+      const b = el('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', `사진 ${i + 1} 크게 보기`);
+      const img = el('img');
+      img.src = u; img.alt = ''; img.loading = 'lazy';
+      b.append(img);
+      b.addEventListener('click', () => openLightbox(photos, i));
+      gal.append(b);
+    });
+    if (!photos.length) $('gallerySec').hidden = true;
+
+    // 오시는 길
     $('venueName').textContent = cfg.venue.name;
     $('venueAddress').textContent = cfg.venue.address;
     const q = encodeURIComponent(cfg.venue.address || cfg.venue.name);
     $('naverMap').href = `https://map.naver.com/p/search/${q}`;
     $('kakaoMap').href = `https://map.kakao.com/?q=${q}`;
     $('copyAddr').addEventListener('click', () => copy(cfg.venue.address, '주소를 복사했어요'));
-
     const guide = $('guide');
     [['대중교통', cfg.venue.transit], ['주차', cfg.venue.parking]].forEach(([k, v]) => {
-      if (!v) return;
-      const dt = document.createElement('dt'); dt.textContent = k;
-      const dd = document.createElement('dd'); dd.textContent = v;
-      guide.append(dt, dd);
+      if (v) guide.append(el('dt', '', k), el('dd', '', v));
     });
+    if (!guide.children.length) guide.hidden = true;
 
+    // 계좌: 신랑 측 / 신부 측 접기
     const acc = $('accounts');
-    (cfg.accounts || []).forEach(a => {
-      const row = document.createElement('div');
-      row.className = 'account';
-      const txt = document.createElement('div');
-      const p1 = document.createElement('p'); p1.className = 'side'; p1.textContent = `${a.side} · ${a.holder}`;
-      const p2 = document.createElement('p'); p2.textContent = `${a.bank} ${a.number}`;
-      txt.append(p1, p2);
-      const b = document.createElement('button');
-      b.className = 'btn small'; b.type = 'button'; b.textContent = '복사';
-      b.addEventListener('click', () => copy(`${a.bank} ${a.number}`, '계좌번호를 복사했어요'));
-      row.append(txt, b);
-      acc.append(row);
+    const sides = {};
+    (cfg.accounts || []).forEach(a => { (sides[a.side] = sides[a.side] || []).push(a); });
+    Object.entries(sides).forEach(([side, list]) => {
+      const box = el('details', 'acc-group');
+      box.append(el('summary', '', `${side} 계좌번호`));
+      list.forEach(a => {
+        const row = el('div', 'account');
+        const txt = el('div');
+        txt.append(el('p', '', `${a.bank} ${a.number}`), el('p', 'holder', a.holder));
+        const b = el('button', 'lbtn', '복사');
+        b.type = 'button';
+        b.addEventListener('click', () => copy(`${a.bank} ${a.number}`, '계좌번호를 복사했어요'));
+        row.append(txt, b);
+        box.append(row);
+      });
+      acc.append(box);
     });
-    if (!acc.children.length) acc.closest('.card').hidden = true;
+    if (!acc.children.length) $('accountSec').hidden = true;
 
     const contacts = $('contacts');
-    [['신랑에게 전화', cfg.groom.phone], ['신부에게 전화', cfg.bride.phone]].forEach(([label, tel]) => {
+    [['신랑에게 연락', cfg.groom.phone], ['신부에게 연락', cfg.bride.phone]].forEach(([label, tel]) => {
       if (!tel) return;
-      const a = document.createElement('a');
-      a.className = 'btn small'; a.textContent = label; a.href = `tel:${tel.replace(/[^0-9+]/g, '')}`;
+      const a = el('a', 'lbtn', label);
+      a.href = `tel:${tel.replace(/[^0-9+]/g, '')}`;
       contacts.append(a);
     });
-    if (!contacts.children.length) contacts.closest('.card').hidden = true;
+    if (!contacts.children.length) $('contactSec').hidden = true;
 
     $('calBtn').addEventListener('click', downloadIcs);
     $('shareBtn').addEventListener('click', async () => {
@@ -216,6 +278,44 @@
       if (navigator.share) { try { await navigator.share(data); return; } catch (e) { /* 취소 */ } }
       copy(location.href, '청첩장 주소를 복사했어요');
     });
+    $('replayBtn').addEventListener('click', () => {
+      $('stage').scrollIntoView({ behavior: 'smooth' });
+      startGame();
+    });
+  }
+
+  // ── 사진 크게 보기(좌우로 넘기기)
+  function openLightbox(list, start) {
+    const box = $('lightbox'), img = $('lbImg');
+    let i = start;
+    const show = () => { img.src = list[i]; $('lbCount').textContent = `${i + 1} / ${list.length}`; };
+    const go = d => { i = (i + d + list.length) % list.length; show(); };
+    show();
+    box.hidden = false;
+    document.body.style.overflow = 'hidden';
+    const close = () => { box.hidden = true; document.body.style.overflow = ''; cleanup(); };
+    let sx = null;
+    const onDown = e => { sx = e.clientX; };
+    const onUp = e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); };
+    const onKey = e => { if (e.key === 'Escape') close(); if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); };
+    const prev = () => go(-1), next = () => go(1);
+    const onBg = e => { if (e.target === box) close(); };
+    $('lbPrev').addEventListener('click', prev);
+    $('lbNext').addEventListener('click', next);
+    $('lbClose').addEventListener('click', close);
+    box.addEventListener('click', onBg);
+    img.addEventListener('pointerdown', onDown);
+    img.addEventListener('pointerup', onUp);
+    window.addEventListener('keydown', onKey);
+    function cleanup() {
+      $('lbPrev').removeEventListener('click', prev);
+      $('lbNext').removeEventListener('click', next);
+      $('lbClose').removeEventListener('click', close);
+      box.removeEventListener('click', onBg);
+      img.removeEventListener('pointerdown', onDown);
+      img.removeEventListener('pointerup', onUp);
+      window.removeEventListener('keydown', onKey);
+    }
   }
 
   function downloadIcs() {
