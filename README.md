@@ -34,6 +34,11 @@
 - `assets/shots/<종류>-1~3.jpg` 종류 페이지의 오프닝·게임·초대장 화면 캡처
 - 다시 만들기: 저장소 폴더에서 `python3 -m http.server 8765`를 켜고 `node tools/make-examples.js` (`tools/photo-gen.js`가 장면을 그림)
 
+## 카톡 미리보기
+
+- 초대장 링크는 종류별 입구 `invite-<종류>.html`로 나가요. 내용은 `invite.html`과 같고, 카톡·문자 미리보기용 제목("결혼식 청첩장" 등)과 그림(`assets/og/<종류>.png`)만 달라요.
+- `invite.html`을 고치면 `python3 -m http.server 8765`를 켜고 `node tools/make-og.js`로 입구 파일과 그림을 다시 만들어 주세요.
+
 ## 배포할 때
 
 HTML의 `js/…`, `css/…` 주소 끝에 `?v=날짜` 가 붙어 있어요. 브라우저가 예전 파일을 기억해서 새 화면이 깨지는 걸 막으려는 것이라, JS·CSS를 고치면 모든 HTML의 `?v=` 값을 함께 바꿔 주세요.

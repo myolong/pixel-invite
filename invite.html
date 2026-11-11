@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
-  <link rel="stylesheet" href="css/invite.css?v=20261111h">
+  <link rel="stylesheet" href="css/invite.css?v=20261111i">
 </head>
 <body>
   <section class="stage" id="stage">
@@ -122,7 +122,11 @@
     </section>
 
     <section class="sec actions">
-      <button class="lbtn" id="calBtn" type="button">캘린더에 추가</button>
+      <button class="lbtn" id="calBtn" type="button" aria-expanded="false">캘린더에 추가</button>
+      <div class="cal-pick" id="calPick" hidden>
+        <a class="lbtn" id="calGoogle" target="_blank" rel="noopener">구글 캘린더</a>
+        <button class="lbtn" id="calIcs" type="button">휴대폰 캘린더</button>
+      </div>
       <button class="lbtn solid" id="shareBtn" type="button"><span><span class="docname">청첩장</span> 공유하기</span></button>
       <button class="lbtn" id="replayBtn" type="button">게임 다시 하기</button>
     </section>
@@ -143,12 +147,12 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/invite-code.js?v=20261111h"></script>
-  <script src="js/kinds.js?v=20261111h"></script>
-  <script src="js/characters.js?v=20261111h"></script>
-  <script src="js/stage.js?v=20261111h"></script>
-  <script src="js/game-bouquet.js?v=20261111h"></script>
-  <script src="js/rsvp.js?v=20261111h"></script>
-  <script src="js/invite.js?v=20261111h"></script>
+  <script src="js/invite-code.js?v=20261111i"></script>
+  <script src="js/kinds.js?v=20261111i"></script>
+  <script src="js/characters.js?v=20261111i"></script>
+  <script src="js/stage.js?v=20261111i"></script>
+  <script src="js/game-bouquet.js?v=20261111i"></script>
+  <script src="js/rsvp.js?v=20261111i"></script>
+  <script src="js/invite.js?v=20261111i"></script>
 </body>
 </html>

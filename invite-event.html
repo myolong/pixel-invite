@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ko">
+<!-- tools/make-og.js가 invite.html로 만든 파일. 직접 고치지 말고 invite.html을 고친 뒤 다시 만드세요. -->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>기념 행사 초대장 - 픽셀 초대장</title>
+  <meta name="description" content="작은 게임을 깨면 열려요. 눌러서 열어 보세요!">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="픽셀 초대장">
+  <meta property="og:title" content="기념 행사 초대장">
+  <meta property="og:description" content="작은 게임을 깨면 열려요. 눌러서 열어 보세요!">
+  <meta property="og:image" content="https://myolong.github.io/pixel-invite/assets/og/event.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#fff3f5">
+  <link rel="preload" href="fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/invite.css?v=20261111i">
+</head>
+<body>
+  <section class="stage" id="stage">
+    <div class="stage-inner">
+      <div class="topbar"><button class="skip" id="skipBtn" type="button"><span class="docname">청첩장</span> 바로 보기 ›</button></div>
+      <canvas id="screen" aria-label="픽셀 신랑·신부 화면"></canvas>
+      <div class="stage-ui" id="stageUi" hidden>
+        <p class="names" id="stageNames"></p>
+        <p class="when" id="stageWhen"></p>
+        <div class="choice">
+          <button class="btn primary" id="playBtn" type="button">게임하고 보기</button>
+          <button class="btn" id="viewBtn" type="button"><span>바로 <span class="docname">청첩장</span> 보기</span></button>
+        </div>
+      </div>
+      <div class="stage-ui result" id="resultUi" hidden>
+        <p class="result-title" id="resultTitle"></p>
+        <p class="result-score" id="resultScore"></p>
+        <div class="choice">
+          <button class="btn primary" id="toInfoBtn" type="button"><span><span class="docname">청첩장</span> 보기</span></button>
+          <button class="btn" id="againBtn" type="button">다시 하기</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="letter" id="info" hidden>
+    <p class="sample-badge" id="sampleBadge" hidden>샘플 청첩장이에요. 이름, 장소, 사진은 모두 예시예요.</p>
+
+    <section class="cover">
+      <div class="cover-media" id="coverMedia"></div>
+      <div class="cover-text">
+        <p class="eyebrow" id="coverEyebrow">THE WEDDING OF</p>
+        <h1 class="cover-names"><span id="cGroom"></span><em id="cJoin">그리고</em><span id="cBride"></span></h1>
+        <p class="cover-date" id="coverDate"></p>
+        <p class="cover-venue" id="coverVenue"></p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <p class="eyebrow">INVITATION</p>
+      <h2 id="inviteHead">소중한 분들을 초대합니다</h2>
+      <p class="greeting" id="greeting"></p>
+      <div class="parents">
+        <p id="groomParents"></p>
+        <p id="brideParents"></p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <p class="eyebrow">CALENDAR</p>
+      <h2 id="calTitle"></h2>
+      <div class="cal" id="cal" aria-label="예식 달력"></div>
+      <p class="dday-line" id="ddayLine"></p>
+    </section>
+
+    <section class="sec" id="gallerySec">
+      <p class="eyebrow">GALLERY</p>
+      <h2 id="galleryHead">우리의 순간</h2>
+      <div class="gallery" id="gallery"></div>
+    </section>
+
+    <section class="sec" id="locSec">
+      <p class="eyebrow">LOCATION</p>
+      <h2>오시는 길</h2>
+      <p class="venue-name" id="venueName"></p>
+      <p class="venue-addr" id="venueAddress"></p>
+      <div class="row-btns">
+        <a class="lbtn" id="naverMap" target="_blank" rel="noopener">네이버 지도</a>
+        <a class="lbtn" id="kakaoMap" target="_blank" rel="noopener">카카오맵</a>
+        <button class="lbtn" id="copyAddr" type="button">주소 복사</button>
+      </div>
+      <dl class="guide" id="guide"></dl>
+    </section>
+
+    <section class="sec" id="rsvpSec" hidden>
+      <p class="eyebrow">RSVP</p>
+      <h2>참석 여부</h2>
+      <p class="note" id="rsvpNote"></p>
+      <div class="rsvp" id="rsvpForm">
+        <div class="rsvp-pick" role="radiogroup" aria-label="참석 여부">
+          <button type="button" class="lbtn" data-attend="1" aria-pressed="false">참석할게요</button>
+          <button type="button" class="lbtn" data-attend="0" aria-pressed="false">못 가요</button>
+        </div>
+        <input id="rsvpName" maxlength="20" placeholder="이름" autocomplete="name" aria-label="이름">
+        <label class="rsvp-people" id="rsvpPeopleRow">함께 오는 인원(나 포함)
+          <select id="rsvpPeople" aria-label="인원"></select>
+        </label>
+        <input id="rsvpMsg" maxlength="100" placeholder="한마디 (선택)" aria-label="한마디">
+        <button type="button" class="lbtn solid" id="rsvpSend">보내기</button>
+      </div>
+      <div class="rsvp-done" id="rsvpDone" hidden>
+        <p id="rsvpDoneText"></p>
+        <button type="button" class="lbtn" id="rsvpEdit">응답 바꾸기</button>
+      </div>
+      <div class="rsvp-list" id="rsvpList" hidden></div>
+    </section>
+
+    <section class="sec" id="accountSec">
+      <p class="eyebrow">ACCOUNT</p>
+      <h2 id="accHead">마음 전하실 곳</h2>
+      <p class="note" id="accNote">참석이 어려우신 분들을 위해 계좌번호를 남겨요.</p>
+      <div id="accounts"></div>
+    </section>
+
+    <section class="sec" id="contactSec">
+      <p class="eyebrow">CONTACT</p>
+      <h2>연락하기</h2>
+      <div class="row-btns" id="contacts"></div>
+    </section>
+
+    <section class="sec actions">
+      <button class="lbtn" id="calBtn" type="button" aria-expanded="false">캘린더에 추가</button>
+      <div class="cal-pick" id="calPick" hidden>
+        <a class="lbtn" id="calGoogle" target="_blank" rel="noopener">구글 캘린더</a>
+        <button class="lbtn" id="calIcs" type="button">휴대폰 캘린더</button>
+      </div>
+      <button class="lbtn solid" id="shareBtn" type="button"><span><span class="docname">청첩장</span> 공유하기</span></button>
+      <button class="lbtn" id="replayBtn" type="button">게임 다시 하기</button>
+    </section>
+
+    <footer class="foot">
+      <p>픽셀 초대장</p>
+      <p><a class="make-link" id="makeLink" href="make.html">나도 게임 초대장 만들기 ›</a></p>
+    </footer>
+  </main>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lb-close" id="lbClose" type="button" aria-label="닫기">✕</button>
+    <button class="lb-nav prev" id="lbPrev" type="button" aria-label="이전 사진">‹</button>
+    <img id="lbImg" alt="" draggable="false">
+    <button class="lb-nav next" id="lbNext" type="button" aria-label="다음 사진">›</button>
+    <p class="lb-count" id="lbCount"></p>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/invite-code.js?v=20261111i"></script>
+  <script src="js/kinds.js?v=20261111i"></script>
+  <script src="js/characters.js?v=20261111i"></script>
+  <script src="js/stage.js?v=20261111i"></script>
+  <script src="js/game-bouquet.js?v=20261111i"></script>
+  <script src="js/rsvp.js?v=20261111i"></script>
+  <script src="js/invite.js?v=20261111i"></script>
+</body>
+</html>

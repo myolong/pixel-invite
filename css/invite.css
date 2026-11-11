@@ -148,3 +148,7 @@ canvas { display: block; width: 100%; height: auto; border-radius: 16px; touch-a
 .rsvp-list li span { color: var(--muted); }
 .rsvp-list li.no b { color: var(--muted); font-weight: 500; }
 .rsvp-list li small { grid-column: 1 / -1; color: var(--muted); }
+
+.cal-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cal-pick .lbtn { font-size: 14px; padding: 11px 6px; }
+.cal-pick[hidden] { display: none; }
