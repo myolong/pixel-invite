@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>게임 청첩장</title>
+  <meta name="description" content="작은 게임을 깨면 열리는 픽셀 청첩장">
+  <meta name="theme-color" content="#fff3f5">
+  <link rel="preload" href="fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/invite.css">
+</head>
+<body>
+  <section class="stage" id="stage">
+    <div class="stage-inner">
+      <div class="topbar"><button class="skip" id="skipBtn" type="button">청첩장 바로 보기 ›</button></div>
+      <canvas id="screen" aria-label="픽셀 신랑·신부 화면"></canvas>
+      <div class="stage-ui" id="stageUi" hidden>
+        <p class="names" id="stageNames"></p>
+        <p class="when" id="stageWhen"></p>
+        <div class="choice">
+          <button class="btn primary" id="playBtn" type="button">게임하고 보기</button>
+          <button class="btn" id="viewBtn" type="button">바로 청첩장 보기</button>
+        </div>
+      </div>
+      <div class="stage-ui result" id="resultUi" hidden>
+        <p class="result-title" id="resultTitle"></p>
+        <p class="result-score" id="resultScore"></p>
+        <div class="choice">
+          <button class="btn primary" id="toInfoBtn" type="button">청첩장 보기 ↓</button>
+          <button class="btn" id="againBtn" type="button">다시 하기</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="info" id="info">
+    <p class="sample-badge" id="sampleBadge" hidden>샘플 청첩장이에요. 이름과 장소는 모두 예시예요.</p>
+
+    <section class="card intro">
+      <p class="eyebrow">WEDDING INVITATION</p>
+      <h1 id="coupleNames"></h1>
+      <p class="big" id="dateText"></p>
+      <p class="muted" id="venueShort"></p>
+      <p class="dday" id="dday"></p>
+    </section>
+
+    <section class="card">
+      <h2>초대합니다</h2>
+      <p class="greeting" id="greeting"></p>
+      <div class="parents">
+        <p id="groomParents"></p>
+        <p id="brideParents"></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>오시는 길</h2>
+      <p class="big" id="venueName"></p>
+      <p id="venueAddress"></p>
+      <div class="row-btns">
+        <a class="btn small" id="naverMap" target="_blank" rel="noopener">네이버 지도</a>
+        <a class="btn small" id="kakaoMap" target="_blank" rel="noopener">카카오맵</a>
+        <button class="btn small" id="copyAddr" type="button">주소 복사</button>
+      </div>
+      <dl class="guide" id="guide"></dl>
+    </section>
+
+    <section class="card">
+      <h2>마음 전하실 곳</h2>
+      <div id="accounts"></div>
+    </section>
+
+    <section class="card">
+      <h2>연락하기</h2>
+      <div class="row-btns" id="contacts"></div>
+    </section>
+
+    <section class="card actions">
+      <button class="btn" id="calBtn" type="button">캘린더에 추가</button>
+      <button class="btn primary" id="shareBtn" type="button">청첩장 공유하기</button>
+    </section>
+
+    <footer class="foot">
+      <p>게임 청첩장 · 샘플</p>
+    </footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/characters.js"></script>
+  <script src="js/stage.js"></script>
+  <script src="js/game-bouquet.js"></script>
+  <script src="js/invite.js"></script>
+</body>
+</html>
