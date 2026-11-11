@@ -38,6 +38,22 @@ function drawSprite(ctx, img, cx, bottom, scale = 2, flip = false) {
   } else {
     ctx.drawImage(img, x, y, w, h);
   }
+  // 사진 얼굴: 몸 그림 위 머리 자리(지름 14칸)에 동그랗게
+  if (img.face && img.face.complete && img.face.naturalWidth) {
+    const d = 14 * scale, fx = x + (img.width / 2) * scale - d / 2, fy = y - 1 * scale;
+    ctx.save();
+    ctx.imageSmoothingEnabled = true;
+    ctx.beginPath();
+    ctx.arc(fx + d / 2, fy + d / 2, d / 2, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fillStyle = '#2a2033';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(fx + d / 2, fy + d / 2, d / 2 - scale * 0.5, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.drawImage(img.face, fx, fy, d, d);
+    ctx.restore();
+  }
 }
 
 function drawText(ctx, text, x, y, size, color = '#2a2033', align = 'center', outline = '#ffffff') {

@@ -77,8 +77,11 @@
     Stage.setTheme(K.scene);
     // 캐릭터: 종류를 바꾸면 그 종류의 기본 옷차림으로
     if (!opt.keepLooks && prev !== K) {
+      const faces = { groom: looks.groom.face, bride: looks.bride.face };
       looks.groom = clone(K.people[0].look);
       looks.bride = clone((K.people[1] || KINDS.wedding.people[1]).look);
+      // 사진 얼굴은 종류를 바꿔도 그대로
+      SLOTS.forEach(sl => { if (faces[sl]) looks[sl].face = faces[sl]; });
     }
     // 인사말: 비어 있거나 예시 문구 그대로면 새 종류의 예시로
     const g = form.greeting.value.replace(/\r/g, '').trim();
@@ -159,16 +162,37 @@
       g.append(h, row);
       panel.append(g);
     };
+    // 얼굴: 픽셀 얼굴 또는 내 사진 얼굴
+    const fb = document.createElement('div');
+    fb.className = 'opt face-opt';
+    fb.innerHTML = `<p>얼굴</p><div class="opt-row">
+      <button type="button" class="chip${L.face ? '' : ' on'}" data-f="pixel">픽셀 얼굴</button>
+      <button type="button" class="chip${L.face ? ' on' : ''}" data-f="photo">${L.face ? '<img alt="" class="face-thumb"> 사진 바꾸기' : '내 사진 얼굴'}</button>
+      </div><input type="file" accept="image/*" hidden>
+      <p class="hint small">${L.face ? '사진 얼굴은 이 링크를 받은 사람 누구나 볼 수 있어요.' : '얼굴이 잘 나온 사진을 고르면 얼굴만 동그랗게 오려서 캐릭터 머리로 써요. 사진은 이 기기 안에서만 처리돼요.'}</p>`;
+    if (L.face) fb.querySelector('.face-thumb').src = L.face;
+    const file = fb.querySelector('input[type=file]');
+    fb.querySelector('[data-f=pixel]').addEventListener('click', () => { delete L.face; rebuild(); renderLook(); saveDraft(); });
+    fb.querySelector('[data-f=photo]').addEventListener('click', () => { FaceCrop.detector(); file.click(); });
+    file.addEventListener('change', async () => {
+      const f = file.files[0];
+      if (!f) return;
+      const url = await FaceCrop.open(f);
+      if (url) { L.face = url; rebuild(); renderLook(); saveDraft(); toast('사진 얼굴을 붙였어요'); }
+    });
+    panel.append(fb);
+
     group('옷', Object.keys(OUTFIT_NAMES).map(k => ({ value: k, label: OUTFIT_NAMES[k] })), L.outfit, v => {
       if (L.outfit !== v) L.color = 0;
       L.outfit = v;
     });
     group('옷 색', (PixelChars.OUTFIT_COLORS[L.outfit] || PixelChars.SUIT_COLORS).map((c, i) => ({ value: i, color: c })), L.color, v => { L.color = v; }, true);
-    group('머리 모양', Object.keys(HAIR_NAMES).map(k => ({ value: k, label: HAIR_NAMES[k] })), L.hair, v => { L.hair = v; });
-    group('머리색', PixelChars.HAIR_COLORS.map((c, i) => ({ value: i, color: c })), L.hairColor, v => { L.hairColor = v; }, true);
+    // 사진 얼굴이면 머리 모양·머리색·안경은 필요 없음
+    if (!L.face) group('머리 모양', Object.keys(HAIR_NAMES).map(k => ({ value: k, label: HAIR_NAMES[k] })), L.hair, v => { L.hair = v; });
+    if (!L.face) group('머리색', PixelChars.HAIR_COLORS.map((c, i) => ({ value: i, color: c })), L.hairColor, v => { L.hairColor = v; }, true);
     group('피부색', PixelChars.SKINS.map((c, i) => ({ value: i, color: c })), L.skin, v => { L.skin = v; }, true);
     const yesNo = [{ value: true, label: '쓰기' }, { value: false, label: '안 쓰기' }];
-    group('안경', yesNo, !!L.glasses, v => { L.glasses = v; });
+    if (!L.face) group('안경', yesNo, !!L.glasses, v => { L.glasses = v; });
     group('베일', yesNo, !!L.veil, v => { L.veil = v; });
   }
 
