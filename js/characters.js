@@ -108,6 +108,62 @@ const OUTFITS = {
     '..DDDDDDDDDDDD..',
     '.dDDDDDDDDDDDDd.',
   ])),
+  suit: pad24(Array(12).fill('................').concat([
+    '...TTTWRRWTTT...',
+    '..TTTTWRRWTTTT..',
+    '..TTTTtRRtTTTT..',
+    '..TTTTTRRTTTTT..',
+    '..TTTTTTTTTTTT..',
+    '..SSTTTTTTTTSS..',
+    '....TTTTTTTT....',
+    '....TTTTTTTT....',
+    '....TTT..TTT....',
+    '....TTT..TTT....',
+    '....TTT..TTT....',
+    '...KKKK..KKKK...',
+  ])),
+  onepiece: pad24(Array(12).fill('................').concat([
+    '...SSDDDDDDSS...',
+    '..SSDDDDDDDDSS..',
+    '..SS.DDDDDD.SS..',
+    '..SS.dddddd.SS..',
+    '..SS.DDDDDD.SS..',
+    '....DDDDDDDD....',
+    '...DDDDDDDDDD...',
+    '...DdDDDDDDdD...',
+    '.....SS..SS.....',
+    '.....SS..SS.....',
+    '.....SS..SS.....',
+    '....KKK..KKK....',
+  ])),
+  hanbok: pad24(Array(12).fill('................').concat([
+    '...JJJJJJJJJJ...',
+    '..JJJJJOOJJJJJ..',
+    '..JJJJJOJJJJJJ..',
+    '..SSDDDODDDDSS..',
+    '....DDDDDDDD....',
+    '...DDDDDDDDDD...',
+    '...DDDDDDDDDD...',
+    '..DDdDDDDDDdDD..',
+    '..DDDDDDDDDDDD..',
+    '.DDDDDDDDDDDDDD.',
+    '.DDDDDDDDDDDDDD.',
+    '.dDDDDDDDDDDDDd.',
+  ])),
+  hoodie: pad24(Array(12).fill('................').concat([
+    '...CCCCccCCCC...',
+    '..CCCCWCCWCCCC..',
+    '..CCCCWCCWCCCC..',
+    '..CCCCCCCCCCCC..',
+    '..CCCccccccCCC..',
+    '..SSCCCCCCCCSS..',
+    '....PPPPPPPP....',
+    '....PPPPPPPP....',
+    '....PPP..PPP....',
+    '....PPP..PPP....',
+    '....PPP..PPP....',
+    '...WWWW..WWWW...',
+  ])),
   casual: pad24(Array(12).fill('................').concat([
     '....CCCccCCC....',
     '..CCCCCCCCCCCC..',
@@ -171,6 +227,42 @@ const HAIRS = {
   ]),
 };
 
+HAIRS.ponytail = pad24([
+  '................',
+  '....HHHHHHHH....',
+  '...HHHHHHHHHH...',
+  '...HHHHHHHHHHHH.',
+  '...HHh....hHHHH.',
+  '...H........HHH.',
+  '.............HH.',
+  '.............HH.',
+  '.............HH.',
+  '.............Hh.',
+]);
+HAIRS.twin = pad24([
+  '................',
+  '....HHHHHHHH....',
+  '...HHHHHHHHHH...',
+  '..HHHHHHHHHHHH..',
+  '.HHHh......hHHH.',
+  '.HH..........HH.',
+  '.HH..........HH.',
+  '.HH..........HH.',
+  '.Hh..........hH.',
+  '..h..........h..',
+]);
+HAIRS.perm = pad24([
+  '....HHHHHHHH....',
+  '...HHHHHHHHHH...',
+  '..HHHHHHHHHHHH..',
+  '..HHHHHHHHHHHH..',
+  '..HHHh....hHHH..',
+  '..HHH......HHH..',
+  '..HH........HH..',
+  '..HH........HH..',
+  '...h........h...',
+]);
+
 const VEIL = pad24([
   '.....VVVVVV.....',
   '....V......V....',
@@ -197,12 +289,19 @@ const GLASSES = pad24(Array(5).fill('................').concat([
   '....GGG..GGG....',
 ]));
 
-const SKINS = ['#f6d2b4', '#e8b48f', '#c98c64'];
-const HAIR_COLORS = ['#2b2230', '#5a3a28', '#a0663a', '#d9b25a', '#c75b6a'];
-const SUIT_COLORS = ['#2a2d3a', '#3b4a6b', '#efe9dc'];
-const DRESS_COLORS = ['#ffffff', '#f6e3ec', '#e9eefb'];
-const CASUAL_COLORS = ['#f2b84b', '#7cc4a4', '#e98aa5', '#d84a4a', '#a99be8'];
-const OUTFIT_COLORS = { tux: SUIT_COLORS, dress: DRESS_COLORS, casual: CASUAL_COLORS };
+// 예전 링크의 번호가 그대로 맞도록 새 색은 뒤에 붙인다. 보여 주는 순서는 *_ORDER
+const SKINS = ['#f6d2b4', '#e8b48f', '#c98c64', '#fbe3cf', '#eec19b', '#d39a6f', '#8d5a3b'];
+const SKIN_ORDER = [3, 0, 4, 1, 5, 2, 6];
+const HAIR_COLORS = ['#2b2230', '#5a3a28', '#a0663a', '#d9b25a', '#c75b6a', '#9a96a0', '#3f5a9a'];
+const SUIT_COLORS = ['#2a2d3a', '#3b4a6b', '#efe9dc', '#4a4a52', '#6b3a4a', '#4d5b49', '#8c8fa3'];
+const DRESS_COLORS = ['#ffffff', '#f6e3ec', '#e9eefb', '#fff1d2', '#e5f3e3', '#ece1f7', '#f6d0c8'];
+const CASUAL_COLORS = ['#f2b84b', '#7cc4a4', '#e98aa5', '#d84a4a', '#a99be8', '#4a6fd1', '#ffffff'];
+const BIZ_COLORS = ['#2b2e3b', '#26365e', '#5a5d66', '#7a5a3e', '#d9cfbd', '#3e5a4a', '#6b3a4a'];
+const ONEPIECE_COLORS = ['#e98aa5', '#f2b84b', '#7cc4a4', '#4a6fd1', '#ffffff', '#d84a4a', '#a99be8'];
+const HANBOK_COLORS = ['#d8424f', '#e98aa5', '#3b4a8c', '#f2c94c', '#7cc4a4', '#9b6bd1', '#2f6e5f'];
+const HOODIE_COLORS = ['#9aa0aa', '#4a4a52', '#f2b84b', '#7cc4a4', '#e98aa5', '#4a6fd1', '#ffffff'];
+const OUTFIT_COLORS = { tux: SUIT_COLORS, suit: BIZ_COLORS, dress: DRESS_COLORS, onepiece: ONEPIECE_COLORS, hanbok: HANBOK_COLORS, casual: CASUAL_COLORS, hoodie: HOODIE_COLORS };
+const isLight = hex => { const n = parseInt(hex.slice(1), 16); return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) > 190; };
 
 const shade = (hex, f) => {
   const n = parseInt(hex.slice(1), 16);
@@ -219,7 +318,7 @@ function makeCharacter(look) {
   const hairCol = HAIR_COLORS[look.hairColor] || HAIR_COLORS[0];
   const cols = OUTFIT_COLORS[outfit];
   const cloth = cols[look.color] || cols[0];
-  const lightSuit = outfit === 'tux' && look.color === 2;
+  const lightSuit = (outfit === 'tux' || outfit === 'suit') && isLight(cloth);
   const pal = {
     S: skin, E: '#2a2033', B: '#f29aa8', M: '#c2526a',
     H: hairCol, h: shade(hairCol, 0.75),
@@ -227,6 +326,7 @@ function makeCharacter(look) {
     D: cloth, d: shade(cloth, 0.88),
     G: '#2a2033', V: 'rgba(255,255,255,0.85)',
     C: cloth, c: shade(cloth, 0.85), P: '#4a5578',
+    J: '#fff6e8', O: outfit === 'hanbok' ? shade(cloth, 0.7) : cloth,
   };
   // 사진 얼굴: 픽셀 머리 대신 동그랗게 오린 사진을 머리 자리에 붙인다(drawSprite가 그림)
   const face = faceImage(look.face);
@@ -334,4 +434,4 @@ const PROPS = {
   ], { C: '#8d93a8', c: '#6f7488', b: '#5aa0e6' }),
 };
 
-window.PixelChars = { makeCharacter, faceImage, FACE_RE, bakeSprite, PROPS, SKINS, HAIR_COLORS, SUIT_COLORS, DRESS_COLORS, CASUAL_COLORS, OUTFIT_COLORS };
+window.PixelChars = { makeCharacter, SKIN_ORDER, faceImage, FACE_RE, bakeSprite, PROPS, SKINS, HAIR_COLORS, SUIT_COLORS, DRESS_COLORS, CASUAL_COLORS, OUTFIT_COLORS };

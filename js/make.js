@@ -136,8 +136,8 @@
       tabs.append(b);
     });
   }
-  const HAIR_NAMES = { short: '짧은 머리', bun: '올림머리', bob: '단발', long: '긴 머리' };
-  const OUTFIT_NAMES = { tux: '턱시도', dress: '드레스', casual: '평상복' };
+  const HAIR_NAMES = { short: '짧은 머리', bun: '올림머리', bob: '단발', long: '긴 머리', ponytail: '포니테일', twin: '양갈래', perm: '파마' };
+  const OUTFIT_NAMES = { tux: '턱시도', suit: '정장', dress: '드레스', onepiece: '원피스', hanbok: '한복', casual: '티셔츠', hoodie: '후드티' };
   function renderLook() {
     const L = looks[who];
     const panel = $('lookPanel');
@@ -190,7 +190,7 @@
     // 사진 얼굴이면 머리 모양·머리색·안경은 필요 없음
     if (!L.face) group('머리 모양', Object.keys(HAIR_NAMES).map(k => ({ value: k, label: HAIR_NAMES[k] })), L.hair, v => { L.hair = v; });
     if (!L.face) group('머리색', PixelChars.HAIR_COLORS.map((c, i) => ({ value: i, color: c })), L.hairColor, v => { L.hairColor = v; }, true);
-    group('피부색', PixelChars.SKINS.map((c, i) => ({ value: i, color: c })), L.skin, v => { L.skin = v; }, true);
+    group('피부색', PixelChars.SKIN_ORDER.map(i => ({ value: i, color: PixelChars.SKINS[i] })), L.skin, v => { L.skin = v; }, true);
     const yesNo = [{ value: true, label: '쓰기' }, { value: false, label: '안 쓰기' }];
     if (!L.face) group('안경', yesNo, !!L.glasses, v => { L.glasses = v; });
     group('베일', yesNo, !!L.veil, v => { L.veil = v; });
