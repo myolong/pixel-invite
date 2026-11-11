@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
-  <link rel="stylesheet" href="css/invite.css?v=20261111g">
+  <link rel="stylesheet" href="css/invite.css?v=20261111h">
 </head>
 <body>
   <section class="stage" id="stage">
@@ -85,6 +85,29 @@
       <dl class="guide" id="guide"></dl>
     </section>
 
+    <section class="sec" id="rsvpSec" hidden>
+      <p class="eyebrow">RSVP</p>
+      <h2>참석 여부</h2>
+      <p class="note" id="rsvpNote"></p>
+      <div class="rsvp" id="rsvpForm">
+        <div class="rsvp-pick" role="radiogroup" aria-label="참석 여부">
+          <button type="button" class="lbtn" data-attend="1" aria-pressed="false">참석할게요</button>
+          <button type="button" class="lbtn" data-attend="0" aria-pressed="false">못 가요</button>
+        </div>
+        <input id="rsvpName" maxlength="20" placeholder="이름" autocomplete="name" aria-label="이름">
+        <label class="rsvp-people" id="rsvpPeopleRow">함께 오는 인원(나 포함)
+          <select id="rsvpPeople" aria-label="인원"></select>
+        </label>
+        <input id="rsvpMsg" maxlength="100" placeholder="한마디 (선택)" aria-label="한마디">
+        <button type="button" class="lbtn solid" id="rsvpSend">보내기</button>
+      </div>
+      <div class="rsvp-done" id="rsvpDone" hidden>
+        <p id="rsvpDoneText"></p>
+        <button type="button" class="lbtn" id="rsvpEdit">응답 바꾸기</button>
+      </div>
+      <div class="rsvp-list" id="rsvpList" hidden></div>
+    </section>
+
     <section class="sec" id="accountSec">
       <p class="eyebrow">ACCOUNT</p>
       <h2 id="accHead">마음 전하실 곳</h2>
@@ -120,11 +143,12 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/invite-code.js?v=20261111g"></script>
-  <script src="js/kinds.js?v=20261111g"></script>
-  <script src="js/characters.js?v=20261111g"></script>
-  <script src="js/stage.js?v=20261111g"></script>
-  <script src="js/game-bouquet.js?v=20261111g"></script>
-  <script src="js/invite.js?v=20261111g"></script>
+  <script src="js/invite-code.js?v=20261111h"></script>
+  <script src="js/kinds.js?v=20261111h"></script>
+  <script src="js/characters.js?v=20261111h"></script>
+  <script src="js/stage.js?v=20261111h"></script>
+  <script src="js/game-bouquet.js?v=20261111h"></script>
+  <script src="js/rsvp.js?v=20261111h"></script>
+  <script src="js/invite.js?v=20261111h"></script>
 </body>
 </html>

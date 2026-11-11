@@ -17,6 +17,8 @@
   const looks = { groom: clone(K.people[0].look), bride: clone(K.people[1].look) };
   let who = 'groom';
   let accounts = [];
+  // 참석 여부: on(켜기), id(초대장 번호), key(만든 사람 열쇠, 수정용 링크에만 들어감)
+  let rsvp = { on: true, id: null, key: null };
   let sprites = {};
 
   // ── 미리보기
@@ -117,6 +119,7 @@
     renderTabs();
     renderLook();
     renderAccounts();
+    renderRsvp();
     rebuild();
   }
 
@@ -244,7 +247,7 @@
       day: v('day'), time: v('time'),
       venue: { name: v('venue.name'), address: v('venue.address'), transit: v('venue.transit'), parking: v('venue.parking') },
       greeting: form.greeting.value.replace(/\r/g, '').trim(),
-      accounts, looks,
+      accounts, looks, rsvp,
     };
   }
   function applyDraft(d) {
@@ -255,6 +258,10 @@
     set('day', d.day); set('time', d.time);
     ['name', 'address', 'transit', 'parking'].forEach(f => set(`venue.${f}`, d.venue && d.venue[f]));
     set('greeting', d.greeting);
+    if (d.rsvp && typeof d.rsvp === 'object') {
+      const ok = window.Rsvp && Rsvp.validId(d.rsvp.id) && /^[A-Za-z0-9]{24}$/.test(d.rsvp.key || '');
+      rsvp = { on: d.rsvp.on !== false, id: ok ? d.rsvp.id : null, key: ok ? d.rsvp.key : null };
+    }
     if (Array.isArray(d.accounts)) accounts = d.accounts.map(a => ({ side: a.side || '', bank: a.bank || '', number: a.number || '', holder: a.holder || '', amount: a.amount || '' }));
     if (d.looks) {
       SLOTS.forEach((k, i) => {
@@ -287,6 +294,7 @@
       noTime: !d.time,
       venue: clean(d.venue),
       greeting: d.greeting,
+      rsvp: window.Rsvp && Rsvp.enabled && d.rsvp.on && d.rsvp.id ? { id: d.rsvp.id, pub: !!K.rsvpPublic } : null,
       accounts: d.accounts.filter(a => a.number.trim()).map(a => clean({ side: a.side, bank: a.bank.trim(), number: a.number.trim(), holder: a.holder.trim(), amount: K.accountAmount ? (a.amount || '').trim().slice(0, 20) : '' })),
     });
   }
@@ -297,8 +305,44 @@
       groom: c.groom || {}, bride: c.bride || {}, day: m[1], time: c.noTime ? '' : m[2], venue: c.venue || {},
       greeting: c.greeting, accounts: c.accounts || [],
       looks: { groom: (c.groom || {}).look, bride: (c.bride || {}).look },
+      rsvp: { on: !c.rsvpOff, id: c.rsvp && c.rsvp.id, key: c.rsvpKey },
     };
   }
+
+  // ── 참석 여부
+  function renderRsvp() {
+    const on = !!(window.Rsvp && Rsvp.enabled);
+    $('rsvpCard').hidden = !on;
+    if (!on) return;
+    $('rsvpOn').checked = rsvp.on;
+    $('rsvpHint').textContent = K.rsvpPublic
+      ? '받은 사람이 참석·불참과 인원을 보내요. 보낸 명단은 초대장을 받은 사람 모두가 볼 수 있어요.'
+      : '받은 사람이 참석·불참과 인원을 보내요. 명단은 수정용 링크를 가진 나만 볼 수 있어요.';
+  }
+  $('rsvpOn').addEventListener('change', () => { rsvp.on = $('rsvpOn').checked; saveDraft(); });
+  async function showRsvpAdmin() {
+    const box = $('rsvpAdmin');
+    if (!(window.Rsvp && Rsvp.enabled && rsvp.on && rsvp.id && rsvp.key)) { box.hidden = true; return; }
+    box.hidden = false;
+    $('rsvpSum').textContent = '불러오는 중…';
+    const ul = $('rsvpRows');
+    ul.innerHTML = '';
+    let rows;
+    try { rows = await Rsvp.list(rsvp.id, rsvp.key); } catch (e) { $('rsvpSum').textContent = '명단을 불러오지 못했어요. 잠시 뒤 다시 눌러 주세요.'; return; }
+    const yes = rows.filter(r => r.attend), no = rows.filter(r => !r.attend);
+    const total = yes.reduce((n, r) => n + (r.people || 1), 0);
+    $('rsvpSum').textContent = rows.length ? `참석 ${yes.length}팀 ${total}명 · 불참 ${no.length}명` : '아직 받은 응답이 없어요.';
+    yes.concat(no).forEach(r => {
+      const li = document.createElement('li');
+      li.className = r.attend ? 'yes' : 'no';
+      const b = document.createElement('b'); b.textContent = r.name;
+      const sp = document.createElement('span'); sp.textContent = r.attend ? `참석 ${r.people}명` : '불참';
+      li.append(b, sp);
+      if (r.note) { const sm = document.createElement('small'); sm.textContent = r.note; li.append(sm); }
+      ul.append(li);
+    });
+  }
+  $('rsvpReload').addEventListener('click', showRsvpAdmin);
 
   // ── 링크 만들기
   const base = location.href.replace(/[?#].*$/, '').replace(/make\.html$/, '');
@@ -320,9 +364,26 @@
       return;
     }
     err.hidden = true;
-    const code = await InviteCode.encode(toConfig(d));
+    const useRsvp = window.Rsvp && Rsvp.enabled && rsvp.on;
+    if (useRsvp) {
+      if (!rsvp.id || !rsvp.key) { rsvp.id = Rsvp.newId(); rsvp.key = Rsvp.newKey(); }
+      let ok = false;
+      try { ok = await Rsvp.register(rsvp.id, rsvp.key, !!K.rsvpPublic); } catch (e2) { ok = false; }
+      if (!ok) {
+        err.textContent = '참석 응답 저장소에 연결하지 못했어요. 잠시 뒤 다시 누르거나, 7번에서 참석 여부 받기를 끄고 만들어 주세요.';
+        err.hidden = false;
+        return;
+      }
+    }
+    d.rsvp = rsvp;
+    const cfg = toConfig(d);
+    const code = await InviteCode.encode(cfg);
+    const editCode = await InviteCode.encode(useRsvp ? { ...cfg, rsvpKey: rsvp.key } : { ...cfg, rsvpOff: !rsvp.on || undefined });
     inviteUrl = `${base}invite.html?d=${code}`;
-    editUrl = `${base}make.html?d=${code}`;
+    editUrl = `${base}make.html?d=${editCode}`;
+    $('rsvpKeep').hidden = !useRsvp;
+    saveDraft();
+    showRsvpAdmin();
     $('outLink').value = inviteUrl;
     $('openLink').href = inviteUrl;
     $('done').hidden = false;
@@ -377,5 +438,6 @@
   if (loaded) applyDraft(loaded);
   K = null; // 처음 한 번은 종류 기본값을 채우도록
   setKind(startKind, { keepLooks: !!(loaded && loaded.looks), keepGreeting: !!(loaded && loaded.greeting) });
+  showRsvpAdmin();
   requestAnimationFrame(frame);
 })();
