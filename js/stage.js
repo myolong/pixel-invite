@@ -2,7 +2,9 @@
 'use strict';
 
 const LW = 160, LH = 204;          // 논리 해상도(픽셀 그림 기준)
-const FLOOR_Y = 176;               // 바닥선
+const FLOOR_Y = 176;
+const CHAR_SCALE = 3;               // 서 있는 캐릭터 배율(16x24 → 48x72)
+const PAIR_X = [50, 110];           // 두 사람이 설 자리               // 바닥선
 
 function setupCanvas(canvas) {
   const ctx = canvas.getContext('2d');
@@ -160,4 +162,4 @@ function flower(ctx, x, y, col, phase) {
   ctx.fillRect(x, y, 1, 1);
 }
 
-window.Stage = { LW, LH, FLOOR_Y, THEMES, setTheme, setupCanvas, toLogical, drawSprite, drawText, drawVenue };
+window.Stage = { LW, LH, FLOOR_Y, CHAR_SCALE, PAIR_X, THEMES, setTheme, setupCanvas, toLogical, drawSprite, drawText, drawVenue };
