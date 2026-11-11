@@ -6,6 +6,7 @@
   <title>게임 청첩장 - 게임을 깨면 열리는 픽셀 청첩장</title>
   <meta name="description" content="신랑·신부를 픽셀 캐릭터로 만들고, 하객이 짧은 게임을 깨면 예식 정보가 열리는 모바일 청첩장.">
   <meta name="theme-color" content="#fff3f5">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
   <link rel="stylesheet" href="css/invite.css">
   <style>
     .hero { max-width: 420px; margin: 0 auto; padding: 40px 16px 24px; text-align: center; }
@@ -13,18 +14,23 @@
     .hero p { font-size: 16px; }
     .points { text-align: left; font-size: 16px; padding-left: 20px; }
     .points li { margin: 6px 0; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-top: 24px; }
+    .card h2 { font-family: var(--serif); font-size: 18px; margin: 0 0 8px; }
+    .muted { color: var(--muted); }
+    .btn.primary { display: inline-flex; flex: none; padding: 12px 20px; }
   </style>
 </head>
 <body>
   <main class="hero">
     <p class="eyebrow">PIXEL GAME INVITATION</p>
-    <h1>게임을 깨면 열리는<br>픽셀 청첩장</h1>
+    <h1 style="font-family:var(--serif)">게임을 깨면 열리는<br>청첩장</h1>
     <p>두 사람을 꼭 닮은 픽셀 캐릭터와 30초 미니게임.<br>하객이 웃으면서 열어보는 청첩장이에요.</p>
     <p><a class="btn primary" href="invite.html?c=sample">샘플 청첩장 열어보기</a></p>
     <section class="card">
       <h2>이렇게 만들어져요</h2>
       <ul class="points">
         <li>신랑·신부 캐릭터를 머리 모양, 색, 옷으로 꾸며요</li>
+        <li>게임이 끝나면 대표 사진·영상과 사진첩 9장이 담긴 청첩장이 열려요</li>
         <li>하객은 카톡 링크로 열고, 게임을 건너뛰고 바로 볼 수도 있어요</li>
         <li>지도, 계좌 복사, 캘린더 추가까지 들어 있어요</li>
       </ul>

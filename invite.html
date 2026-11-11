@@ -7,6 +7,9 @@
   <meta name="description" content="작은 게임을 깨면 열리는 픽셀 청첩장">
   <meta name="theme-color" content="#fff3f5">
   <link rel="preload" href="fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
   <link rel="stylesheet" href="css/invite.css">
 </head>
 <body>
@@ -33,19 +36,22 @@
     </div>
   </section>
 
-  <main class="info" id="info">
-    <p class="sample-badge" id="sampleBadge" hidden>샘플 청첩장이에요. 이름과 장소는 모두 예시예요.</p>
+  <main class="letter" id="info">
+    <p class="sample-badge" id="sampleBadge" hidden>샘플 청첩장이에요. 이름, 장소, 사진은 모두 예시예요.</p>
 
-    <section class="card intro">
-      <p class="eyebrow">WEDDING INVITATION</p>
-      <h1 id="coupleNames"></h1>
-      <p class="big" id="dateText"></p>
-      <p class="muted" id="venueShort"></p>
-      <p class="dday" id="dday"></p>
+    <section class="cover">
+      <div class="cover-media" id="coverMedia"></div>
+      <div class="cover-text">
+        <p class="eyebrow">THE WEDDING OF</p>
+        <h1 class="cover-names"><span id="cGroom"></span><em>그리고</em><span id="cBride"></span></h1>
+        <p class="cover-date" id="coverDate"></p>
+        <p class="cover-venue" id="coverVenue"></p>
+      </div>
     </section>
 
-    <section class="card">
-      <h2>초대합니다</h2>
+    <section class="sec">
+      <p class="eyebrow">INVITATION</p>
+      <h2>소중한 분들을 초대합니다</h2>
       <p class="greeting" id="greeting"></p>
       <div class="parents">
         <p id="groomParents"></p>
@@ -53,37 +59,63 @@
       </div>
     </section>
 
-    <section class="card">
+    <section class="sec">
+      <p class="eyebrow">CALENDAR</p>
+      <h2 id="calTitle"></h2>
+      <div class="cal" id="cal" aria-label="예식 달력"></div>
+      <p class="dday-line" id="ddayLine"></p>
+    </section>
+
+    <section class="sec" id="gallerySec">
+      <p class="eyebrow">GALLERY</p>
+      <h2>우리의 순간</h2>
+      <div class="gallery" id="gallery"></div>
+    </section>
+
+    <section class="sec">
+      <p class="eyebrow">LOCATION</p>
       <h2>오시는 길</h2>
-      <p class="big" id="venueName"></p>
-      <p id="venueAddress"></p>
+      <p class="venue-name" id="venueName"></p>
+      <p class="venue-addr" id="venueAddress"></p>
       <div class="row-btns">
-        <a class="btn small" id="naverMap" target="_blank" rel="noopener">네이버 지도</a>
-        <a class="btn small" id="kakaoMap" target="_blank" rel="noopener">카카오맵</a>
-        <button class="btn small" id="copyAddr" type="button">주소 복사</button>
+        <a class="lbtn" id="naverMap" target="_blank" rel="noopener">네이버 지도</a>
+        <a class="lbtn" id="kakaoMap" target="_blank" rel="noopener">카카오맵</a>
+        <button class="lbtn" id="copyAddr" type="button">주소 복사</button>
       </div>
       <dl class="guide" id="guide"></dl>
     </section>
 
-    <section class="card">
+    <section class="sec" id="accountSec">
+      <p class="eyebrow">ACCOUNT</p>
       <h2>마음 전하실 곳</h2>
+      <p class="note">참석이 어려우신 분들을 위해 계좌번호를 남겨요.</p>
       <div id="accounts"></div>
     </section>
 
-    <section class="card">
+    <section class="sec" id="contactSec">
+      <p class="eyebrow">CONTACT</p>
       <h2>연락하기</h2>
       <div class="row-btns" id="contacts"></div>
     </section>
 
-    <section class="card actions">
-      <button class="btn" id="calBtn" type="button">캘린더에 추가</button>
-      <button class="btn primary" id="shareBtn" type="button">청첩장 공유하기</button>
+    <section class="sec actions">
+      <button class="lbtn" id="calBtn" type="button">캘린더에 추가</button>
+      <button class="lbtn solid" id="shareBtn" type="button">청첩장 공유하기</button>
+      <button class="lbtn" id="replayBtn" type="button">게임 다시 하기</button>
     </section>
 
     <footer class="foot">
-      <p>게임 청첩장 · 샘플</p>
+      <p>게임 청첩장</p>
     </footer>
   </main>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lb-close" id="lbClose" type="button" aria-label="닫기">✕</button>
+    <button class="lb-nav prev" id="lbPrev" type="button" aria-label="이전 사진">‹</button>
+    <img id="lbImg" alt="" draggable="false">
+    <button class="lb-nav next" id="lbNext" type="button" aria-label="다음 사진">›</button>
+    <p class="lb-count" id="lbCount"></p>
+  </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
