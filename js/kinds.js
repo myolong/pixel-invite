@@ -379,5 +379,15 @@
   // "{names}", "{title}", "{n}" 바꾸기
   const fill = (s, v) => String(s || '').replace(/\{(\w+)\}/g, (_, k) => (v[k] != null ? v[k] : ''));
 
-  window.InviteKinds = { KINDS, ORDER, OUTFIT_NAMES, ACC_NAMES, get, fill, sampleConfig };
+  // 게임 3가지(만드는 사람이 고름). 결혼식·결혼 알림장 말고는 게임을 깨야 초대장이 열린다.
+  const GAMES = {
+    catch: { name: '받기', desc: '던지는 소품을 받아요 (30초)' },
+    blocks: { name: '블록 쌓기', desc: '블록으로 가로줄 4개를 채워요' },
+    shoot: { name: '물총 쏘기', desc: '날아다니는 소품을 물총으로 맞혀요 (30초)' },
+  };
+  const GAME_ORDER = ['catch', 'blocks', 'shoot'];
+  const OPEN_KINDS = ['wedding', 'notice'];
+  const gated = kind => !OPEN_KINDS.includes(kind || 'wedding');
+
+  window.InviteKinds = { KINDS, ORDER, OUTFIT_NAMES, ACC_NAMES, GAMES, GAME_ORDER, gated, get, fill, sampleConfig };
 })();

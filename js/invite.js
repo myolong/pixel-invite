@@ -72,7 +72,23 @@
   let t = 0;
   let game = null;
   const hearts = [];
-  let bestKey = `pi-best-${linkCode ? linkCode.slice(-16) : code}`;
+  const linkTag = linkCode ? linkCode.slice(-16) : code;
+  let bestKey = `pi-best-${linkTag}`;
+  // 게임 종류와 잠금: 결혼식·결혼 알림장 말고는 게임을 깨야 초대장이 열린다(예시 초대장은 안 잠금)
+  const GAME_CLASS = { catch: window.BouquetGame, blocks: window.BlockGame, shoot: window.ShootGame };
+  const gameKind = GAME_CLASS[cfg.game] ? cfg.game : 'catch';
+  const gated = !cfg.sample && InviteKinds.gated(cfg.kind);
+  const clearKey = `pi-clear-${linkTag}`, failKey = `pi-fail-${linkTag}`;
+  const store = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { /* 저장 안 돼도 진행 */ } return null; };
+  let unlocked = !gated || store(clearKey) === '1';
+  let fails = Number(store(failKey)) || 0;
+  const applyGate = () => {
+    $('skipBtn').hidden = !unlocked;
+    $('viewBtn').hidden = !unlocked;
+    $('gateNote').hidden = unlocked;
+    $('playBtn').textContent = unlocked ? '게임하고 보기' : `게임 깨고 ${DOC} 열기`;
+  };
+  applyGate();
 
   $('stageNames').textContent = headline;
   $('stageWhen').textContent = `${W.m}월 ${W.d}일 ${WEEK[W.wd]}요일 ${timeText}`.trim();
@@ -90,12 +106,13 @@
     window.scrollTo(0, 0);
   };
   const toInfo = () => {
+    if (!unlocked) return;
     if (!infoEl.hidden) return;
     if (location.hash !== '#invite') history.pushState({ view: 'invite' }, '', '#invite');
     openInvite();
   };
   // 휴대폰 뒤로 가기: 청첩장 → 게임 화면
-  window.addEventListener('popstate', () => { if (location.hash === '#invite') openInvite(); else openStage(); });
+  window.addEventListener('popstate', () => { if (location.hash === '#invite' && unlocked) openInvite(); else openStage(); });
   if (location.hash === '#invite') history.replaceState(null, '', location.pathname + location.search);
   const showMenu = () => {
     mode = 'menu';
@@ -105,7 +122,8 @@
   const startGame = () => {
     $('stageUi').hidden = true;
     $('resultUi').hidden = true;
-    game = new BouquetGame({ groom: chars.groom, bride: chars.thrower }, endGame, K.game);
+    const easy = gated && !unlocked && fails >= 3; // 세 번 넘게 못 깨면 쉽게
+    game = new GAME_CLASS[gameKind]({ groom: chars.groom, bride: chars.thrower }, endGame, { ...K.game, easy });
     mode = 'game';
   };
   function endGame(score, cleared) {
@@ -113,8 +131,12 @@
     let best = 0;
     try { best = Number(localStorage.getItem(bestKey)) || 0; } catch (e) { /* 저장 안 돼도 진행 */ }
     if (score > best) { best = score; try { localStorage.setItem(bestKey, String(score)); } catch (e) { /* 무시 */ } }
-    $('resultTitle').textContent = cleared ? '클리어! 와 줘서 고마워요' : `수고했어요! ${DOC}이 열렸어요`;
-    $('resultScore').textContent = `점수 ${score}점 · 받은 선물 ${game.caught}개 · 내 최고 ${best}점`;
+    if (cleared && !unlocked) { unlocked = true; store(clearKey, '1'); applyGate(); }
+    if (!cleared && !unlocked) { fails++; store(failKey, String(fails)); }
+    $('resultTitle').textContent = cleared ? (gated ? `클리어! ${DOC}이 열렸어요` : '클리어! 와 줘서 고마워요')
+      : unlocked ? `수고했어요! ${DOC}이 열렸어요` : fails >= 3 ? `아쉬워요! 다음 판은 쉽게 해 드릴게요` : `아쉬워요! 깨야 ${DOC}이 열려요`;
+    $('resultScore').textContent = game.summary(best);
+    $('toInfoBtn').hidden = !unlocked;
     $('resultUi').hidden = false;
   }
 
@@ -135,20 +157,20 @@
   // ── 입력
   const onPointer = e => {
     if (mode !== 'game' || !game) return;
-    const p = Stage.toLogical(canvas, e.clientX, e.clientY);
-    game.pointer(p.x);
+    return Stage.toLogical(canvas, e.clientX, e.clientY);
   };
-  canvas.addEventListener('pointerdown', e => { onPointer(e); canvas.setPointerCapture?.(e.pointerId); });
-  canvas.addEventListener('pointermove', e => { if (e.buttons || e.pointerType === 'touch') onPointer(e); });
+  canvas.addEventListener('pointerdown', e => { const p = onPointer(e); if (p) { game.down(p); canvas.setPointerCapture?.(e.pointerId); } });
+  canvas.addEventListener('pointermove', e => { if (e.buttons || e.pointerType === 'touch') { const p = onPointer(e); if (p) game.move(p); } });
+  ['pointerup', 'pointercancel'].forEach(n => canvas.addEventListener(n, e => { const p = onPointer(e); if (p) game.up(p); }));
+  const GAME_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' '];
   window.addEventListener('keydown', e => {
-    if (!game) return;
-    if (e.key === 'ArrowLeft') game.keys.left = true;
-    if (e.key === 'ArrowRight') game.keys.right = true;
+    if (mode !== 'game' || !game || !GAME_KEYS.includes(e.key)) return;
+    e.preventDefault();
+    if (!e.repeat || e.key === 'ArrowLeft' || e.key === 'ArrowRight') game.key(e.key, true);
   });
   window.addEventListener('keyup', e => {
-    if (!game) return;
-    if (e.key === 'ArrowLeft') game.keys.left = false;
-    if (e.key === 'ArrowRight') game.keys.right = false;
+    if (!game || !GAME_KEYS.includes(e.key)) return;
+    game.key(e.key, false);
   });
 
   // ── 오프닝 장면

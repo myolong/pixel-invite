@@ -36,6 +36,8 @@ canvas { display: block; width: 100%; height: auto; border-radius: 16px; touch-a
 .stage-ui[hidden] { display: none; }
 .names { font-size: 20px; font-weight: 700; margin: 0; }
 .when { margin: 0 0 10px; color: var(--px-muted); font-size: 15px; }
+.gate-note { margin: 8px 0 0; color: var(--px-muted); font-size: 13px; }
+.gate-note[hidden], .skip[hidden], .btn[hidden] { display: none; }
 .choice { display: flex; gap: 8px; }
 .result-title { font-size: 18px; font-weight: 700; margin: 0; }
 .result-score { margin: 0 0 10px; font-size: 14px; }

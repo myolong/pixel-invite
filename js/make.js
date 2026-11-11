@@ -19,6 +19,7 @@
   let accounts = [];
   // 참석 여부: on(켜기), id(초대장 번호), key(만든 사람 열쇠, 수정용 링크에만 들어감)
   let rsvp = { on: true, id: null, key: null };
+  let gameKind = 'catch';
   let sprites = {};
 
   // ── 미리보기
@@ -120,6 +121,7 @@
     renderLook();
     renderAccounts();
     renderRsvp();
+    renderGame();
     rebuild();
   }
 
@@ -251,7 +253,7 @@
       day: v('day'), time: v('time'),
       venue: { name: v('venue.name'), address: v('venue.address'), transit: v('venue.transit'), parking: v('venue.parking') },
       greeting: form.greeting.value.replace(/\r/g, '').trim(),
-      accounts, looks, rsvp,
+      accounts, looks, rsvp, game: gameKind,
     };
   }
   function applyDraft(d) {
@@ -262,6 +264,7 @@
     set('day', d.day); set('time', d.time);
     ['name', 'address', 'transit', 'parking'].forEach(f => set(`venue.${f}`, d.venue && d.venue[f]));
     set('greeting', d.greeting);
+    if (InviteKinds.GAMES[d.game]) gameKind = d.game;
     if (d.rsvp && typeof d.rsvp === 'object') {
       const ok = window.Rsvp && Rsvp.validId(d.rsvp.id) && /^[A-Za-z0-9]{24}$/.test(d.rsvp.key || '');
       rsvp = { on: d.rsvp.on !== false, id: ok ? d.rsvp.id : null, key: ok ? d.rsvp.key : null };
@@ -298,6 +301,7 @@
       noTime: !d.time,
       venue: clean(d.venue),
       greeting: d.greeting,
+      game: gameKind !== 'catch' ? gameKind : '',
       rsvp: window.Rsvp && Rsvp.enabled && d.rsvp.on && d.rsvp.id ? { id: d.rsvp.id, pub: !!K.rsvpPublic } : null,
       accounts: d.accounts.filter(a => a.number.trim()).map(a => clean({ side: a.side, bank: a.bank.trim(), number: a.number.trim(), holder: a.holder.trim(), amount: K.accountAmount ? (a.amount || '').trim().slice(0, 20) : '' })),
     });
@@ -310,7 +314,27 @@
       greeting: c.greeting, accounts: c.accounts || [],
       looks: { groom: (c.groom || {}).look, bride: (c.bride || {}).look },
       rsvp: { on: !c.rsvpOff, id: c.rsvp && c.rsvp.id, key: c.rsvpKey },
+      game: c.game,
     };
+  }
+
+  // ── 게임 고르기
+  function renderGame() {
+    const { GAMES, GAME_ORDER, gated } = InviteKinds;
+    const row = $('gamePick');
+    row.innerHTML = '';
+    GAME_ORDER.forEach(g => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip' + (g === gameKind ? ' on' : '');
+      b.setAttribute('aria-pressed', g === gameKind);
+      b.textContent = GAMES[g].name;
+      b.addEventListener('click', () => { gameKind = g; renderGame(); saveDraft(); });
+      row.append(b);
+    });
+    $('gameHint').textContent = GAMES[gameKind].desc + '. ' + (gated(kind)
+      ? '이 초대장은 게임을 깨야 열려요. 세 번 넘게 못 깨면 게임이 쉬워져요.'
+      : '받는 사람이 게임을 건너뛰고 바로 볼 수도 있어요.');
   }
 
   // ── 참석 여부
@@ -374,7 +398,7 @@
       let ok = false;
       try { ok = await Rsvp.register(rsvp.id, rsvp.key, !!K.rsvpPublic); } catch (e2) { ok = false; }
       if (!ok) {
-        err.textContent = '참석 응답 저장소에 연결하지 못했어요. 잠시 뒤 다시 누르거나, 7번에서 참석 여부 받기를 끄고 만들어 주세요.';
+        err.textContent = '참석 응답 저장소에 연결하지 못했어요. 잠시 뒤 다시 누르거나, 8번에서 참석 여부 받기를 끄고 만들어 주세요.';
         err.hidden = false;
         return;
       }
