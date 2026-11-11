@@ -74,10 +74,10 @@
   const hearts = [];
   const linkTag = linkCode ? linkCode.slice(-16) : code;
   let bestKey = `pi-best-${linkTag}`;
-  // 게임 종류와 잠금: 결혼식·결혼 알림장 말고는 게임을 깨야 초대장이 열린다(예시 초대장은 안 잠금)
+  // 게임 종류와 잠금: 결혼식·결혼 알림장 말고는 게임을 깨야 초대장이 열린다(예시 초대장도 똑같이)
   const GAME_CLASS = { catch: window.BouquetGame, blocks: window.BlockGame, shoot: window.ShootGame };
   const gameKind = GAME_CLASS[cfg.game] ? cfg.game : 'catch';
-  const gated = !cfg.sample && InviteKinds.gated(cfg.kind);
+  const gated = InviteKinds.gated(cfg.kind);
   const clearKey = `pi-clear-${linkTag}`, failKey = `pi-fail-${linkTag}`;
   const store = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { /* 저장 안 돼도 진행 */ } return null; };
   let unlocked = !gated || store(clearKey) === '1';
