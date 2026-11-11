@@ -111,7 +111,9 @@ canvas { display: block; width: 100%; height: auto; border-radius: 16px; touch-a
 .actions .lbtn { padding: 13px; font-size: 15px; }
 .foot { text-align: center; color: var(--muted); font-size: 12px; padding-top: 24px; }
 .foot p { margin: 4px 0; }
-.make-link { color: var(--rose); font-size: 13px; }
+.make-cta { display: block; max-width: 300px; margin: 28px auto 0; padding: 14px 16px; border: 2px dashed var(--rose); border-radius: 14px; text-align: center; text-decoration: none; color: var(--rose); background: #fff; }
+.make-cta b { display: block; font-size: 16px; }
+.make-cta span { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); }
 .cover-media.pixel { background: #ffeef2; }
 .cover-media.pixel img { object-fit: contain; image-rendering: pixelated; }
 
