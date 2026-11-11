@@ -3,40 +3,103 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>게임 청첩장 - 게임을 깨면 열리는 픽셀 청첩장</title>
-  <meta name="description" content="신랑·신부를 픽셀 캐릭터로 만들고, 하객이 짧은 게임을 깨면 예식 정보가 열리는 모바일 청첩장.">
+  <title>픽셀 초대장 - 게임을 깨면 열리는 재밌는 초대장 만들기</title>
+  <meta name="description" content="결혼식·비혼식·이혼식·연말 모임·신년 모임·결혼 알림장·베이비샤워·기념 행사 초대장을 픽셀 캐릭터와 미니게임으로 만들어요. 가입 없이 무료.">
   <meta name="theme-color" content="#fff3f5">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
+  <link rel="preload" href="fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/invite.css">
+  <link rel="stylesheet" href="css/make.css">
   <style>
-    .hero { max-width: 420px; margin: 0 auto; padding: 40px 16px 24px; text-align: center; }
-    .hero h1 { font-size: 28px; margin: 8px 0 12px; }
-    .hero p { font-size: 16px; }
-    .points { text-align: left; font-size: 16px; padding-left: 20px; }
-    .points li { margin: 6px 0; }
-    .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-top: 24px; }
-    .card h2 { font-family: var(--serif); font-size: 18px; margin: 0 0 8px; }
-    .muted { color: var(--muted); }
-    .cta { display: flex; gap: 8px; justify-content: center; }
+    .hero { text-align: center; padding-top: 24px; }
+    .hero h1 { font-size: 26px; line-height: 1.4; margin: 6px 0 10px; }
+    .hero p { font-size: 15px; color: var(--px-muted); margin: 0 0 16px; }
+    .hero canvas { max-width: 240px; margin: 0 auto 16px; }
+    .cta { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
     .cta .btn { flex: none; padding: 12px 18px; }
+    .home-kinds { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .home-kinds a { display: block; height: 100%; text-decoration: none; color: var(--px-ink); }
+    .how { padding-left: 20px; margin: 0; font-size: 15px; }
+    .how li { margin: 6px 0; }
+    .mk-card h2 { font-family: 'Galmuri11', var(--sans); font-size: 17px; margin: 0 0 10px; }
   </style>
 </head>
-<body>
-  <main class="hero">
-    <p class="eyebrow">PIXEL GAME INVITATION</p>
-    <h1 style="font-family:var(--serif)">게임을 깨면 열리는<br>청첩장</h1>
-    <p>두 사람을 꼭 닮은 픽셀 캐릭터와 30초 미니게임.<br>하객이 웃으면서 열어보는 청첩장이에요.</p>
-    <p class="cta"><a class="btn primary" href="make.html">내 청첩장 만들기 (무료)</a> <a class="btn" href="invite.html?c=sample">샘플 보기</a></p>
-    <section class="card">
-      <h2>이렇게 만들어져요</h2>
-      <ul class="points">
-        <li>신랑·신부 캐릭터를 머리 모양, 색, 옷으로 꾸며요</li>
-        <li>게임이 끝나면 인사말, 달력, 오시는 길이 담긴 청첩장이 열려요</li>
-        <li>하객은 카톡 링크로 열고, 게임을 건너뛰고 바로 볼 수도 있어요</li>
-        <li>지도, 계좌 복사, 캘린더 추가까지 들어 있어요</li>
-      </ul>
-      <p class="muted">가입 없이 바로 만들 수 있어요. 지금은 무료 베타라서 웨딩 사진 대신 픽셀 캐릭터가 대표 그림으로 들어가요.</p>
+<body class="maker">
+  <header class="mk-head">
+    <span class="mk-home">픽셀 초대장</span>
+    <span class="mk-beta">무료 베타</span>
+  </header>
+  <main class="mk">
+    <section class="hero">
+      <p class="eyebrow">PIXEL GAME INVITATION</p>
+      <h1>게임을 깨면 열리는<br>재밌는 초대장</h1>
+      <p>나를 닮은 픽셀 캐릭터와 30초 미니게임.<br>받는 사람이 웃으면서 열어보는 초대장을 만들어요.</p>
+      <canvas id="hero" aria-label="픽셀 캐릭터 무대"></canvas>
+      <div class="cta">
+        <a class="btn primary" href="make.html">초대장 만들기 (무료)</a>
+        <a class="btn" href="invite.html?c=sample">샘플 보기</a>
+      </div>
+    </section>
+
+    <section class="mk-card">
+      <h2>이런 초대장을 만들 수 있어요</h2>
+      <ul class="home-kinds" id="kinds"></ul>
+    </section>
+
+    <section class="mk-card">
+      <h2>이렇게 만들어요</h2>
+      <ol class="how">
+        <li>초대장 종류를 고르고 이름, 날짜, 장소를 적어요</li>
+        <li>픽셀 캐릭터의 옷, 머리, 색을 꾸며요</li>
+        <li>링크를 만들어 카톡으로 보내면 끝</li>
+      </ol>
+      <p class="hint">받는 사람은 게임을 하거나 건너뛰고 초대장을 봐요. 달력, 지도, 계좌 복사, 캘린더 추가가 들어 있어요. 가입이 필요 없고, 입력한 내용은 서버에 저장되지 않아요.</p>
     </section>
   </main>
+
+  <script src="js/kinds.js"></script>
+  <script src="js/characters.js"></script>
+  <script src="js/stage.js"></script>
+  <script>
+    'use strict';
+    (function () {
+      const { KINDS, ORDER } = InviteKinds;
+      const list = document.getElementById('kinds');
+      ORDER.forEach((k, i) => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `make.html?k=${k}`;
+        a.className = 'kind';
+        a.innerHTML = `<span class="kind-no">${i + 1}</span><b></b><small></small>`;
+        a.querySelector('b').textContent = KINDS[k].name;
+        a.querySelector('small').textContent = KINDS[k].blurb;
+        li.append(a);
+        list.append(li);
+      });
+
+      // 종류가 3초마다 바뀌는 무대
+      const canvas = document.getElementById('hero');
+      const ctx = Stage.setupCanvas(canvas);
+      let idx = 0, t = 0, last = performance.now(), chars = [];
+      const show = () => {
+        const K = KINDS[ORDER[idx]];
+        Stage.setTheme(K.scene);
+        chars = K.people.map(p => PixelChars.makeCharacter(p.look));
+      };
+      show();
+      function frame(now) {
+        const dt = Math.min(0.05, (now - last) / 1000);
+        last = now; t += dt;
+        if (t > 3) { t = 0; idx = (idx + 1) % ORDER.length; show(); }
+        Stage.drawVenue(ctx, now / 300);
+        const xs = chars.length > 1 ? [58, 102] : [80];
+        const bob = Math.floor(now / 400) % 2;
+        chars.forEach((c, i) => Stage.drawSprite(ctx, (now / 1000) % 3.2 < 0.15 ? c.happy : c.stand, xs[i], Stage.FLOOR_Y + 8 - (i === bob ? 1 : 0), 2));
+        const K = KINDS[ORDER[idx]];
+        Stage.drawText(ctx, K.name, 80, 42, 12, '#e0526e');
+        requestAnimationFrame(frame);
+      }
+      Promise.race([document.fonts.load('700 12px Galmuri11'), new Promise(r => setTimeout(r, 800))]).catch(() => {}).then(() => requestAnimationFrame(frame));
+    })();
+  </script>
 </body>
 </html>

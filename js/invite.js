@@ -21,17 +21,26 @@
       if (!res.ok) throw new Error(res.status);
       cfg = await res.json();
     }
-    if (!cfg || !cfg.groom || !cfg.bride || !cfg.date || isNaN(new Date(cfg.date))) throw new Error('설정 오류');
+    if (!cfg || !cfg.groom || !cfg.groom.name || !cfg.date || isNaN(new Date(cfg.date))) throw new Error('설정 오류');
     cfg.venue = cfg.venue || {};
   } catch (e) {
-    document.body.innerHTML = '<p style="padding:24px;font-family:sans-serif">청첩장을 찾을 수 없어요. 주소를 다시 확인해 주세요.</p>';
+    document.body.innerHTML = '<p style="padding:24px;font-family:sans-serif">초대장을 찾을 수 없어요. 주소를 다시 확인해 주세요.</p>';
     return;
   }
 
+  // 종류(결혼식·비혼식·연말 모임 …)
+  const K = InviteKinds.get(cfg.kind);
+  Stage.setTheme(K.scene);
+  const two = K.people.length > 1 && !!(cfg.bride && cfg.bride.name);
+  cfg.bride = two ? cfg.bride : null;
+  const DOC = cfg.kind === 'notice' ? '알림장' : (cfg.kind && cfg.kind !== 'wedding' ? '초대장' : '청첩장');
+  document.querySelectorAll('.docname').forEach(e => { e.textContent = DOC; });
   const chars = {
-    groom: PixelChars.makeCharacter(cfg.groom.look || { outfit: 'tux' }),
-    bride: PixelChars.makeCharacter(cfg.bride.look || { outfit: 'dress', hair: 'long', veil: true }),
+    groom: PixelChars.makeCharacter(cfg.groom.look || K.people[0].look),
+    bride: two ? PixelChars.makeCharacter(cfg.bride.look || K.people[1].look) : null,
   };
+  // 한 사람 초대장에서는 친구 캐릭터가 게임 소품을 던진다
+  chars.thrower = chars.bride || PixelChars.makeCharacter({ outfit: 'casual', hair: 'bun', hairColor: 3, color: 1, skin: 1 });
   const when = new Date(cfg.date);
   const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
   const pad = n => String(n).padStart(2, '0');
@@ -42,10 +51,12 @@
   };
   const W = kst(when);
   const dateText = `${W.y}년 ${W.m}월 ${W.d}일 ${WEEK[W.wd]}요일`;
-  const timeText = `${W.h < 12 ? '오전' : '오후'} ${W.h % 12 || 12}시${W.mi ? ' ' + W.mi + '분' : ''}`;
+  const timeText = cfg.noTime ? '' : `${W.h < 12 ? '오전' : '오후'} ${W.h % 12 || 12}시${W.mi ? ' ' + W.mi + '분' : ''}`;
   const gShort = cfg.groom.short || cfg.groom.name;
-  const bShort = cfg.bride.short || cfg.bride.name;
-  document.title = `${gShort} ♥ ${bShort} 결혼합니다`;
+  const bShort = two ? (cfg.bride.short || cfg.bride.name) : '';
+  const namesText = two ? `${gShort} ♥ ${bShort}` : gShort;
+  const headline = K.title && cfg.title ? cfg.title : namesText;
+  document.title = InviteKinds.fill(K.pageTitle, { names: namesText, title: headline });
 
   // ── 예식 정보 채우기
   fillInfo();
@@ -57,8 +68,8 @@
   const hearts = [];
   let bestKey = `pi-best-${linkCode ? linkCode.slice(-16) : code}`;
 
-  $('stageNames').textContent = `${gShort} ♥ ${bShort}`;
-  $('stageWhen').textContent = `${W.m}월 ${W.d}일 ${WEEK[W.wd]}요일 ${timeText}`;
+  $('stageNames').textContent = headline;
+  $('stageWhen').textContent = `${W.m}월 ${W.d}일 ${WEEK[W.wd]}요일 ${timeText}`.trim();
 
   // 청첩장 본문은 버튼을 눌러야 열린다(스크롤로는 안 보임)
   const stageEl = $('stage'), infoEl = $('info');
@@ -88,7 +99,7 @@
   const startGame = () => {
     $('stageUi').hidden = true;
     $('resultUi').hidden = true;
-    game = new BouquetGame(chars, endGame);
+    game = new BouquetGame({ groom: chars.groom, bride: chars.thrower }, endGame, K.game);
     mode = 'game';
   };
   function endGame(score, cleared) {
@@ -96,7 +107,7 @@
     let best = 0;
     try { best = Number(localStorage.getItem(bestKey)) || 0; } catch (e) { /* 저장 안 돼도 진행 */ }
     if (score > best) { best = score; try { localStorage.setItem(bestKey, String(score)); } catch (e) { /* 무시 */ } }
-    $('resultTitle').textContent = cleared ? '클리어! 축하해 줘서 고마워요' : '수고했어요! 청첩장이 열렸어요';
+    $('resultTitle').textContent = cleared ? '클리어! 와 줘서 고마워요' : `수고했어요! ${DOC}이 열렸어요`;
     $('resultScore').textContent = `점수 ${score}점 · 받은 선물 ${game.caught}개 · 내 최고 ${best}점`;
     $('resultUi').hidden = false;
   }
@@ -144,12 +155,16 @@
     const walking = t < WALK;
     const bob = walking ? Math.floor(t * 8) % 2 : 0;
     const blink = !walking && (t % 3.2) < 0.15;
-    const gx = -20 + (58 - -20) * k;
-    const bx = 180 + (102 - 180) * k;
-    const gImg = blink || (!walking && t % 6 > 5) ? chars.groom.happy : chars.groom.stand;
-    const bImg = blink || (!walking && t % 6 > 5) ? chars.bride.happy : chars.bride.stand;
-    Stage.drawSprite(ctx, gImg, gx, Stage.FLOOR_Y + 8 - bob, 2);
-    Stage.drawSprite(ctx, bImg, bx, Stage.FLOOR_Y + 8 - bob, 2);
+    const smile = blink || (!walking && t % 6 > 5);
+    if (two) {
+      const gx = -20 + (58 - -20) * k;
+      const bx = 180 + (102 - 180) * k;
+      Stage.drawSprite(ctx, smile ? chars.groom.happy : chars.groom.stand, gx, Stage.FLOOR_Y + 8 - bob, 2);
+      Stage.drawSprite(ctx, smile ? chars.bride.happy : chars.bride.stand, bx, Stage.FLOOR_Y + 8 - bob, 2);
+    } else {
+      const gx = -20 + (80 - -20) * k;
+      Stage.drawSprite(ctx, smile ? chars.groom.happy : chars.groom.stand, gx, Stage.FLOOR_Y + 8 - bob, 2);
+    }
 
     if (!walking) {
       if (Math.random() < dt * 1.6) hearts.push({ x: 80 + (Math.random() - 0.5) * 20, y: 120, life: 2 });
@@ -162,7 +177,7 @@
       }
       const a = Math.min(1, (t - WALK) * 2);
       ctx.globalAlpha = a;
-      Stage.drawText(ctx, '저희 결혼합니다', 80, 42, 13, '#e0526e');
+      Stage.drawText(ctx, K.stage, 80, 42, K.stage.length > 9 ? 11 : 13, '#e0526e');
       ctx.globalAlpha = 1;
       if (mode === 'opening' && t > WALK + 0.4) showMenu();
     }
@@ -209,25 +224,36 @@
       media.append(v);
     } else if (cover.src) {
       const img = el('img');
-      img.src = src(cover.src); img.alt = `${gShort}와 ${bShort}의 웨딩 사진`;
+      img.src = src(cover.src); img.alt = `${namesText} 대표 사진`;
       media.append(img);
     } else {
       drawPixelCover(media);
     }
-    $('cGroom').textContent = gShort;
-    $('cBride').textContent = bShort;
-    $('coverDate').textContent = `${dateText} ${timeText}`;
-    $('coverVenue').textContent = cfg.venue.name;
+    $('coverEyebrow').textContent = K.eyebrow;
+    if (two) {
+      $('cGroom').textContent = gShort;
+      $('cJoin').textContent = K.joiner;
+      $('cBride').textContent = bShort;
+    } else {
+      $('cGroom').textContent = headline;
+      $('cJoin').remove();
+      $('cBride').remove();
+    }
+    $('coverDate').textContent = `${dateText} ${timeText}`.trim();
+    $('coverVenue').textContent = K.title && cfg.title ? `${cfg.venue.name || ''}${cfg.venue.name ? ' · ' : ''}${gShort}` : (cfg.venue.name || '');
 
     // 인사말과 혼주
+    $('inviteHead').textContent = K.inviteHead;
     $('greeting').textContent = cfg.greeting || '';
     const parentLine = (id, who) => {
       if (!who.parents) return;
       const p = $(id);
       p.append(document.createTextNode(who.parents), el('b', '', who.short || who.name));
     };
-    parentLine('groomParents', cfg.groom);
-    parentLine('brideParents', cfg.bride);
+    if (K.parents) {
+      parentLine('groomParents', cfg.groom);
+      if (two) parentLine('brideParents', cfg.bride);
+    }
 
     // 달력
     $('calTitle').textContent = `${W.y}. ${pad(W.m)}`;
@@ -243,8 +269,15 @@
     const N = kst(new Date());
     const days = Math.round((Date.UTC(W.y, W.m - 1, W.d) - Date.UTC(N.y, N.m - 1, N.d)) / 864e5);
     const dl = $('ddayLine');
-    if (days > 0) dl.append(`${gShort} ♥ ${bShort}의 결혼식이 `, el('b', '', `${days}일`), ' 남았어요');
-    else dl.textContent = days === 0 ? '오늘, 결혼합니다' : '함께해 주셔서 감사합니다';
+    // "{n}" 자리만 굵게
+    const ddayText = (tpl, n) => {
+      const parts = InviteKinds.fill(tpl, { names: namesText, title: headline, n: '\u0000' }).split('\u0000');
+      dl.append(parts[0]);
+      if (parts.length > 1) dl.append(el('b', '', n), parts[1]);
+    };
+    if (days > 0) ddayText(K.ddayBefore, `${days}일`);
+    else if (days === 0) ddayText(K.ddayToday);
+    else ddayText(K.ddayAfter, `${1 - days}일`);
 
     // 사진첩
     const photos = (cfg.gallery || []).map(src);
@@ -261,8 +294,9 @@
     });
     if (!photos.length) $('gallerySec').hidden = true;
 
-    // 오시는 길
-    $('venueName').textContent = cfg.venue.name;
+    // 오시는 길(장소가 없으면 숨김)
+    if (!cfg.venue.name && !cfg.venue.address) $('locSec').hidden = true;
+    $('venueName').textContent = cfg.venue.name || '';
     $('venueAddress').textContent = cfg.venue.address;
     const q = encodeURIComponent(cfg.venue.address || cfg.venue.name);
     $('naverMap').href = `https://map.naver.com/p/search/${q}`;
@@ -275,6 +309,7 @@
     if (!guide.children.length) guide.hidden = true;
 
     // 계좌: 신랑 측 / 신부 측 접기
+    $('accNote').textContent = K.accountNote;
     const acc = $('accounts');
     const sides = {};
     (cfg.accounts || []).forEach(a => { (sides[a.side] = sides[a.side] || []).push(a); });
@@ -296,7 +331,8 @@
     if (!acc.children.length) $('accountSec').hidden = true;
 
     const contacts = $('contacts');
-    [['신랑에게 연락', cfg.groom.phone], ['신부에게 연락', cfg.bride.phone]].forEach(([label, tel]) => {
+    const callLabel = i => (two ? `${K.people[i].label}에게 연락` : '전화하기');
+    [[callLabel(0), cfg.groom.phone], [callLabel(1), two && cfg.bride.phone]].forEach(([label, tel]) => {
       if (!tel) return;
       const a = el('a', 'lbtn', label);
       a.href = `tel:${tel.replace(/[^0-9+]/g, '')}`;
@@ -306,10 +342,11 @@
 
     $('calBtn').addEventListener('click', downloadIcs);
     $('shareBtn').addEventListener('click', async () => {
-      const data = { title: document.title, text: `${dateText} ${timeText}, ${cfg.venue.name}`, url: location.href };
+      const data = { title: document.title, text: [`${dateText} ${timeText}`.trim(), cfg.venue.name].filter(Boolean).join(', '), url: location.href };
       if (navigator.share) { try { await navigator.share(data); return; } catch (e) { /* 취소 */ } }
-      copy(location.href, '청첩장 주소를 복사했어요');
+      copy(location.href, `${DOC} 주소를 복사했어요`);
     });
+    $('makeLink').href = `make.html?k=${cfg.kind || 'wedding'}`;
     $('replayBtn').addEventListener('click', () => {
       backToStage();
       startGame();
@@ -326,12 +363,16 @@
     g.setTransform(S, 0, 0, S, 0, 0);
     g.imageSmoothingEnabled = false;
     Stage.drawVenue(g, 0);
-    Stage.drawSprite(g, chars.groom.happy, 58, Stage.FLOOR_Y + 8, 2);
-    Stage.drawSprite(g, chars.bride.happy, 102, Stage.FLOOR_Y + 8, 2);
+    if (two) {
+      Stage.drawSprite(g, chars.groom.happy, 58, Stage.FLOOR_Y + 8, 2);
+      Stage.drawSprite(g, chars.bride.happy, 102, Stage.FLOOR_Y + 8, 2);
+    } else {
+      Stage.drawSprite(g, chars.groom.happy, 80, Stage.FLOOR_Y + 8, 2);
+    }
     [[70, 112], [84, 98], [92, 118], [62, 92], [100, 88]].forEach(([x, y]) => g.drawImage(PixelChars.PROPS.heart, x, y));
     const img = document.createElement('img');
     img.src = c.toDataURL('image/png');
-    img.alt = `${gShort}와 ${bShort}의 픽셀 캐릭터`;
+    img.alt = `${namesText} 픽셀 캐릭터`;
     media.append(img);
   }
 
@@ -376,13 +417,13 @@
       'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//pixel-invite//KO', 'BEGIN:VEVENT',
       `UID:${code}-${when.getTime()}@pixel-invite`, `DTSTAMP:${z(new Date())}`,
       `DTSTART:${z(when)}`, `DTEND:${z(end)}`,
-      `SUMMARY:${cfg.groom.name} ♥ ${cfg.bride.name} 결혼식`,
-      `LOCATION:${cfg.venue.name} (${cfg.venue.address})`,
+      `SUMMARY:${document.title}`,
+      `LOCATION:${[cfg.venue.name, cfg.venue.address].filter(Boolean).join(' ')}`,
       'END:VEVENT', 'END:VCALENDAR',
     ].join('\r\n');
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
-    a.download = 'wedding.ics';
+    a.download = 'invite.ics';
     a.click();
   }
 
