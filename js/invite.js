@@ -6,13 +6,23 @@
   const canvas = $('screen');
   const ctx = Stage.setupCanvas(canvas);
 
-  // ── 설정 읽기: invite.html?c=<이름> → invites/<이름>.json
-  const code = (new URLSearchParams(location.search).get('c') || 'sample').replace(/[^a-z0-9_-]/gi, '');
+  // ── 설정 읽기
+  //   invite.html?d=<링크 코드>  만들기 화면에서 만든 청첩장(내용이 주소 안에 들어 있음)
+  //   invite.html?c=<이름>      invites/<이름>.json
+  const params = new URLSearchParams(location.search);
+  const linkCode = params.get('d');
+  const code = linkCode ? 'link' : (params.get('c') || 'sample').replace(/[^a-z0-9_-]/gi, '');
   let cfg;
   try {
-    const res = await fetch(`invites/${code}.json`, { cache: 'no-cache' });
-    if (!res.ok) throw new Error(res.status);
-    cfg = await res.json();
+    if (linkCode) {
+      cfg = await InviteCode.decode(linkCode);
+    } else {
+      const res = await fetch(`invites/${code}.json`, { cache: 'no-cache' });
+      if (!res.ok) throw new Error(res.status);
+      cfg = await res.json();
+    }
+    if (!cfg || !cfg.groom || !cfg.bride || !cfg.date || isNaN(new Date(cfg.date))) throw new Error('설정 오류');
+    cfg.venue = cfg.venue || {};
   } catch (e) {
     document.body.innerHTML = '<p style="padding:24px;font-family:sans-serif">청첩장을 찾을 수 없어요. 주소를 다시 확인해 주세요.</p>';
     return;
@@ -45,7 +55,7 @@
   let t = 0;
   let game = null;
   const hearts = [];
-  let bestKey = `pi-best-${code}`;
+  let bestKey = `pi-best-${linkCode ? linkCode.slice(-16) : code}`;
 
   $('stageNames').textContent = `${gShort} ♥ ${bShort}`;
   $('stageWhen').textContent = `${W.m}월 ${W.d}일 ${WEEK[W.wd]}요일 ${timeText}`;
@@ -202,7 +212,7 @@
       img.src = src(cover.src); img.alt = `${gShort}와 ${bShort}의 웨딩 사진`;
       media.append(img);
     } else {
-      media.hidden = true;
+      drawPixelCover(media);
     }
     $('cGroom').textContent = gShort;
     $('cBride').textContent = bShort;
@@ -304,6 +314,25 @@
       backToStage();
       startGame();
     });
+  }
+
+  // 사진이 없으면 픽셀 신랑·신부 그림을 대표 사진 자리에 둔다
+  function drawPixelCover(media) {
+    media.classList.add('pixel');
+    const S = 4;
+    const c = document.createElement('canvas');
+    c.width = Stage.LW * S; c.height = Stage.LH * S;
+    const g = c.getContext('2d');
+    g.setTransform(S, 0, 0, S, 0, 0);
+    g.imageSmoothingEnabled = false;
+    Stage.drawVenue(g, 0);
+    Stage.drawSprite(g, chars.groom.happy, 58, Stage.FLOOR_Y + 8, 2);
+    Stage.drawSprite(g, chars.bride.happy, 102, Stage.FLOOR_Y + 8, 2);
+    [[70, 112], [84, 98], [92, 118], [62, 92], [100, 88]].forEach(([x, y]) => g.drawImage(PixelChars.PROPS.heart, x, y));
+    const img = document.createElement('img');
+    img.src = c.toDataURL('image/png');
+    img.alt = `${gShort}와 ${bShort}의 픽셀 캐릭터`;
+    media.append(img);
   }
 
   // ── 사진 크게 보기(좌우로 넘기기)

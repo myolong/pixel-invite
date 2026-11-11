@@ -107,6 +107,10 @@ canvas { display: block; width: 100%; height: auto; border-radius: 16px; touch-a
 .actions { display: flex; flex-direction: column; gap: 8px; max-width: 320px; margin-left: auto; margin-right: auto; }
 .actions .lbtn { padding: 13px; font-size: 15px; }
 .foot { text-align: center; color: var(--muted); font-size: 12px; padding-top: 24px; }
+.foot p { margin: 4px 0; }
+.make-link { color: var(--rose); font-size: 13px; }
+.cover-media.pixel { background: #ffeef2; }
+.cover-media.pixel img { object-fit: contain; image-rendering: pixelated; }
 
 /* 사진 크게 보기 */
 .lightbox { position: fixed; inset: 0; z-index: 20; background: rgba(20, 16, 15, .94); display: flex; align-items: center; justify-content: center; touch-action: pan-y; }
