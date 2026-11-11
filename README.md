@@ -24,6 +24,8 @@
 
 - `js/face-crop.js` 사진 얼굴: 사진에서 얼굴을 자동으로 찾아(MediaPipe Face Detector, 처음 쓸 때 jsdelivr·Google 저장소에서 받음) 72px 동그란 얼굴로 오려요. 사진은 기기 안에서만 처리하고, 오린 얼굴(몇 KB)만 링크(`look.face`)에 들어가요. 캐릭터는 얼굴이 있으면 픽셀 머리 대신 이 얼굴을 그려요.
 
+- `js/rsvp.js`, `supabase/rsvp.sql` 참석 여부(RSVP). Supabase에 `rsvp.sql`을 한 번 실행해 두고, `js/rsvp.js`에 Project URL과 공개(publishable) 키를 적어요. 비워 두면 기능이 꺼져요. 초대장 링크에는 초대장 번호만, 수정용 링크에는 만든 사람 열쇠(`rsvpKey`)도 들어가요. 연말·신년 모임(`rsvpPublic`)은 받은 사람 모두가 명단을 보고, 나머지는 수정용 링크로만 봐요.
+
 글꼴: Galmuri(SIL Open Font License 1.1, `fonts/LICENSE.txt`)
 
 ## 예시 사진·화면 캡처

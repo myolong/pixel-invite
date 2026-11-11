@@ -347,6 +347,8 @@
     });
     if (!contacts.children.length) $('contactSec').hidden = true;
 
+    setupRsvp(el);
+
     $('calBtn').addEventListener('click', downloadIcs);
     $('shareBtn').addEventListener('click', async () => {
       const data = { title: document.title, text: [`${dateText} ${timeText}`.trim(), cfg.venue.name].filter(Boolean).join(', '), url: location.href };
@@ -435,6 +437,88 @@
     a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
     a.download = 'invite.ics';
     a.click();
+  }
+
+  // ───────── 참석 여부 ─────────
+  function setupRsvp(el) {
+    const R = cfg.rsvp;
+    const sample = !!cfg.sample;
+    if (!R || !(sample || (window.Rsvp && Rsvp.enabled && Rsvp.validId(R.id)))) return;
+    const pub = !!R.pub;
+    $('rsvpSec').hidden = false;
+    $('rsvpNote').textContent = pub
+      ? '참석 여부를 알려 주세요. 보낸 응답은 이 초대장을 받은 사람 모두가 볼 수 있어요.'
+      : '참석 여부를 알려 주세요. 응답은 초대장을 만든 사람만 볼 수 있어요.';
+    const sel = $('rsvpPeople');
+    for (let n = 1; n <= 10; n++) sel.add(new Option(`${n}명`, n));
+    const store = `pi-rsvp-${R.id}`;
+    let attend = null;
+    const pick = v => {
+      attend = v;
+      document.querySelectorAll('[data-attend]').forEach(b => {
+        const on = b.dataset.attend === (v ? '1' : '0');
+        b.classList.toggle('solid', on); b.setAttribute('aria-pressed', on);
+      });
+      $('rsvpPeopleRow').hidden = !v;
+    };
+    document.querySelectorAll('[data-attend]').forEach(b => b.addEventListener('click', () => pick(b.dataset.attend === '1')));
+    $('rsvpPeopleRow').hidden = true;
+
+    const showDone = a => {
+      $('rsvpForm').hidden = true;
+      $('rsvpDone').hidden = false;
+      $('rsvpDoneText').textContent = a.attend ? `${a.name} 님, ${a.people}명 참석으로 전했어요.` : `${a.name} 님, 불참으로 전했어요.`;
+    };
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(store) || 'null'); } catch (e) { /* 없음 */ }
+    if (saved && saved.name) {
+      $('rsvpName').value = saved.name; $('rsvpMsg').value = saved.note || ''; sel.value = saved.people || 1; pick(!!saved.attend);
+      showDone(saved);
+    }
+    $('rsvpEdit').addEventListener('click', () => { $('rsvpForm').hidden = false; $('rsvpDone').hidden = true; });
+
+    const renderList = rows => {
+      const box = $('rsvpList');
+      box.innerHTML = '';
+      const yes = rows.filter(r => r.attend), no = rows.filter(r => !r.attend);
+      const total = yes.reduce((s, r) => s + (r.people || 1), 0);
+      box.append(el('p', 'rsvp-sum', `참석 ${total}명 · 불참 ${no.length}명`));
+      const list = el('ul');
+      yes.concat(no).forEach(r => {
+        const li = el('li', r.attend ? 'yes' : 'no');
+        li.append(el('b', '', r.name), el('span', '', r.attend ? `참석 ${r.people}명` : '불참'));
+        if (r.note) li.append(el('small', '', r.note));
+        list.append(li);
+      });
+      if (rows.length) box.append(list);
+      box.hidden = false;
+    };
+    const loadList = async () => {
+      if (!pub) return;
+      if (sample) { renderList([{ name: '예시 친구', attend: true, people: 2, note: '꼭 갈게요!' }, { name: '예시 동료', attend: false, people: 0, note: '' }]); return; }
+      try { renderList(await Rsvp.list(R.id)); } catch (e) { /* 명단은 못 불러와도 응답은 가능 */ }
+    };
+    loadList();
+
+    $('rsvpSend').addEventListener('click', async () => {
+      const name = $('rsvpName').value.trim();
+      if (attend === null) { toast('참석 또는 못 가요를 골라 주세요'); return; }
+      if (!name) { toast('이름을 적어 주세요'); $('rsvpName').focus(); return; }
+      const a = { name, attend, people: attend ? +sel.value : 0, note: $('rsvpMsg').value.trim() };
+      if (sample) { toast('예시 초대장이라 저장되지 않아요'); showDone(a); return; }
+      const btn = $('rsvpSend');
+      btn.disabled = true;
+      try {
+        const ok = await Rsvp.submit(R.id, a);
+        if (!ok) throw new Error('rejected');
+        try { localStorage.setItem(store, JSON.stringify(a)); } catch (e) { /* 무시 */ }
+        showDone(a);
+        toast('응답을 보냈어요');
+        loadList();
+      } catch (e) {
+        toast('보내지 못했어요. 잠시 뒤 다시 해 주세요');
+      } finally { btn.disabled = false; }
+    });
   }
 
   async function copy(text, msg) {

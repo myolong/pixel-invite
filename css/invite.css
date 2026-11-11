@@ -130,3 +130,21 @@ canvas { display: block; width: 100%; height: auto; border-radius: 16px; touch-a
   opacity: 0; pointer-events: none; transition: .2s;
 }
 .toast.show { opacity: 1; transform: translateX(-50%); }
+
+/* 참석 여부 */
+.rsvp { display: grid; gap: 10px; text-align: left; }
+.rsvp-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rsvp-pick .lbtn { padding: 12px; font-size: 15px; }
+.rsvp input, .rsvp select { width: 100%; box-sizing: border-box; font: inherit; font-size: 15px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); }
+.rsvp-people { display: grid; gap: 6px; font-size: 14px; color: var(--muted); }
+.rsvp[hidden], .rsvp [hidden], .rsvp-done[hidden], .rsvp-list[hidden], .rsvp-people[hidden] { display: none; }
+.rsvp-done { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.rsvp-done p { margin: 0 0 10px; }
+.rsvp-list { margin-top: 18px; text-align: left; }
+.rsvp-sum { font-weight: 700; text-align: center; margin: 0 0 10px; }
+.rsvp-list ul { list-style: none; margin: 0; padding: 0; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
+.rsvp-list li { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding: 10px 14px; border-top: 1px solid var(--line); font-size: 14px; }
+.rsvp-list li:first-child { border-top: 0; }
+.rsvp-list li span { color: var(--muted); }
+.rsvp-list li.no b { color: var(--muted); font-weight: 500; }
+.rsvp-list li small { grid-column: 1 / -1; color: var(--muted); }

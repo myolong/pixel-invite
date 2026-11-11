@@ -71,7 +71,7 @@
       when: '일시', place: '장소', placeHint: '○○고깃집 단체석',
       ddayAfter: '함께해 주셔서 고마워요', ddayToday: '오늘 만나요!',
       ddayBefore: '모임까지 {n} 남았어요',
-      accountSides: ['회비'], accountAmount: true, accountNote: '회비는 아래 계좌로 보내 주세요.',
+      accountSides: ['회비'], accountAmount: true, rsvpPublic: true, accountNote: '회비는 아래 계좌로 보내 주세요.',
       scene: 'winter', game: { good: 'gift', goodName: '선물', hint: '선물 상자를 받아 주세요!' },
       greetings: [
         '올 한 해도 정말 수고 많았어요.\n\n맛있는 거 먹으면서\n한 해를 웃으며 마무리해요.\n얼굴 보는 것만으로도 충분해요!',
@@ -88,7 +88,7 @@
       when: '일시', place: '장소', placeHint: '○○한정식 2층',
       ddayAfter: '함께해 주셔서 고마워요', ddayToday: '오늘 만나요!',
       ddayBefore: '모임까지 {n} 남았어요',
-      accountSides: ['회비'], accountAmount: true, accountNote: '회비는 아래 계좌로 보내 주세요.',
+      accountSides: ['회비'], accountAmount: true, rsvpPublic: true, accountNote: '회비는 아래 계좌로 보내 주세요.',
       scene: 'newyear', game: { good: 'pouch', goodName: '복주머니', hint: '복주머니를 받아 주세요!' },
       greetings: [
         '새해 복 많이 받으세요!\n\n올해도 건강하고\n좋은 일만 가득하길 바라며\n새해 첫 모임에 초대합니다.',
@@ -227,6 +227,7 @@
     c.greeting = K.greetings[0];
     c.base = `invites/examples/${k}/`;
     c.gallery = [1, 2, 3, 4, 5, 6].map(i => `p${i}.png`);
+    c.rsvp = { id: 'sample', pub: !!K.rsvpPublic };
     c.groom.look = K.people[0].look;
     if (c.bride && K.people[1]) c.bride.look = K.people[1].look;
     return c;

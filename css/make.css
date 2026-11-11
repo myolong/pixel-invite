@@ -91,3 +91,16 @@ body.maker { background: var(--px-bg); color: var(--px-ink); font-family: var(--
 .fc-tip { margin: 8px 0 0; font-size: 12px; color: var(--px-muted); line-height: 1.5; }
 .fc-zoom { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; margin: 10px 0 12px; }
 .fc-zoom input { flex: 1; margin: 0; padding: 0; }
+
+/* 참석 여부 */
+.mk label.check { display: flex; flex-direction: row; align-items: center; gap: 8px; font-weight: 600; }
+.mk .check input { width: 20px; height: 20px; margin: 0; padding: 0; flex: none; }
+.rsvp-admin h2 { margin-top: 0; }
+.rsvp-sum { font-weight: 700; margin: 0 0 10px; }
+.rsvp-rows { list-style: none; margin: 0; padding: 0; border: 1.5px solid #ecdde2; border-radius: 10px; }
+.rsvp-rows:empty { display: none; }
+.rsvp-rows li { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding: 10px 12px; border-top: 1px solid #ecdde2; font-size: 14px; }
+.rsvp-rows li:first-child { border-top: 0; }
+.rsvp-rows li span { color: var(--px-muted); }
+.rsvp-rows li.no b { color: var(--px-muted); font-weight: 500; }
+.rsvp-rows li small { grid-column: 1 / -1; color: var(--px-muted); }
