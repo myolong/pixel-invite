@@ -183,23 +183,37 @@
   // ── 오프닝 장면
   const WALK = 1.8;
   const ease = k => 1 - Math.pow(1 - Math.min(1, k), 3);
+  // 춤: 2.4초에 한 바퀴(좌우로 들썩 → 빙글 → 폴짝). 두 사람은 거울처럼 마주 춘다.
+  function dancePose(tt, i) {
+    const beat = Math.floor(tt / 0.3) % 8, f = (tt % 0.3) / 0.3, side = i ? -1 : 1;
+    if (beat < 4) {
+      const dx = side * (beat < 2 ? -3 : 3);
+      return { dx, dy: f < 0.5 ? -3 : 0, flip: dx < 0, happy: false };
+    }
+    if (beat < 6) return { dx: 0, dy: 0, flip: Math.floor(tt / 0.1) % 2 === 1, happy: false };
+    return { dx: 0, dy: -Math.round(Math.sin(f * Math.PI) * 9), flip: false, happy: true };
+  }
+  function drawDancers(g, tt) {
+    const list = two ? [[chars.groom, Stage.PAIR_X[0]], [chars.bride, Stage.PAIR_X[1]]] : [[chars.groom, 80]];
+    list.forEach(([c, x], i) => {
+      const d = dancePose(tt, i);
+      Stage.drawSprite(g, d.happy ? c.happy : c.stand, x + d.dx, Stage.FLOOR_Y + 8 + d.dy, Stage.CHAR_SCALE, d.flip);
+    });
+  }
   function drawOpening(dt) {
     t += dt;
     Stage.drawVenue(ctx, t * 3);
     const k = ease(t / WALK);
     const walking = t < WALK;
     const bob = walking ? Math.floor(t * 8) % 2 : 0;
-    const blink = !walking && (t % 3.2) < 0.15;
-    const smile = blink || (!walking && t % 6 > 5);
-    if (two) {
-      const gx = -30 + (Stage.PAIR_X[0] + 30) * k;
-      const bx = 190 + (Stage.PAIR_X[1] - 190) * k;
-      Stage.drawSprite(ctx, smile ? chars.groom.happy : chars.groom.stand, gx, Stage.FLOOR_Y + 8 - bob, Stage.CHAR_SCALE);
-      Stage.drawSprite(ctx, smile ? chars.bride.happy : chars.bride.stand, bx, Stage.FLOOR_Y + 8 - bob, Stage.CHAR_SCALE);
-    } else {
-      const gx = -30 + (80 + 30) * k;
-      Stage.drawSprite(ctx, smile ? chars.groom.happy : chars.groom.stand, gx, Stage.FLOOR_Y + 8 - bob, Stage.CHAR_SCALE);
-    }
+    if (walking) {
+      if (two) {
+        Stage.drawSprite(ctx, chars.groom.stand, -30 + (Stage.PAIR_X[0] + 30) * k, Stage.FLOOR_Y + 8 - bob, Stage.CHAR_SCALE);
+        Stage.drawSprite(ctx, chars.bride.stand, 190 + (Stage.PAIR_X[1] - 190) * k, Stage.FLOOR_Y + 8 - bob, Stage.CHAR_SCALE);
+      } else {
+        Stage.drawSprite(ctx, chars.groom.stand, -30 + (80 + 30) * k, Stage.FLOOR_Y + 8 - bob, Stage.CHAR_SCALE);
+      }
+    } else drawDancers(ctx, t - WALK);
 
     if (!walking) {
       if (Math.random() < dt * 1.6) hearts.push({ x: 80 + (Math.random() - 0.5) * 20, y: 96, life: 2 });
@@ -406,21 +420,24 @@
     const S = 4;
     const c = document.createElement('canvas');
     c.width = Stage.LW * S; c.height = Stage.LH * S;
+    c.setAttribute('role', 'img');
+    c.setAttribute('aria-label', `${namesText} 픽셀 캐릭터`);
     const g = c.getContext('2d');
     g.setTransform(S, 0, 0, S, 0, 0);
     g.imageSmoothingEnabled = false;
-    Stage.drawVenue(g, 0);
-    if (two) {
-      Stage.drawSprite(g, chars.groom.happy, Stage.PAIR_X[0], Stage.FLOOR_Y + 8, Stage.CHAR_SCALE);
-      Stage.drawSprite(g, chars.bride.happy, Stage.PAIR_X[1], Stage.FLOOR_Y + 8, Stage.CHAR_SCALE);
-    } else {
-      Stage.drawSprite(g, chars.groom.happy, 80, Stage.FLOOR_Y + 8, Stage.CHAR_SCALE);
-    }
-    [[70, 82], [84, 68], [92, 88], [62, 62], [100, 58]].forEach(([x, y]) => g.drawImage(PixelChars.PROPS.heart, x, y));
-    const img = document.createElement('img');
-    img.src = c.toDataURL('image/png');
-    img.alt = `${namesText} 픽셀 캐릭터`;
-    media.append(img);
+    media.append(c);
+    // 화면에 보일 때만 춤을 그린다
+    let seen = true, t0 = performance.now();
+    if ('IntersectionObserver' in window) new IntersectionObserver(es => { seen = es[0].isIntersecting; }).observe(c);
+    const paint = now => {
+      if (seen) {
+        Stage.drawVenue(g, (now - t0) / 1000 * 3);
+        drawDancers(g, (now - t0) / 1000);
+        [[70, 82], [84, 68], [92, 88], [62, 62], [100, 58]].forEach(([x, y], i) => g.drawImage(PixelChars.PROPS.heart, x, y + Math.round(Math.sin((now - t0) / 400 + i) * 2)));
+      }
+      requestAnimationFrame(paint);
+    };
+    requestAnimationFrame(paint);
   }
 
   // ── 사진 크게 보기(좌우로 넘기기)
