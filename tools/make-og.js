@@ -4,6 +4,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
+const { makeHomeOg } = require('./og-home');
 const ROOT = path.join(__dirname, '..');
 const SITE = 'https://myolong.github.io/pixel-invite/';
 const TITLES = {
@@ -39,6 +40,7 @@ const DESC = '작은 게임을 깨면 열려요. 눌러서 열어 보세요!';
     await p.waitForTimeout(700);
     await p.locator('#og').screenshot({ path: path.join(ROOT, `assets/og/${k}.png`) });
   }
+  await makeHomeOg(p, path.join(ROOT, 'assets/og/home.png'));
   await b.close();
 
   // 2) 종류별 입구 파일: invite.html과 같고 <head>의 제목·미리보기 정보만 다르다
