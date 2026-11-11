@@ -82,7 +82,10 @@
   const gated = InviteKinds.gated(cfg.kind);
   const clearKey = `pi-clear-${linkTag}`, failKey = `pi-fail-${linkTag}`;
   const store = (k, v) => { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { /* 저장 안 돼도 진행 */ } return null; };
-  let unlocked = !gated || store(clearKey) === '1';
+  // #cal: 카톡 안에서 '휴대폰 캘린더'를 눌러 바깥 브라우저로 넘어온 경우. 이미 게임을 깨고 누른 버튼이라 잠금 없이 바로 캘린더로.
+  const fromCal = location.hash === '#cal';
+  let unlocked = !gated || fromCal || store(clearKey) === '1';
+  if (fromCal && gated) store(clearKey, '1');
   let fails = Number(store(failKey)) || 0;
   const applyGate = () => {
     $('skipBtn').hidden = !unlocked;
