@@ -71,7 +71,7 @@
       when: '일시', place: '장소', placeHint: '○○고깃집 단체석',
       ddayAfter: '함께해 주셔서 고마워요', ddayToday: '오늘 만나요!',
       ddayBefore: '모임까지 {n} 남았어요',
-      accountSides: ['회비'], accountNote: '회비는 아래 계좌로 보내 주세요.',
+      accountSides: ['회비'], accountAmount: true, accountNote: '회비는 아래 계좌로 보내 주세요.',
       scene: 'winter', game: { good: 'gift', goodName: '선물', hint: '선물 상자를 받아 주세요!' },
       greetings: [
         '올 한 해도 정말 수고 많았어요.\n\n맛있는 거 먹으면서\n한 해를 웃으며 마무리해요.\n얼굴 보는 것만으로도 충분해요!',
@@ -88,7 +88,7 @@
       when: '일시', place: '장소', placeHint: '○○한정식 2층',
       ddayAfter: '함께해 주셔서 고마워요', ddayToday: '오늘 만나요!',
       ddayBefore: '모임까지 {n} 남았어요',
-      accountSides: ['회비'], accountNote: '회비는 아래 계좌로 보내 주세요.',
+      accountSides: ['회비'], accountAmount: true, accountNote: '회비는 아래 계좌로 보내 주세요.',
       scene: 'newyear', game: { good: 'pouch', goodName: '복주머니', hint: '복주머니를 받아 주세요!' },
       greetings: [
         '새해 복 많이 받으세요!\n\n올해도 건강하고\n좋은 일만 가득하길 바라며\n새해 첫 모임에 초대합니다.',
@@ -185,14 +185,14 @@
       points: ['모임 이름과 대표 캐릭터', '눈 내리는 겨울 무대, 선물 받기 게임', '디데이와 캘린더 추가', '회비 계좌 복사'],
       sample: { title: '2026 우리 반 송년회', groom: { name: '총무 민준', short: '민준' }, date: '2026-12-27T18:30:00+09:00',
         venue: { name: '예시고깃집 단체석', address: '서울특별시 강남구 예시로 88', parking: '건물 뒤 공영주차장' },
-        accounts: [acc('회비', '이민준')] },
+        accounts: [{ ...acc('회비', '이민준'), amount: '1인 30,000원' }] },
     },
     newyear: {
       uses: ["신년회, 새해 첫 동창 모임", "가족·친척 새해 모임 안내", "새해 인사와 모임 공지를 한 번에 보낼 때"],
       desc: '신년회·새해 첫 모임 초대장이에요. 복주머니를 받는 게임으로 새해 인사를 건네고, 모임 정보를 한 장에 담아요.',
       points: ['모임 이름과 대표 캐릭터', '복주머니 받기 게임', '새해 인사말 예시', '장소·회비 안내'],
       sample: { title: '2027 새해 첫 모임', groom: { name: '회장 서윤', short: '서윤' }, date: '2027-01-09T12:00:00+09:00',
-        venue: { name: '예시한정식 2층', address: '서울특별시 종로구 예시로 12' }, accounts: [acc('회비', '정서윤')] },
+        venue: { name: '예시한정식 2층', address: '서울특별시 종로구 예시로 12' }, accounts: [{ ...acc('회비', '정서윤'), amount: '1인 25,000원' }] },
     },
     notice: {
       uses: ["결혼식을 생략하거나 가족끼리만 올렸을 때", "결혼 소식을 회사·지인에게 정중하게 알릴 때", "혼인신고 날짜를 기념하고 싶을 때"],

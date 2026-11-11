@@ -313,15 +313,19 @@
 
     // 계좌: 신랑 측 / 신부 측 접기
     $('accNote').textContent = K.accountNote;
+    if (K.accountAmount) $('accHead').textContent = '회비 안내';
     const acc = $('accounts');
     const sides = {};
     (cfg.accounts || []).forEach(a => { (sides[a.side] = sides[a.side] || []).push(a); });
     Object.entries(sides).forEach(([side, list]) => {
       const box = el('details', 'acc-group');
-      box.append(el('summary', '', `${side} 계좌번호`));
+      const amt = list.map(a => a.amount).filter(Boolean)[0];
+      box.append(el('summary', '', amt ? `${side} ${amt}` : `${side} 계좌번호`));
+      if (amt) box.open = true;
       list.forEach(a => {
         const row = el('div', 'account');
         const txt = el('div');
+        if (a.amount && list.length > 1) txt.append(el('p', 'amount', `${side} ${a.amount}`));
         txt.append(el('p', '', `${a.bank} ${a.number}`), el('p', 'holder', a.holder));
         const b = el('button', 'lbtn', '복사');
         b.type = 'button';

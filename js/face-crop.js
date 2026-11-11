@@ -1,5 +1,5 @@
 // 사진에서 얼굴을 찾아 동그랗게 오리기. 사진은 이 기기 안에서만 처리하고 어디에도 보내지 않는다.
-// FaceCrop.open(file) → Promise<data URL | null>  (64×64 정사각형, 원 모양 자르기는 그릴 때 함)
+// FaceCrop.open(file) → Promise<data URL | null>  (타원 모양으로 오린 얼굴, 바깥은 투명, 긴 쪽 72px)
 'use strict';
 
 (function () {
@@ -51,17 +51,19 @@
     } catch (e) { return null; }
   }
 
-  // ── 맞추기 화면(끌어서 옮기기, 막대로 크기)
+  // ── 맞추기 화면
+  // 사진은 끌어서 옮기고 막대로 확대, 흰 타원 선(또는 동그란 손잡이)을 끌면 가로·세로 크기를 따로 바꾼다.
   function editor(src, start) {
     return new Promise(resolve => {
       const wrap = document.createElement('div');
       wrap.className = 'fc-modal';
       wrap.innerHTML = `
         <div class="fc-box" role="dialog" aria-label="얼굴 맞추기">
-          <p class="fc-title">얼굴을 동그라미 안에 맞춰 주세요</p>
+          <p class="fc-title">얼굴만 흰 선 안에 들어오게 맞춰 주세요</p>
           <p class="fc-note" id="fcNote"></p>
           <canvas class="fc-canvas" width="560" height="560"></canvas>
-          <label class="fc-zoom">크기<input type="range" min="0.15" max="3" step="0.01"></label>
+          <p class="fc-tip">사진을 끌면 옮겨져요. 흰 선이나 동그란 손잡이를 끌면 가로·세로로 늘이고 줄일 수 있어요.</p>
+          <label class="fc-zoom">사진 확대<input type="range" step="0.001"></label>
           <div class="choice">
             <button type="button" class="btn" data-act="cancel">취소</button>
             <button type="button" class="btn primary" data-act="ok">이 얼굴 쓰기</button>
@@ -71,60 +73,94 @@
       document.body.style.overflow = 'hidden';
       const cv = wrap.querySelector('canvas'), g = cv.getContext('2d');
       const zoom = wrap.querySelector('input');
-      const V = cv.width, R = V * 0.36;          // 보이는 원 반지름
-      // 상태: 사진 위의 원 중심(cx, cy)과 원 지름(size), 사진 픽셀 단위
-      let { cx, cy, size } = start;
+      const V = cv.width, MIN_R = 40, MAX_R = V * 0.48, GRAB = 26;
+      // 상태: 화면 가운데에 오는 사진 위치(cx, cy, 사진 픽셀), 배율 k(사진 → 화면), 타원 반지름 rx, ry(화면 픽셀)
+      let { cx, cy } = start;
+      let rx = V * 0.33, ry = V * 0.38;
       const minSide = Math.min(src.width, src.height);
-      zoom.min = (minSide * 0.08).toFixed(0);
-      zoom.max = minSide.toFixed(0);
-      zoom.step = 1;
-      const setZoom = () => { zoom.value = (+zoom.max + +zoom.min - size).toFixed(0); };
+      const kMin = (V * 0.6) / Math.max(src.width, src.height), kMax = (V * 0.9) / (minSide * 0.08);
+      let k = (ry * 2) / start.size;
+      zoom.min = Math.log(kMin); zoom.max = Math.log(kMax);
+      const clampK = v => Math.max(kMin, Math.min(kMax, v));
+      const clampR = v => Math.max(MIN_R, Math.min(MAX_R, v));
+      const setZoom = () => { k = clampK(k); zoom.value = Math.log(k); };
       const draw = () => {
-        const k = (R * 2) / size;               // 사진 → 화면 배율
         g.fillStyle = '#222'; g.fillRect(0, 0, V, V);
         g.drawImage(src, V / 2 - cx * k, V / 2 - cy * k, src.width * k, src.height * k);
         g.save();
         g.fillStyle = 'rgba(0,0,0,.55)';
-        g.beginPath(); g.rect(0, 0, V, V); g.arc(V / 2, V / 2, R, 0, Math.PI * 2, true); g.fill('evenodd');
-        g.strokeStyle = '#fff'; g.lineWidth = 4; g.beginPath(); g.arc(V / 2, V / 2, R, 0, Math.PI * 2); g.stroke();
+        g.beginPath(); g.rect(0, 0, V, V); g.ellipse(V / 2, V / 2, rx, ry, 0, 0, Math.PI * 2, true); g.fill('evenodd');
+        g.strokeStyle = '#fff'; g.lineWidth = 4;
+        g.beginPath(); g.ellipse(V / 2, V / 2, rx, ry, 0, 0, Math.PI * 2); g.stroke();
+        g.fillStyle = '#fff'; g.strokeStyle = '#e8578a'; g.lineWidth = 3;
+        [[rx, 0], [-rx, 0], [0, ry], [0, -ry]].forEach(([dx, dy]) => {
+          g.beginPath(); g.arc(V / 2 + dx, V / 2 + dy, 11, 0, Math.PI * 2); g.fill(); g.stroke();
+        });
         g.restore();
       };
       setZoom(); draw();
-      zoom.addEventListener('input', () => { size = +zoom.max + +zoom.min - +zoom.value; draw(); });
+      let touched = false;
+      zoom.addEventListener('input', () => { touched = true; k = Math.exp(+zoom.value); draw(); });
+      // 화면 좌표(캔버스 픽셀)
+      const pos = e => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * V / r.width, y: (e.clientY - r.top) * V / r.height }; };
+      // 흰 선 근처면 'x'(가로) 또는 'y'(세로), 아니면 null
+      const edgeAt = p => {
+        const dx = p.x - V / 2, dy = p.y - V / 2;
+        const t = Math.atan2(dy / ry, dx / rx);
+        const ex = rx * Math.cos(t), ey = ry * Math.sin(t);
+        if (Math.hypot(dx - ex, dy - ey) > GRAB) return null;
+        return Math.abs(Math.cos(t)) >= Math.abs(Math.sin(t)) ? 'x' : 'y';
+      };
       let drag = null;
-      cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, cx, cy }; cv.setPointerCapture(e.pointerId); });
+      cv.addEventListener('pointerdown', e => {
+        touched = true;
+        const p = pos(e);
+        drag = { mode: edgeAt(p) || 'move', p, cx, cy };
+        cv.setPointerCapture(e.pointerId);
+      });
       cv.addEventListener('pointermove', e => {
-        if (!drag) return;
-        const rect = cv.getBoundingClientRect();
-        const k = (R * 2) / size * (rect.width / V);
-        cx = drag.cx - (e.clientX - drag.x) / k;
-        cy = drag.cy - (e.clientY - drag.y) / k;
+        const p = pos(e);
+        if (!drag) {
+          const m = edgeAt(p);
+          cv.style.cursor = m === 'x' ? 'ew-resize' : m === 'y' ? 'ns-resize' : 'grab';
+          return;
+        }
+        if (drag.mode === 'x') rx = clampR(Math.abs(p.x - V / 2));
+        else if (drag.mode === 'y') ry = clampR(Math.abs(p.y - V / 2));
+        else {
+          cx = drag.cx - (p.x - drag.p.x) / k;
+          cy = drag.cy - (p.y - drag.p.y) / k;
+        }
         draw();
       });
-      cv.addEventListener('pointerup', () => { drag = null; });
-      // 자동으로 찾은 얼굴 위치로 옮기기(사용자가 아직 안 움직였을 때만)
-      let touched = false;
-      cv.addEventListener('pointerdown', () => { touched = true; });
-      zoom.addEventListener('input', () => { touched = true; });
+      const end = () => { drag = null; };
+      cv.addEventListener('pointerup', end);
+      cv.addEventListener('pointercancel', end);
+      // 자동으로 찾은 얼굴 위치로 옮기기(사용자가 아직 안 만졌을 때만)
       wrap.addEventListener('face', e => {
         if (touched) return;
         ({ cx, cy } = e.detail);
-        size = Math.max(+zoom.min, Math.min(+zoom.max, e.detail.size));
+        k = (ry * 2) / e.detail.size;
         setZoom(); draw();
       });
-      cv.addEventListener('wheel', e => { e.preventDefault(); size = Math.max(+zoom.min, Math.min(+zoom.max, size * (e.deltaY > 0 ? 1.06 : 0.94))); setZoom(); draw(); }, { passive: false });
+      cv.addEventListener('wheel', e => { e.preventDefault(); touched = true; k *= e.deltaY > 0 ? 0.94 : 1.06; setZoom(); draw(); }, { passive: false });
       const close = val => { wrap.remove(); document.body.style.overflow = ''; resolve(val); };
       wrap.addEventListener('click', e => {
         const act = e.target.dataset && e.target.dataset.act;
         if (act === 'cancel') close(null);
         if (act === 'ok') {
+          // 타원 안쪽만 남기고 바깥은 투명하게. 긴 쪽이 OUT 픽셀
+          const w = (rx * 2) / k, h = (ry * 2) / k;
+          const s = OUT / Math.max(w, h);
           const o = document.createElement('canvas');
-          o.width = o.height = OUT;
+          o.width = Math.max(8, Math.round(w * s));
+          o.height = Math.max(8, Math.round(h * s));
           const og = o.getContext('2d');
           og.imageSmoothingQuality = 'high';
-          og.drawImage(src, cx - size / 2, cy - size / 2, size, size, 0, 0, OUT, OUT);
-          let url = o.toDataURL('image/webp', 0.72);
-          if (!url.startsWith('data:image/webp')) url = o.toDataURL('image/jpeg', 0.72);
+          og.beginPath(); og.ellipse(o.width / 2, o.height / 2, o.width / 2, o.height / 2, 0, 0, Math.PI * 2); og.clip();
+          og.drawImage(src, cx - w / 2, cy - h / 2, w, h, 0, 0, o.width, o.height);
+          let url = o.toDataURL('image/webp', 0.8);
+          if (!url.startsWith('data:image/webp')) url = o.toDataURL('image/png');
           close(url);
         }
       });
@@ -146,10 +182,10 @@
     findFace(src).then(f => {
       if (!document.body.contains(editor.current)) return;
       if (f) {
-        note.textContent = '얼굴을 찾았어요. 필요하면 끌어서 옮기거나 크기를 바꾸세요.';
+        note.textContent = '얼굴을 찾았어요. 흰 선을 끌어서 얼굴에 딱 맞게 줄여 보세요.';
         editor.current.dispatchEvent(new CustomEvent('face', { detail: f }));
       } else {
-        note.textContent = '얼굴을 자동으로 못 찾았어요. 끌어서 옮기고 막대로 크기를 맞춰 주세요.';
+        note.textContent = '얼굴을 자동으로 못 찾았어요. 사진을 끌어서 옮기고 흰 선으로 크기를 맞춰 주세요.';
       }
     });
     return p;

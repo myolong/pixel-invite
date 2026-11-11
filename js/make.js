@@ -169,7 +169,7 @@
       <button type="button" class="chip${L.face ? '' : ' on'}" data-f="pixel">픽셀 얼굴</button>
       <button type="button" class="chip${L.face ? ' on' : ''}" data-f="photo">${L.face ? '<img alt="" class="face-thumb"> 사진 바꾸기' : '내 사진 얼굴'}</button>
       </div><input type="file" accept="image/*" hidden>
-      <p class="hint small">${L.face ? '사진 얼굴은 이 링크를 받은 사람 누구나 볼 수 있어요.' : '얼굴이 잘 나온 사진을 고르면 얼굴만 동그랗게 오려서 캐릭터 머리로 써요. 사진은 이 기기 안에서만 처리돼요.'}</p>`;
+      <p class="hint small">${L.face ? '사진 얼굴은 이 링크를 받은 사람 누구나 볼 수 있어요.' : '얼굴이 잘 나온 사진을 고르면 얼굴만 오려서 캐릭터 머리로 써요. 사진은 이 기기 안에서만 처리돼요.'}</p>`;
     if (L.face) fb.querySelector('.face-thumb').src = L.face;
     const file = fb.querySelector('input[type=file]');
     fb.querySelector('[data-f=pixel]').addEventListener('click', () => { delete L.face; rebuild(); renderLook(); saveDraft(); });
@@ -209,12 +209,15 @@
       sides.concat(sides.includes(a.side) ? [] : [a.side]).forEach(s => sel.add(new Option(s, s, false, s === a.side)));
       const inp = (ph, val, max) => { const e = document.createElement('input'); e.placeholder = ph; e.maxLength = max || 12; e.value = val; e.setAttribute('aria-label', ph); return e; };
       const bank = inp('은행', a.bank), num = inp('계좌번호', a.number, 30), holder = inp('예금주', a.holder);
+      const amount = inp('금액 (예: 1인 30,000원)', a.amount || '', 20);
+      amount.className = 'amount';
+      amount.hidden = !K.accountAmount;
       num.inputMode = 'numeric';
       const del = document.createElement('button');
       del.type = 'button'; del.className = 'del'; del.textContent = '✕'; del.setAttribute('aria-label', '이 계좌 지우기');
-      row.append(sel, bank, num, holder, del);
-      const sync = () => { a.side = sel.value; a.bank = bank.value; a.number = num.value; a.holder = holder.value; saveDraft(); };
-      [sel, bank, num, holder].forEach(e => e.addEventListener('input', sync));
+      row.append(sel, bank, num, holder, amount, del);
+      const sync = () => { a.side = sel.value; a.bank = bank.value; a.number = num.value; a.holder = holder.value; a.amount = amount.value; saveDraft(); };
+      [sel, bank, num, holder, amount].forEach(e => e.addEventListener('input', sync));
       del.addEventListener('click', () => { accounts.splice(i, 1); renderAccounts(); saveDraft(); });
       box.append(row);
     });
@@ -252,7 +255,7 @@
     set('day', d.day); set('time', d.time);
     ['name', 'address', 'transit', 'parking'].forEach(f => set(`venue.${f}`, d.venue && d.venue[f]));
     set('greeting', d.greeting);
-    if (Array.isArray(d.accounts)) accounts = d.accounts.map(a => ({ side: a.side || '', bank: a.bank || '', number: a.number || '', holder: a.holder || '' }));
+    if (Array.isArray(d.accounts)) accounts = d.accounts.map(a => ({ side: a.side || '', bank: a.bank || '', number: a.number || '', holder: a.holder || '', amount: a.amount || '' }));
     if (d.looks) {
       SLOTS.forEach((k, i) => {
         if (d.looks[k]) looks[k] = Object.assign(clone((K.people[i] || KINDS.wedding.people[i]).look), d.looks[k]);
@@ -284,7 +287,7 @@
       noTime: !d.time,
       venue: clean(d.venue),
       greeting: d.greeting,
-      accounts: d.accounts.filter(a => a.number.trim()).map(a => clean({ side: a.side, bank: a.bank.trim(), number: a.number.trim(), holder: a.holder.trim() })),
+      accounts: d.accounts.filter(a => a.number.trim()).map(a => clean({ side: a.side, bank: a.bank.trim(), number: a.number.trim(), holder: a.holder.trim(), amount: K.accountAmount ? (a.amount || '').trim().slice(0, 20) : '' })),
     });
   }
   function fromConfig(c) {

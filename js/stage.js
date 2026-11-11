@@ -38,20 +38,21 @@ function drawSprite(ctx, img, cx, bottom, scale = 2, flip = false) {
   } else {
     ctx.drawImage(img, x, y, w, h);
   }
-  // 사진 얼굴: 몸 그림 위 머리 자리(지름 14칸)에 동그랗게
+  // 사진 얼굴: 몸 그림 위 머리 자리에 타원으로(긴 쪽 14칸, 아래쪽을 목에 맞춤)
   if (img.face && img.face.complete && img.face.naturalWidth) {
-    const d = 14 * scale, fx = x + (img.width / 2) * scale - d / 2, fy = y - 1 * scale;
+    const d = 14 * scale, a = img.face.naturalWidth / img.face.naturalHeight;
+    const w = a <= 1 ? d * a : d, h = a <= 1 ? d : d / a;
+    const ccx = x + (img.width / 2) * scale, ccy = y - 1 * scale + d - h / 2;
     ctx.save();
     ctx.imageSmoothingEnabled = true;
     ctx.beginPath();
-    ctx.arc(fx + d / 2, fy + d / 2, d / 2, 0, Math.PI * 2);
-    ctx.closePath();
+    ctx.ellipse(ccx, ccy, w / 2, h / 2, 0, 0, Math.PI * 2);
     ctx.fillStyle = '#2a2033';
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(fx + d / 2, fy + d / 2, d / 2 - scale * 0.5, 0, Math.PI * 2);
+    ctx.ellipse(ccx, ccy, w / 2 - scale * 0.5, h / 2 - scale * 0.5, 0, 0, Math.PI * 2);
     ctx.clip();
-    ctx.drawImage(img.face, fx, fy, d, d);
+    ctx.drawImage(img.face, ccx - w / 2, ccy - h / 2, w, h);
     ctx.restore();
   }
 }
