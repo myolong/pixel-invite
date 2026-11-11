@@ -104,3 +104,4 @@ body.maker { background: var(--px-bg); color: var(--px-ink); font-family: var(--
 .rsvp-rows li span { color: var(--px-muted); }
 .rsvp-rows li.no b { color: var(--px-muted); font-weight: 500; }
 .rsvp-rows li small { grid-column: 1 / -1; color: var(--px-muted); }
+.quiz-box { margin-top: 10px; display: grid; gap: 8px; }

@@ -77,8 +77,9 @@
   const linkTag = linkCode ? linkCode.slice(-16) : code;
   let bestKey = `pi-best-${linkTag}`;
   // 게임 종류와 잠금: 결혼식·결혼 알림장 말고는 게임을 깨야 초대장이 열린다(예시 초대장도 똑같이)
-  const GAME_CLASS = { catch: window.BouquetGame, blocks: window.BlockGame, shoot: window.ShootGame };
-  const gameKind = GAME_CLASS[cfg.game] ? cfg.game : 'catch';
+  const GAME_CLASS = { catch: window.BouquetGame, blocks: window.BlockGame, shoot: window.ShootGame, tower: window.TowerGame, whack: window.WhackGame, quiz: window.QuizGame };
+  const quizOk = q => q && typeof q.q === 'string' && q.q && typeof q.a === 'string' && q.a && Array.isArray(q.w) && q.w.some(w => typeof w === 'string' && w);
+  const gameKind = GAME_CLASS[cfg.game] && (cfg.game !== 'quiz' || quizOk(cfg.quiz)) ? cfg.game : 'catch';
   const gated = InviteKinds.gated(cfg.kind);
   const clearKey = `pi-clear-${linkTag}`, failKey = `pi-fail-${linkTag}`;
   // 게임을 깬 기록은 이 폰에 계속 남긴다(창을 닫았다 열어도 다시 안 깨도 됨). 초안·참석 목록·최고점은 창 단위로 초기화.
@@ -129,7 +130,7 @@
     $('stageUi').hidden = true;
     $('resultUi').hidden = true;
     const easy = gated && !unlocked && fails >= 3; // 세 번 넘게 못 깨면 쉽게
-    game = new GAME_CLASS[gameKind]({ groom: chars.groom, bride: chars.thrower }, endGame, { ...K.game, easy });
+    game = new GAME_CLASS[gameKind]({ groom: chars.groom, bride: chars.thrower }, endGame, { ...K.game, easy, quiz: cfg.quiz });
     mode = 'game';
   };
   function endGame(score, cleared) {

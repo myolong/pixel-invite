@@ -260,6 +260,7 @@
       venue: { name: v('venue.name'), address: v('venue.address'), transit: v('venue.transit'), parking: v('venue.parking') },
       greeting: form.greeting.value.replace(/\r/g, '').trim(),
       accounts, looks, rsvp, game: gameKind,
+      quiz: { q: v('quiz.q'), a: v('quiz.a'), w: [v('quiz.w1'), v('quiz.w2'), v('quiz.w3')] },
     };
   }
   function applyDraft(d) {
@@ -271,6 +272,7 @@
     ['name', 'address', 'transit', 'parking'].forEach(f => set(`venue.${f}`, d.venue && d.venue[f]));
     set('greeting', d.greeting);
     if (InviteKinds.GAMES[d.game]) gameKind = d.game;
+    if (d.quiz) { set('quiz.q', d.quiz.q); set('quiz.a', d.quiz.a); (d.quiz.w || []).forEach((w, i) => set(`quiz.w${i + 1}`, w)); }
     if (d.rsvp && typeof d.rsvp === 'object') {
       const ok = window.Rsvp && Rsvp.validId(d.rsvp.id) && /^[A-Za-z0-9]{24}$/.test(d.rsvp.key || '');
       rsvp = { on: d.rsvp.on !== false, id: ok ? d.rsvp.id : null, key: ok ? d.rsvp.key : null };
@@ -308,6 +310,7 @@
       venue: clean(d.venue),
       greeting: d.greeting,
       game: gameKind !== 'catch' ? gameKind : '',
+      quiz: gameKind === 'quiz' ? { q: d.quiz.q, a: d.quiz.a, w: d.quiz.w.filter(Boolean) } : null,
       rsvp: window.Rsvp && Rsvp.enabled && d.rsvp.on && d.rsvp.id ? { id: d.rsvp.id, pub: !!K.rsvpPublic } : null,
       accounts: d.accounts.filter(a => a.number.trim()).map(a => clean({ side: a.side, bank: a.bank.trim(), number: a.number.trim(), holder: a.holder.trim(), amount: K.accountAmount ? (a.amount || '').trim().slice(0, 20) : '' })),
     });
@@ -320,7 +323,7 @@
       greeting: c.greeting, accounts: c.accounts || [],
       looks: { groom: (c.groom || {}).look, bride: (c.bride || {}).look },
       rsvp: { on: !c.rsvpOff, id: c.rsvp && c.rsvp.id, key: c.rsvpKey },
-      game: c.game,
+      game: c.game, quiz: c.quiz,
     };
   }
 
@@ -339,8 +342,9 @@
       row.append(b);
     });
     $('gameHint').textContent = GAMES[gameKind].desc + '. ' + (gated(kind)
-      ? '이 초대장은 게임을 깨야 열려요. 세 번 넘게 못 깨면 게임이 쉬워져요.'
+      ? (gameKind === 'quiz' ? '이 초대장은 문제를 맞혀야 열려요. 세 번 넘게 틀리면 보기가 2개로 줄어요.' : '이 초대장은 게임을 깨야 열려요. 세 번 넘게 못 깨면 게임이 쉬워져요.')
       : '받는 사람이 게임을 건너뛰고 바로 볼 수도 있어요.');
+    $('quizBox').hidden = gameKind !== 'quiz';
   }
 
   // ── 참석 여부
@@ -391,6 +395,11 @@
     if (!d.day) missing.push(K.when);
     if (!K.placeOptional && !d.time) missing.push('시간');
     if (!K.placeOptional && !d.venue.name) missing.push(K.place);
+    if (gameKind === 'quiz') {
+      if (!d.quiz.q) missing.push('퀴즈 문제');
+      if (!d.quiz.a) missing.push('퀴즈 정답');
+      if (!d.quiz.w.some(Boolean)) missing.push('퀴즈 틀린 보기');
+    }
     const err = $('err');
     if (missing.length) {
       err.textContent = `아직 비어 있어요: ${missing.join(', ')}`;
