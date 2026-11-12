@@ -47,6 +47,7 @@ def head(title, desc, url, depth, ld=None):
   <title>{html.escape(title)}</title>
   <meta name="description" content="{html.escape(desc)}">
   <link rel="canonical" href="{url}">
+  <link rel="alternate" type="application/rss+xml" title="{NAME} 가이드" href="{SITE}rss.xml">
   <meta property="og:type" content="article">
   <meta property="og:url" content="{url}">
   <meta property="og:site_name" content="{NAME}">
@@ -143,6 +144,42 @@ def main():
         s = open(f, encoding='utf-8').read()
         s = FOOTER_RE.sub('', s)
         s = s.replace('  </main>\n', '  </main>\n' + footer(0), 1)
+        open(f, 'w', encoding='utf-8').write(s)
+    # RSS(가이드 글, 최신순)
+    from email.utils import format_datetime
+    from datetime import datetime, timezone, timedelta
+    KST = timezone(timedelta(hours=9))
+    def rfc(d):
+        return format_datetime(datetime.strptime(d, '%Y-%m-%d').replace(hour=9, tzinfo=KST))
+    feed = sorted(guides, key=lambda g: (g.get('updated', g['date']), -g['order']), reverse=True)
+    items = ''.join(f"""    <item>
+      <title>{html.escape(g['title'])}</title>
+      <link>{SITE}guide/{g['slug']}.html</link>
+      <guid isPermaLink="true">{SITE}guide/{g['slug']}.html</guid>
+      <description>{html.escape(g['desc'])}</description>
+      <pubDate>{rfc(g['date'])}</pubDate>
+    </item>
+""" for g in feed)
+    last = max(g.get('updated', g['date']) for g in guides)
+    rss = f"""<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{NAME} 가이드</title>
+    <link>{SITE}guide/</link>
+    <description>모임 초대 문구, 공지·회비 안내, 참석 여부 받는 법을 정리한 글</description>
+    <language>ko</language>
+    <lastBuildDate>{rfc(last)}</lastBuildDate>
+    <atom:link href="{SITE}rss.xml" rel="self" type="application/rss+xml"/>
+{items}  </channel>
+</rss>
+"""
+    open(os.path.join(ROOT, 'rss.xml'), 'w', encoding='utf-8').write(rss)
+    # 첫 화면에 RSS 알림 링크
+    f = os.path.join(ROOT, 'index.html')
+    s = open(f, encoding='utf-8').read()
+    tag = f'  <link rel="alternate" type="application/rss+xml" title="{NAME} 가이드" href="{SITE}rss.xml">\n'
+    if 'application/rss+xml' not in s:
+        s = s.replace('  <link rel="canonical"', tag + '  <link rel="canonical"', 1)
         open(f, 'w', encoding='utf-8').write(s)
     # 사이트맵
     sm = open(os.path.join(ROOT, 'sitemap.xml'), encoding='utf-8').read()
