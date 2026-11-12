@@ -199,12 +199,12 @@
       L.outfit = v;
     });
     group('옷 색', (PixelChars.OUTFIT_COLORS[L.outfit] || PixelChars.SUIT_COLORS).map((c, i) => ({ value: i, color: c })), L.color, v => { L.color = v; }, true);
-    // 사진 얼굴이면 머리 모양·머리색·안경은 필요 없음
+    // 사진 얼굴이면 머리 모양·머리색·선글라스는 필요 없음
     if (!L.face) group('머리 모양', Object.keys(HAIR_NAMES).map(k => ({ value: k, label: HAIR_NAMES[k] })), L.hair, v => { L.hair = v; });
     if (!L.face) group('머리색', PixelChars.HAIR_COLORS.map((c, i) => ({ value: i, color: c })), L.hairColor, v => { L.hairColor = v; }, true);
     group('피부색', PixelChars.SKIN_ORDER.map(i => ({ value: i, color: PixelChars.SKINS[i] })), L.skin, v => { L.skin = v; }, true);
     const yesNo = [{ value: true, label: '쓰기' }, { value: false, label: '안 쓰기' }];
-    if (!L.face) group('안경', yesNo, !!L.glasses, v => { L.glasses = v; });
+    if (!L.face) group('선글라스', yesNo, !!L.glasses, v => { L.glasses = v; });
     // 소품: 종류마다 다른 목록(예전 veil:true는 면사포로 본다)
     const curAcc = L.acc || (L.veil ? 'veil' : '');
     const accs = K.accs.includes(curAcc) ? K.accs : K.accs.concat([curAcc]);
