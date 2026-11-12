@@ -54,7 +54,7 @@ class QuizGame {
   // 글자를 폭에 맞게 줄바꿈(최대 줄 수 넘으면 글자 크기를 줄인다)
   wrap(ctx, text, width, size, maxLines) {
     for (let s = size; s >= 6; s--) {
-      ctx.font = `700 ${s}px Galmuri11, sans-serif`;
+      ctx.font = `700 ${s * Stage.DONGLE}px Dongle, sans-serif`;
       const lines = [];
       let line = '';
       const fits = x => ctx.measureText(x).width <= width;
@@ -79,9 +79,8 @@ class QuizGame {
 
     // 문제 카드
     const cardY = 30, cardH = this.boxes[0].y - 8 - cardY;
-    ctx.fillStyle = '#2a2033'; ctx.fillRect(8, cardY, Stage.LW - 16, cardH);
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(9, cardY + 1, Stage.LW - 18, cardH - 3);
-    ctx.fillStyle = '#e0526e'; ctx.fillRect(9, cardY + 1, Stage.LW - 18, 13);
+    Stage.panel(ctx, 8, cardY, Stage.LW - 16, cardH, '#ffffff', 5);
+    ctx.fillStyle = '#e0526e'; ctx.beginPath(); ctx.roundRect(8.8, cardY + 0.8, Stage.LW - 17.6, 13, [4.2, 4.2, 0, 0]); ctx.fill();
     Stage.drawText(ctx, 'Q. 문제를 맞혀 주세요', 80, cardY + 8, 8, '#ffffff', 'center', null);
     const { lines, size } = this.wrap(ctx, this.q, Stage.LW - 32, 11, 4);
     const lh = size + 4, qTop = cardY + 14 + (cardH - 16 - lines.length * lh) / 2 + lh / 2;
@@ -94,9 +93,8 @@ class QuizGame {
       const showRight = done && c.right && this.win;
       const fill = showRight ? '#c9ecd0' : sel && !c.right ? '#f7c6d9' : '#ffffff';
       const shake = sel && !c.right && this.endIn > 0 ? (Math.floor(this.t * 30) % 2 ? 1 : -1) : 0;
-      ctx.fillStyle = '#2a2033'; ctx.fillRect(b.x + shake, b.y, b.w, b.h);
-      ctx.fillStyle = fill; ctx.fillRect(b.x + 1 + shake, b.y + 1, b.w - 2, b.h - 3);
-      ctx.fillStyle = '#e0526e'; ctx.fillRect(b.x + 3 + shake, b.y + 3, 14, b.h - 7);
+      Stage.panel(ctx, b.x + shake, b.y, b.w, b.h, fill, 4);
+      ctx.fillStyle = '#e0526e'; ctx.beginPath(); ctx.roundRect(b.x + 3 + shake, b.y + 3, 14, b.h - 7, 3); ctx.fill();
       Stage.drawText(ctx, String(i + 1), b.x + 10 + shake, b.y + b.h / 2 - 1, 8, '#ffffff', 'center', null);
       const w = this.wrap(ctx, c.text, b.w - 28, 9, 2);
       const l2 = w.size + 2;
@@ -108,7 +106,7 @@ class QuizGame {
     // 결과 장면
     if (done) {
       ctx.fillStyle = 'rgba(255,255,255,0.94)';
-      ctx.fillRect(9, cardY + 14, Stage.LW - 18, cardH - 16);
+      ctx.beginPath(); ctx.roundRect(8.8, cardY + 14, Stage.LW - 17.6, cardH - 16.6, [0, 0, 4.2, 4.2]); ctx.fill();
       if (this.win) {
         const bob = Math.floor(this.t * 10) % 2 * 2;
         Stage.drawSprite(ctx, groom.happy, 36, cardY + cardH - 4 - bob, GAME_SCALE);

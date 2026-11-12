@@ -140,9 +140,9 @@ class ShootGame {
 
     for (const o of this.targets) {
       const img = P[this.good];
-      ctx.drawImage(img, Math.round(o.x - img.width), Math.round(o.y + o.dy - img.height), img.width * 2, img.height * 2);
+      ctx.drawImage(img, Math.round(o.x - (img.lw || img.width)), Math.round(o.y + o.dy - (img.lh || img.height)), (img.lw || img.width) * 2, (img.lh || img.height) * 2);
     }
-    for (const d of this.drops) ctx.drawImage(P.rain, Math.round(d.x - P.rain.width), Math.round(d.y - P.rain.height), P.rain.width * 2, P.rain.height * 2);
+    for (const d of this.drops) ctx.drawImage(P.rain, Math.round(d.x - (P.rain.lw || P.rain.width)), Math.round(d.y - (P.rain.lh || P.rain.height)), (P.rain.lw || P.rain.width) * 2, (P.rain.lh || P.rain.height) * 2);
     for (const s of this.shots) {
       ctx.fillStyle = '#2a2033'; ctx.fillRect(Math.round(s.x) - 2, Math.round(s.y) - 1, 4, 7);
       ctx.fillStyle = '#7fd0f0'; ctx.fillRect(Math.round(s.x) - 1, Math.round(s.y), 2, 5);

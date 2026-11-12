@@ -14,13 +14,14 @@ const TITLES = {
   bihon: '비혼식 초대장', ihon: '이혼식 초대장', babyshower: '베이비샤워 초대장', event: '기념 행사 초대장',
 };
 // 그림을 바꾸면 이 값을 올린다(카톡은 같은 그림 주소면 예전 그림을 계속 씀)
-const OG_VER = '2';
+const OG_VER = '3';
 const DESC = '작은 게임을 깨면 열려요. 눌러서 열어 보세요!';
 
 (async () => {
   // 1) 미리보기 그림
-  const b = await chromium.launch();
-  const p = await b.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
+  const px = process.env.HTTPS_PROXY || process.env.https_proxy;
+  const b = await chromium.launch(px ? { proxy: { server: px, bypass: 'localhost' } } : {});
+  const p = await b.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1, ignoreHTTPSErrors: true });
   await p.goto('http://localhost:8765/index.html');
   await p.waitForTimeout(800);
   fs.mkdirSync(path.join(ROOT, 'assets/og'), { recursive: true });
@@ -29,9 +30,9 @@ const DESC = '작은 게임을 깨면 열려요. 눌러서 열어 보세요!';
       // 제목을 두 줄로: 끝 낱말(초대장·청첩장·알림장)을 아랫줄로
       const cut = title.lastIndexOf(' ');
       const top = title.slice(0, cut), last = title.slice(cut + 1);
-      const size = Math.min(92, Math.floor(620 / Math.max(top.length, last.length)));
+      const size = Math.min(140, Math.floor(900 / Math.max(top.length, last.length)));
       document.body.innerHTML = `
-        <div id="og" style="position:relative;width:1200px;height:630px;font-family:Galmuri11,sans-serif;color:#2a2033;overflow:hidden;background:#ffd9e2">
+        <div id="og" style="position:relative;width:1200px;height:630px;font-family:Dongle,sans-serif;color:#2a2033;overflow:hidden;background:#ffd9e2">
           <div style="position:absolute;inset:0;background-image:radial-gradient(#f7a8bd 3px,transparent 3px);background-size:36px 36px"></div>
           <div style="position:absolute;left:56px;top:34px;width:420px;height:562px;background:#e0526e;border:8px solid #2a2033;border-radius:36px 36px 90px 36px;box-shadow:0 12px 0 #2a2033">
             <div style="margin:28px auto 0;width:340px;height:380px;background:#2a2033;border-radius:18px;padding:14px;box-sizing:border-box">
@@ -43,14 +44,15 @@ const DESC = '작은 게임을 깨면 열려요. 눌러서 열어 보세요!';
             <div style="position:absolute;right:110px;bottom:34px;width:50px;height:50px;background:#f5c542;border:6px solid #2a2033;border-radius:50%"></div>
           </div>
           <div style="position:absolute;left:530px;right:40px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center">
-            <p style="margin:0 0 20px;align-self:flex-start;font-size:40px;padding:8px 22px;background:#2a2033;color:#fff;border-radius:12px">${last} 도착!</p>
-            <p style="margin:0;font-size:${size}px;font-weight:700;line-height:1.15">${top}<br>${last}</p>
-            <p style="margin:26px 0 0;font-size:46px;color:#e0526e;font-weight:700">${gated ? '게임을 깨면 열려요' : '게임 한 판 하고 열어요'}</p>
+            <p style="margin:0 0 20px;align-self:flex-start;font-size:60px;font-weight:700;line-height:1.1;padding:6px 24px 0;background:#2a2033;color:#fff;border-radius:12px">${last} 도착!</p>
+            <p style="margin:0;font-size:${size}px;font-weight:700;line-height:0.95">${top}<br>${last}</p>
+            <p style="margin:26px 0 0;font-size:70px;color:#e0526e;font-weight:700">${gated ? '게임을 깨면 열려요' : '게임 한 판 하고 열어요'}</p>
           </div>
         </div>`;
       document.body.style.margin = '0';
       PixelScene.mount(document.querySelector('#og canvas'), k);
     }, [k, TITLES[k], !['wedding', 'notice'].includes(k)]);
+    await p.evaluate(t => document.fonts.load('700 80px Dongle', t), TITLES[k] + ' 도착! 게임을 깨면 열려요 한 판 하고');
     await p.waitForTimeout(700);
     await p.locator('#og').screenshot({ path: path.join(ROOT, `assets/og/${k}.png`) });
   }

@@ -221,7 +221,7 @@
       for (let i = hearts.length - 1; i >= 0; i--) if (hearts[i].life <= 0) hearts.splice(i, 1);
       for (const h of hearts) {
         ctx.globalAlpha = Math.min(1, h.life);
-        ctx.drawImage(PixelChars.PROPS.heart, Math.round(h.x - 4), Math.round(h.y));
+        ctx.drawImage(PixelChars.PROPS.heart, h.x - 4, h.y, 7, 6);
         ctx.globalAlpha = 1;
       }
       const a = Math.min(1, (t - WALK) * 2);
@@ -251,7 +251,7 @@
     requestAnimationFrame(frame);
   }
   // 글꼴이 늦게 오면 첫 글자가 기본 글꼴로 보이므로 잠깐 기다린다
-  try { await Promise.race([document.fonts.load('700 13px Galmuri11'), new Promise(r => setTimeout(r, 800))]); } catch (e) { /* 무시 */ }
+  try { await Promise.race([document.fonts.load('700 20px Dongle', '받아 주세요 점수 목표'), new Promise(r => setTimeout(r, 800))]); } catch (e) { /* 무시 */ }
   requestAnimationFrame(frame);
 
   // ───────── 예식 정보 ─────────
@@ -424,7 +424,7 @@
     c.setAttribute('aria-label', `${namesText} 픽셀 캐릭터`);
     const g = c.getContext('2d');
     g.setTransform(S, 0, 0, S, 0, 0);
-    g.imageSmoothingEnabled = false;
+    g.imageSmoothingEnabled = true;
     media.append(c);
     // 화면에 보일 때만 춤을 그린다
     let seen = true, t0 = performance.now();
@@ -433,7 +433,7 @@
       if (seen) {
         Stage.drawVenue(g, (now - t0) / 1000 * 3);
         drawDancers(g, (now - t0) / 1000);
-        [[70, 82], [84, 68], [92, 88], [62, 62], [100, 58]].forEach(([x, y], i) => g.drawImage(PixelChars.PROPS.heart, x, y + Math.round(Math.sin((now - t0) / 400 + i) * 2)));
+        [[70, 82], [84, 68], [92, 88], [62, 62], [100, 58]].forEach(([x, y], i) => g.drawImage(PixelChars.PROPS.heart, x, y + Math.sin((now - t0) / 400 + i) * 2, 7, 6));
       }
       requestAnimationFrame(paint);
     };

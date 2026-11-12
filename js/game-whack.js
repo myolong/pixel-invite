@@ -99,11 +99,11 @@ class WhackGame {
     const P = PixelChars.PROPS;
     // 판
     ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.fillRect(4, 46, Stage.LW - 8, Stage.FLOOR_Y + 12 - 46);
+    ctx.beginPath(); ctx.roundRect(4, 46, Stage.LW - 8, Stage.FLOOR_Y + 12 - 46, 8); ctx.fill();
     WHACK_HOLES.forEach((h, i) => {
       // 구멍 뒤쪽
-      ctx.fillStyle = '#2a2033'; ctx.fillRect(h.x - 19, h.y - 4, 38, 8);
-      ctx.fillStyle = '#5a4a63'; ctx.fillRect(h.x - 18, h.y - 3, 36, 3);
+      ctx.fillStyle = '#3a2c40'; ctx.beginPath(); ctx.ellipse(h.x, h.y + 1, 19, 5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#5a4a63'; ctx.beginPath(); ctx.ellipse(h.x, h.y - 0.5, 16, 3, 0, Math.PI, 0); ctx.fill();
       // 튀어나온 것: 구멍 위쪽만 보이게 자른다
       const u = this.ups.find(v => v.hole === i);
       if (u) {
@@ -115,14 +115,13 @@ class WhackGame {
           Stage.drawSprite(ctx, u.hit ? c.happy : c.stand, h.x, h.y + 22 - Math.round(r * 30), GAME_SCALE);
         } else {
           const img = u.kind === 'prop' ? P[this.good] : P.rain;
-          ctx.drawImage(img, Math.round(h.x - img.width * 1.5), Math.round(h.y + 4 - r * 30), img.width * 3, img.height * 3);
+          ctx.drawImage(img, Math.round(h.x - (img.lw || img.width) * 1.5), Math.round(h.y + 4 - r * 30), (img.lw || img.width) * 3, (img.lh || img.height) * 3);
         }
         ctx.restore();
       }
       // 구멍 앞쪽 테두리(흙더미)
-      ctx.fillStyle = '#2a2033'; ctx.fillRect(h.x - 21, h.y, 42, 6);
-      ctx.fillStyle = '#c98c64'; ctx.fillRect(h.x - 20, h.y + 1, 40, 4);
-      ctx.fillStyle = '#e0b088'; ctx.fillRect(h.x - 20, h.y + 1, 40, 1);
+      ctx.fillStyle = '#c98c64'; ctx.beginPath(); ctx.ellipse(h.x, h.y + 0.5, 21, 5.5, 0, 0, Math.PI); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#e0b088'; ctx.beginPath(); ctx.ellipse(h.x, h.y + 1.5, 20, 1.6, 0, 0, Math.PI); ctx.fill();
     });
     for (const s of this.stars) {
       const r = (0.3 - s.life) * 50;

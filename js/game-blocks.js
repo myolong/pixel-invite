@@ -157,13 +157,13 @@ class BlockGame {
   }
 
   drawCell(ctx, x, y, color, s = BLOCK_RULES.cell) {
-    ctx.fillStyle = '#2a2033';
-    ctx.fillRect(x, y, s, s);
+    const r = s * 0.28;
     ctx.fillStyle = color;
-    ctx.fillRect(x + 1, y + 1, s - 2, s - 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.45)';
-    ctx.fillRect(x + 1, y + 1, s - 2, 1);
-    ctx.fillRect(x + 1, y + 1, 1, s - 2);
+    ctx.beginPath(); ctx.roundRect(x + 0.4, y + 0.4, s - 0.8, s - 0.8, r); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.16)';
+    ctx.beginPath(); ctx.roundRect(x + 0.4, y + s * 0.62, s - 0.8, s * 0.38 - 0.4, [0, 0, r, r]); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.beginPath(); ctx.ellipse(x + s * 0.35, y + s * 0.3, s * 0.16, s * 0.1, -0.5, 0, Math.PI * 2); ctx.fill();
   }
 
   draw(ctx) {
@@ -172,9 +172,9 @@ class BlockGame {
     const X0 = this.X0, Y0 = this.Y0, W = cols * cell, H = rows * cell;
     // 판
     ctx.fillStyle = '#2a2033';
-    ctx.fillRect(X0 - 2, Y0 - 2, W + 4, H + 4);
-    ctx.fillStyle = 'rgba(255,255,255,0.88)';
-    ctx.fillRect(X0, Y0, W, H);
+    ctx.beginPath(); ctx.roundRect(X0 - 2, Y0 - 2, W + 4, H + 4, 4); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    ctx.beginPath(); ctx.roundRect(X0, Y0, W, H, 2.5); ctx.fill();
     ctx.fillStyle = 'rgba(42,32,51,0.06)';
     for (let x = 1; x < cols; x++) ctx.fillRect(X0 + x * cell, Y0, 1, H);
     for (let y = 1; y < rows; y++) ctx.fillRect(X0, Y0 + y * cell, W, 1);
@@ -192,8 +192,7 @@ class BlockGame {
 
     // 오른쪽: 다음 블록, 캐릭터
     const RX = X0 + W + 8, RW = Stage.LW - RX - 6;
-    ctx.fillStyle = '#2a2033'; ctx.fillRect(RX - 1, Y0 - 1, RW + 2, 34);
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(RX, Y0, RW, 32);
+    Stage.panel(ctx, RX - 1, Y0 - 1, RW + 2, 35, '#ffffff', 4);
     Stage.drawText(ctx, '다음', RX + RW / 2, Y0 + 9, 7, '#7a6d80');
     const nc = BLOCK_SHAPES[this.next], nw = Math.max(...nc.map(c => c[0])) + 1;
     nc.forEach(([cx, cy]) => this.drawCell(ctx, RX + RW / 2 - nw * 3.5 + cx * 7, Y0 + 14 + cy * 7, BLOCK_COLORS[this.next], 7));
@@ -206,8 +205,7 @@ class BlockGame {
     ['left', 'rot', 'right', 'drop'].forEach((b, i) => {
       const x = 4 + i * 38, y = Stage.FLOOR_Y + 3, w = 36, h = 22;
       const on = this.pressT > 0 && this.pressed === b || this.held === b;
-      ctx.fillStyle = '#2a2033'; ctx.fillRect(x, y, w, h);
-      ctx.fillStyle = on ? '#f7c6d9' : '#ffffff'; ctx.fillRect(x + 1, y + 1, w - 2, h - 3);
+      Stage.panel(ctx, x, y + (on ? 1 : 0), w, h - (on ? 1 : 0), on ? '#f7c6d9' : '#ffffff', 5);
       Stage.drawText(ctx, labels[b], x + w / 2, y + 11, b === 'rot' ? 8 : 10, '#2a2033', 'center', null);
     });
 

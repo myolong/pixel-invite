@@ -166,7 +166,7 @@ class BouquetGame {
       ctx.save();
       ctx.translate(Math.round(o.x), Math.round(o.y));
       if (o.kind === this.good) ctx.rotate(Math.sin(o.spin) * 0.4);
-      ctx.drawImage(img, -img.width, -img.height, img.width * 2, img.height * 2);
+      { const w = img.lw || img.width, h = img.lh || img.height; ctx.drawImage(img, -w, -h, w * 2, h * 2); }
       ctx.restore();
     }
 
