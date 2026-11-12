@@ -1,14 +1,14 @@
 /* 만들기 화면: 픽셀 무대 느낌의 입력 양식 */
 body.maker { background: var(--px-bg); color: var(--px-ink); font-family: var(--sans); }
-.mk-head { display: flex; align-items: center; justify-content: space-between; max-width: 520px; margin: 0 auto; padding: 14px 16px 0; font-family: 'Galmuri11', var(--sans); }
+.mk-head { display: flex; align-items: center; justify-content: space-between; max-width: 520px; margin: 0 auto; padding: 14px 16px 0; font-family: 'Dongle', var(--sans); font-size: 26px; line-height: 1.1; }
 .mk-home { color: var(--px-ink); font-weight: 700; text-decoration: none; }
-.mk-beta { font-size: 12px; padding: 3px 8px; border-radius: 999px; background: var(--px-accent); color: #fff; }
+.mk-beta { font-family: var(--sans); font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--px-accent); color: #fff; }
 .mk { max-width: 520px; margin: 0 auto; padding: 8px 16px 48px; }
-.mk h1 { font-family: 'Galmuri11', var(--sans); font-size: 24px; margin: 14px 0 6px; }
+.mk h1 { font-family: 'Dongle', var(--sans); font-size: 38px; margin: 14px 0 6px; }
 .mk-lead { margin: 0 0 16px; font-size: 15px; color: var(--px-muted); }
 
 .mk-card { background: #fff; border: 2px solid var(--px-ink); border-radius: 14px; box-shadow: 0 4px 0 #f0cdd6; padding: 14px 16px 16px; margin: 0 0 16px; min-width: 0; }
-.mk-card legend { font-family: 'Galmuri11', var(--sans); font-weight: 700; font-size: 17px; padding: 0 6px; }
+.mk-card legend { font-family: 'Dongle', var(--sans); font-weight: 700; font-size: 27px; padding: 0 6px; }
 .mk-card legend small { font-weight: 400; color: var(--px-muted); font-size: 13px; }
 .step { display: inline-flex; width: 24px; height: 24px; align-items: center; justify-content: center; border-radius: 6px; background: var(--px-accent); color: #fff; font-size: 14px; margin-right: 2px; }
 .mk-card h3 { font-size: 15px; margin: 4px 0 4px; color: var(--px-accent); }
@@ -28,7 +28,7 @@ body.maker { background: var(--px-bg); color: var(--px-ink); font-family: var(--
 
 .preview-box { max-width: 260px; margin: 6px auto 12px; }
 .who-tabs { display: flex; gap: 8px; margin-bottom: 4px; }
-.who { flex: 1; font: inherit; font-family: 'Galmuri11', var(--sans); font-weight: 700; font-size: 15px; padding: 9px; border-radius: 10px; border: 2px solid var(--px-ink); background: #fff; color: var(--px-ink); cursor: pointer; }
+.who { flex: 1; font: inherit; font-weight: 700; font-size: 15px; padding: 9px; border-radius: 10px; border: 2px solid var(--px-ink); background: #fff; color: var(--px-ink); cursor: pointer; }
 .who.on { background: var(--px-ink); color: #fff; }
 .opt p { margin: 12px 0 6px; font-size: 14px; font-weight: 600; }
 .opt-row { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -49,8 +49,8 @@ body.maker { background: var(--px-bg); color: var(--px-ink); font-family: var(--
 .mini[hidden] { display: none; }
 
 .err { color: #c0392b; font-weight: 600; margin: 0 0 10px; }
-.btn.big { width: 100%; padding: 15px; font-size: 18px; font-family: 'Galmuri11', var(--sans); }
-.done h2 { font-family: 'Galmuri11', var(--sans); font-size: 20px; margin: 0; }
+.btn.big { width: 100%; padding: 15px; font-size: 18px; }
+.done h2 { font-family: 'Dongle', var(--sans); font-size: 32px; margin: 0; }
 .done #outLink { font-size: 13px; margin: 12px 0; }
 .done .choice { margin-bottom: 8px; }
 .done > .btn { width: 100%; }

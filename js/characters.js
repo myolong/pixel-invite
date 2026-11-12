@@ -466,6 +466,7 @@ const shade = (hex, f) => {
 // look: { outfit:'tux'|'dress'|'casual', hair:'short'|'long'|'bob'|'bun', skin:0.., hairColor:0.., color:0.., glasses:bool, veil:bool }
 // 반환: { stand, happy } 두 장의 굽힌 캔버스
 function makeCharacter(look) {
+  if (window.TOON) return window.TOON.make(look);
   const outfit = OUTFITS[look.outfit] ? look.outfit : 'tux';
   const hair = HAIRS[look.hair] ? look.hair : 'short';
   const skin = SKINS[look.skin] || SKINS[0];

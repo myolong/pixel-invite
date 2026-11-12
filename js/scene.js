@@ -32,7 +32,7 @@
       const prop = PixelChars.PROPS[s.K.game.good];
       const fall = (tt * 40) % 150;
       const px = 80 + Math.sin(tt * 1.3) * 30;
-      s.ctx.drawImage(prop, Math.round(px - prop.width), Math.round(30 + fall), prop.width * 2, prop.height * 2);
+      s.ctx.drawImage(prop, Math.round(px - (prop.lw || prop.width)), Math.round(30 + fall), (prop.lw || prop.width) * 2, (prop.lh || prop.height) * 2);
       if (s.title) Stage.drawText(s.ctx, s.K.stage, 80, 42, s.K.stage.length > 9 ? 11 : 13, '#e0526e');
     }
     requestAnimationFrame(loop);

@@ -116,13 +116,14 @@ class TowerGame {
 
   drawLayer(ctx, x, bottom, w, c) {
     const [body, edge] = TOWER_COLORS[c];
-    const h = TOWER_RULES.layerH, X = Math.round(x), W = Math.round(w), Y = Math.round(bottom - h);
-    ctx.fillStyle = '#2a2033'; ctx.fillRect(X, Y, W, h);
-    ctx.fillStyle = body; ctx.fillRect(X + 1, Y + 1, W - 2, h - 2);
-    // 위쪽 크림
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(X + 1, Y + 1, W - 2, 3);
-    ctx.fillStyle = edge;
-    for (let i = X + 3; i < X + W - 3; i += 6) ctx.fillRect(i, Y + 4, 2, 2);
+    const h = TOWER_RULES.layerH, X = x, W = w, Y = bottom - h, r = Math.min(2.5, W / 3);
+    ctx.fillStyle = body; ctx.beginPath(); ctx.roundRect(X, Y, W, h, r); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.beginPath(); ctx.roundRect(X, Y + h - 2, W, 2, [0, 0, r, r]); ctx.fill();
+    // 위쪽 크림(물결)
+    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.moveTo(X, Y + r); ctx.quadraticCurveTo(X, Y, X + r, Y); ctx.lineTo(X + W - r, Y); ctx.quadraticCurveTo(X + W, Y, X + W, Y + r);
+    for (let i = X + W; i > X + 0.5; i -= 4) ctx.quadraticCurveTo(i - 2, Y + 5.5, Math.max(X, i - 4), Y + 3);
+    ctx.closePath(); ctx.fill();
+    for (let i = X + 4; i < X + W - 3; i += 6) { ctx.fillStyle = edge; ctx.beginPath(); ctx.arc(i, Y + 6.5, 1, 0, Math.PI * 2); ctx.fill(); }
   }
 
   draw(ctx) {
@@ -136,15 +137,17 @@ class TowerGame {
 
     // 접시
     const plate = this.stack[0];
-    ctx.fillStyle = '#2a2033'; ctx.fillRect(Math.round(plate.x) - 6, Stage.FLOOR_Y - 4, plate.w + 12, 5);
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(Math.round(plate.x) - 5, Stage.FLOOR_Y - 3, plate.w + 10, 3);
+    ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.beginPath(); ctx.ellipse(plate.x + plate.w / 2, Stage.FLOOR_Y + 1, plate.w / 2 + 8, 2.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.ellipse(plate.x + plate.w / 2, Stage.FLOOR_Y - 1.5, plate.w / 2 + 6, 2.6, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#d9cbd3'; ctx.lineWidth = 0.6; ctx.stroke();
     this.stack.slice(1).forEach((s, i) => this.drawLayer(ctx, s.x, this.layerY(i + 1), s.w, s.c));
     // 다 쌓으면 꼭대기에 촛불
     if (this.win && this.endIn > 0) {
       const tp = this.top, cx = Math.round(tp.x + tp.w / 2), y = this.layerY(this.layers) - TOWER_RULES.layerH;
-      ctx.fillStyle = '#2a2033'; ctx.fillRect(cx - 2, y - 10, 4, 10);
-      ctx.fillStyle = '#ffffff'; ctx.fillRect(cx - 1, y - 9, 2, 9);
-      ctx.fillStyle = Math.floor(this.t * 8) % 2 ? '#f5c542' : '#f5a623'; ctx.fillRect(cx - 1, y - 14, 3, 4);
+      ctx.fillStyle = '#f7a8c0'; ctx.beginPath(); ctx.roundRect(cx - 1.5, y - 10, 3, 10, 1); ctx.fill();
+      const fl = 1 + Math.sin(this.t * 20) * 0.15;
+      ctx.fillStyle = '#f5a623'; ctx.beginPath(); ctx.ellipse(cx, y - 13, 1.8, 3 * fl, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff3b0'; ctx.beginPath(); ctx.ellipse(cx, y - 12.4, 0.8, 1.6 * fl, 0, 0, Math.PI * 2); ctx.fill();
       Stage.drawText(ctx, '완성!', 22, 104, 12, '#e0526e');
     }
     for (const b of this.bits) { ctx.globalAlpha = Math.min(1, b.life * 2); this.drawLayer(ctx, b.x, b.y + TOWER_RULES.layerH, b.w, b.c); ctx.globalAlpha = 1; }
