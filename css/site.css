@@ -64,3 +64,46 @@
 .faq details:first-child { border-top: 0; padding-top: 0; }
 .faq summary { font-weight: 700; cursor: pointer; font-size: 15px; }
 .faq p { margin: 6px 0 0; font-size: 14px; color: var(--px-muted); }
+
+/* 머리 메뉴·바닥글 */
+.mk-nav { display: flex; gap: 12px; font-family: var(--sans); font-size: 14px; font-weight: 700; }
+.mk-nav a { color: var(--px-ink); text-decoration: none; }
+.mk-nav a:last-child { color: var(--px-accent); }
+.site-foot { max-width: 960px; margin: 0 auto; padding: 22px 16px 40px; border-top: 1px dashed #ecdde2; text-align: center; font-size: 13px; color: var(--px-muted); }
+.site-foot nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; margin-bottom: 8px; }
+.site-foot a { color: var(--px-muted); }
+.site-foot p { margin: 0; }
+
+/* 안내 글 */
+.guide-page { max-width: 720px; }
+.guide { background: #fff; border: 2px solid var(--px-ink); border-radius: 16px; box-shadow: 0 4px 0 #f0cdd6; padding: 20px 18px 24px; font-size: 16px; line-height: 1.8; color: var(--ink); }
+.guide h1 { font-family: 'Dongle', var(--sans); font-size: 44px; line-height: 1.05; margin: 0 0 6px; color: var(--px-ink); }
+.guide h2 { font-family: 'Dongle', var(--sans); font-size: 32px; line-height: 1.1; margin: 28px 0 8px; color: var(--px-ink); }
+.guide h3 { font-size: 16px; margin: 18px 0 4px; }
+.guide p { margin: 0 0 12px; }
+.guide ul, .guide ol { padding-left: 22px; margin: 0 0 12px; }
+.guide li { margin: 4px 0; }
+.g-date { font-size: 13px; color: var(--px-muted); }
+.g-quotes { list-style: none; padding: 0 !important; }
+.g-quotes li { background: #fff6f8; border-left: 4px solid var(--px-accent); border-radius: 8px; padding: 10px 12px; margin: 8px 0; font-size: 15px; line-height: 1.7; }
+.g-table { width: 100%; border-collapse: collapse; margin: 6px 0 14px; font-size: 14px; line-height: 1.6; }
+.g-table th, .g-table td { border: 1px solid #ecdde2; padding: 7px 8px; text-align: left; vertical-align: top; }
+.g-table th { background: #fff0f3; }
+.g-cta { margin-top: 24px; padding: 16px; background: #fff0f3; border-radius: 14px; text-align: center; }
+.g-cta p { margin: 0 0 10px; }
+.g-cta .btn { display: inline-flex; text-decoration: none; min-width: 130px; margin: 3px; }
+.g-mail { font-size: 18px; font-weight: 700; }
+.g-rel h2 { font-family: 'Dongle', var(--sans); font-size: 30px; margin: 22px 0 6px; }
+.g-rel ul { padding-left: 20px; margin: 0; }
+.g-rel li { margin: 6px 0; }
+.g-rel a, .guide a { color: var(--px-accent); }
+.g-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.g-list a { display: block; text-decoration: none; color: var(--px-ink); background: #fff; border: 2px solid var(--px-ink); border-radius: 14px; box-shadow: 0 3px 0 #f0cdd6; padding: 12px 14px; }
+.g-list b { display: block; font-size: 16px; }
+.g-list small { display: block; color: var(--px-muted); font-size: 13px; line-height: 1.5; margin-top: 3px; }
+.home-guides { margin-top: 8px; }
+.home-guides h2 { font-family: 'Dongle', var(--sans); font-size: 27px; margin: 0 0 8px; }
+.g-rel-list { padding-left: 20px; margin: 0 0 8px; font-size: 15px; }
+.g-rel-list li { margin: 6px 0; }
+.g-rel-list a, .home-guides .more { color: var(--px-accent); }
+.home-guides .more { font-size: 14px; font-weight: 700; text-decoration: none; }

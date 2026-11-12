@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>게임 초대장 - 픽셀 초대장</title>
-  <meta name="description" content="픽셀 캐릭터와 미니게임이 들어간 재밌는 초대장. 예시를 보고 바로 만들어요.">
+  <title>게임 초대장 - 게임초대장</title>
+  <meta name="description" content="귀여운 캐릭터와 미니게임이 들어간 재밌는 초대장. 예시를 보고 바로 만들어요.">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="픽셀 초대장">
-  <meta property="og:title" content="픽셀 초대장 - 게임을 깨면 열리는 초대장 만들기">
-  <meta property="og:description" content="결혼식·모임·행사 초대장을 픽셀 캐릭터와 미니게임으로. 가입 없이 무료.">
-  <meta property="og:image" content="https://myolong.github.io/pixel-invite/assets/og/home.png?v=3">
+  <meta property="og:site_name" content="게임초대장">
+  <meta property="og:title" content="게임초대장 - 게임을 깨면 열리는 초대장 만들기">
+  <meta property="og:description" content="결혼식·모임·행사 초대장을 귀여운 캐릭터와 미니게임으로. 가입 없이 무료.">
+  <meta property="og:image" content="https://myolong.github.io/pixel-invite/assets/og/home.png?v=4">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
@@ -17,16 +17,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dongle:wght@400;700&display=swap">
-  <link rel="stylesheet" href="css/invite.css?v=20261112a">
-  <link rel="stylesheet" href="css/make.css?v=20261112a">
-  <link rel="stylesheet" href="css/site.css?v=20261112a">
+  <link rel="stylesheet" href="css/invite.css?v=20261112b">
+  <link rel="stylesheet" href="css/make.css?v=20261112b">
+  <link rel="stylesheet" href="css/site.css?v=20261112b">
   <!-- 광고: 초대장을 만드는 사람이 보는 화면에만(손님이 여는 invite*.html에는 넣지 않음) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5781805498180631" crossorigin="anonymous"></script>
 </head>
 <body class="maker">
   <header class="mk-head">
-    <a class="mk-home" href="index.html">픽셀 초대장</a>
-    <span class="mk-beta">무료 베타</span>
+    <a class="mk-home" href="index.html">게임초대장</a>
+    <nav class="mk-nav"><a href="guide/">초대장 가이드</a></nav>
   </header>
   <main class="site">
     <a class="back" href="index.html">‹ 초대장 종류 전체</a>
@@ -76,9 +76,13 @@
       <div class="other-chips" id="others"></div>
     </section>
   </main>
+  <footer class="site-foot">
+    <nav><a href="about.html">사이트 소개</a><a href="guide/">초대장 가이드</a><a href="privacy.html">개인정보처리방침</a><a href="contact.html">문의</a></nav>
+    <p>© 2026 게임초대장. 게임을 깨면 열리는 무료 모바일 초대장.</p>
+  </footer>
 
-  <script src="js/invite-code.js?v=20261112a"></script>
-  <script src="js/kinds.js?v=20261112a"></script>
+  <script src="js/invite-code.js?v=20261112b"></script>
+  <script src="js/kinds.js?v=20261112b"></script>
   <script>
     'use strict';
     (async function () {
@@ -95,7 +99,7 @@
       // 검색어에 맞춘 제목(송년회 초대장 등)
       const SEO = { yearend: '송년회·연말모임 초대장', newyear: '신년회·새해 모임 초대장', xmas: '크리스마스 파티 초대장', seollal: '설 연휴 가족모임 초대장',
         chuseok: '추석 가족모임 초대장', bungae: '번개 모임 초대장', gather: '모임 초대장', wedding: '모바일 청첩장', notice: '결혼 알림장' };
-      document.title = `${SEO[k] || K.name} 만들기 무료 - 게임으로 여는 픽셀 초대장`;
+      document.title = `${SEO[k] || K.name} 만들기 무료 - 게임으로 여는 게임초대장`;
       document.querySelector('meta[name=description]').content = `${K.desc} 가입 없이 무료로 만들어요.`;
       $('kEyebrow').textContent = K.eyebrow;
       $('kName').textContent = K.name;
@@ -135,7 +139,7 @@
         ['받는 사람이 앱을 깔아야 하나요?', '아니요. 카톡으로 받은 링크를 누르면 휴대폰 브라우저에서 바로 열려요.'],
         ['게임이 어려우면 어떡하죠?', `게임은 언제든 건너뛸 수 있고, 점수와 상관없이 끝나면 ${DOC}이 열려요.`],
         ['보낸 뒤에 내용을 고칠 수 있나요?', '수정용 링크로 들어가 고친 뒤 새 링크를 다시 보내면 돼요. 이미 보낸 링크는 고치기 전 내용으로 보여요.'],
-        ['사진도 넣을 수 있나요?', '무료 베타에서는 사진 대신 픽셀 캐릭터 그림이 들어가요. 사진첩은 준비 중이에요.'],
+        ['사진도 넣을 수 있나요?', '무료 베타에서는 사진 대신 귀여운 캐릭터 그림이 들어가요. 사진첩은 준비 중이에요.'],
         ['입력한 정보는 어디에 저장되나요?', '서버에 저장하지 않고 링크 안에만 들어가요. 링크를 가진 사람은 누구나 볼 수 있으니 계좌·연락처는 필요한 것만 적어 주세요.'],
       ];
       faq.forEach(([qq, a]) => { const d = el('details'); d.append(el('summary', '', qq), el('p', '', a)); $('faq').append(d); });
