@@ -1,4 +1,4 @@
-# pixel-invite (픽셀 초대장)
+# pixel-invite (게임초대장)
 
 게임을 깨면 열리는 재밌는 초대장. 오프닝과 게임은 픽셀, 초대장 본문은 일반 모바일 청첩장 디자인이에요.
 
@@ -47,3 +47,7 @@ HTML의 `js/…`, `css/…` 주소 끝에 `?v=날짜` 가 붙어 있어요. 브�
 ## 광고
 
 애드센스(자동 광고) 코드는 만드는 사람이 보는 `index.html`, `kind.html`, `make.html`에만 넣었어요. 손님이 여는 `invite.html`·`invite-<종류>.html`에는 넣지 않아요. `ads.txt`는 도메인 맨 위에 있어야 해서, 지금 주소(github.io 하위 경로)에서는 쓰이지 않고 도메인을 연결하면 쓰여요.
+
+## 안내 글·소개·개인정보처리방침
+
+원본은 `tools/pages/*.html`. 고친 뒤 `python3 tools/build-pages.py`를 실행하면 `guide/`, `about.html`, `privacy.html`, `contact.html`, `sitemap.xml`과 첫 화면·종류·만들기 페이지의 바닥글이 새로 만들어져요. 도메인을 연결하면 스크립트의 `SITE`를 바꾸고 다시 실행해요.

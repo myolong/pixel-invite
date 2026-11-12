@@ -421,7 +421,7 @@
     const c = document.createElement('canvas');
     c.width = Stage.LW * S; c.height = Stage.LH * S;
     c.setAttribute('role', 'img');
-    c.setAttribute('aria-label', `${namesText} 픽셀 캐릭터`);
+    c.setAttribute('aria-label', `${namesText} 캐릭터`);
     const g = c.getContext('2d');
     g.setTransform(S, 0, 0, S, 0, 0);
     g.imageSmoothingEnabled = true;

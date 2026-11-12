@@ -63,10 +63,10 @@ const DESC = '작은 게임을 깨면 열려요. 눌러서 열어 보세요!';
   const src = fs.readFileSync(path.join(ROOT, 'invite.html'), 'utf8');
   for (const [k, title] of Object.entries(TITLES)) {
     const og = [
-      `<title>${title} - 픽셀 초대장</title>`,
+      `<title>${title} - 게임초대장</title>`,
       `  <meta name="description" content="${DESC}">`,
       `  <meta property="og:type" content="website">`,
-      `  <meta property="og:site_name" content="픽셀 초대장">`,
+      `  <meta property="og:site_name" content="게임초대장">`,
       `  <meta property="og:title" content="${title}">`,
       `  <meta property="og:description" content="${DESC}">`,
       `  <meta property="og:image" content="${SITE}assets/og/${k}.png?v=${OG_VER}">`,

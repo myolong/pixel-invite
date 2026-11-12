@@ -177,7 +177,7 @@
     const fb = document.createElement('div');
     fb.className = 'opt face-opt';
     fb.innerHTML = `<p>얼굴</p><div class="opt-row">
-      <button type="button" class="chip${L.face ? '' : ' on'}" data-f="pixel">픽셀 얼굴</button>
+      <button type="button" class="chip${L.face ? '' : ' on'}" data-f="pixel">그림 얼굴</button>
       <button type="button" class="chip${L.face ? ' on' : ''}" data-f="photo">${L.face ? '<img alt="" class="face-thumb"> 사진 바꾸기' : '내 사진 얼굴'}</button>
       </div><input type="file" accept="image/*" hidden>
       <p class="hint small">${L.face ? '사진 얼굴은 이 링크를 받은 사람 누구나 볼 수 있어요.' : '얼굴이 잘 나온 사진을 고르면 얼굴만 오려서 캐릭터 머리로 써요. 사진은 이 기기 안에서만 처리돼요.'}</p>`;

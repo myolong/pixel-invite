@@ -14,7 +14,7 @@ async function makeHomeOg(p, file) {
       <div id="og" style="position:relative;width:1200px;height:630px;background:#fff3f5;font-family:sans-serif;color:#2a2033;overflow:hidden">
         <div style="position:absolute;inset:0;background-image:radial-gradient(#f7c6d9 2px,transparent 2px);background-size:28px 28px;opacity:.7"></div>
         <div style="position:absolute;top:0;left:0;width:620px;height:630px;display:flex;flex-direction:column;justify-content:center;padding-left:64px">
-          <p style="margin:0 0 22px;align-self:flex-start;font-family:Dongle;font-weight:700;font-size:42px;line-height:1.1;padding:6px 20px 2px;border:3px solid #2a2033;border-radius:999px;background:#fff">🎮 픽셀 초대장</p>
+          <p style="margin:0 0 22px;align-self:flex-start;font-family:Dongle;font-weight:700;font-size:42px;line-height:1.1;padding:6px 20px 2px;border:3px solid #2a2033;border-radius:999px;background:#fff">🎮 게임초대장</p>
           <p style="margin:0;font-family:Dongle;font-size:104px;font-weight:700;line-height:0.95">게임을 깨면<br><span style="color:#e0526e">열리는 초대장</span></p>
           <p style="margin:26px 0 0;font-size:28px;line-height:1.55;color:#7a6d80">송년회·신년회·크리스마스 파티<br>명절 모임·결혼식까지 1분이면 끝</p>
           <div style="margin-top:36px;display:flex;gap:14px;align-items:center">
@@ -29,7 +29,7 @@ async function makeHomeOg(p, file) {
     document.body.style.margin = '0';
     document.querySelectorAll('#og canvas').forEach(c => PixelScene.mount(c, c.dataset.k));
   });
-  await p.evaluate(() => document.fonts.load('700 80px Dongle', '픽셀 초대장 게임을 깨면 열리는 무료로 만들기'));
+  await p.evaluate(() => document.fonts.load('700 80px Dongle', '게임초대장 게임을 깨면 열리는 무료로 만들기'));
   await p.waitForTimeout(900);
   await p.locator('#og').screenshot({ path: file });
 }
