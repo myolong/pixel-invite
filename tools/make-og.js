@@ -13,6 +13,8 @@ const TITLES = {
   // 목록에서 빠졌지만 예전 링크용으로 남긴 종류
   bihon: '비혼식 초대장', ihon: '이혼식 초대장', babyshower: '베이비샤워 초대장', event: '기념 행사 초대장',
 };
+// 그림을 바꾸면 이 값을 올린다(카톡은 같은 그림 주소면 예전 그림을 계속 씀)
+const OG_VER = '2';
 const DESC = '작은 게임을 깨면 열려요. 눌러서 열어 보세요!';
 
 (async () => {
@@ -65,7 +67,7 @@ const DESC = '작은 게임을 깨면 열려요. 눌러서 열어 보세요!';
       `  <meta property="og:site_name" content="픽셀 초대장">`,
       `  <meta property="og:title" content="${title}">`,
       `  <meta property="og:description" content="${DESC}">`,
-      `  <meta property="og:image" content="${SITE}assets/og/${k}.png">`,
+      `  <meta property="og:image" content="${SITE}assets/og/${k}.png?v=${OG_VER}">`,
       `  <meta property="og:image:width" content="1200">`,
       `  <meta property="og:image:height" content="630">`,
       `  <meta name="twitter:card" content="summary_large_image">`,
