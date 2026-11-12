@@ -278,10 +278,18 @@ const TOON = (() => {
   }
 
   function glasses(g) {
-    g.strokeStyle = INK; g.lineWidth = 2.6;
-    [-12, 12].forEach(x => { ell(g, x, HY + 1, 9, 8); g.stroke(); });
-    g.beginPath(); g.moveTo(-3, HY); g.lineTo(3, HY); g.stroke();
-    g.fillStyle = 'rgba(255,255,255,0.25)'; [-12, 12].forEach(x => { ell(g, x - 3, HY - 2, 3, 2); g.fill(); });
+    // 선글라스: 짙은 렌즈 + 반사광
+    g.fillStyle = INK; g.strokeStyle = INK; g.lineWidth = 2.6;
+    [-1, 1].forEach(s => {
+      g.beginPath(); g.moveTo(s * 3, HY - 5); g.lineTo(s * 22, HY - 6);
+      g.quadraticCurveTo(s * 23, HY + 10, s * 13, HY + 10); g.quadraticCurveTo(s * 3, HY + 10, s * 3, HY - 5); g.fill();
+    });
+    g.beginPath(); g.moveTo(-4, HY - 4); g.quadraticCurveTo(0, HY - 7, 4, HY - 4); g.stroke();
+    g.beginPath(); g.moveTo(-22, HY - 5); g.lineTo(-31, HY - 2); g.moveTo(22, HY - 5); g.lineTo(31, HY - 2); g.stroke();
+    g.fillStyle = 'rgba(255,255,255,0.55)';
+    [-1, 1].forEach(s => { g.beginPath(); g.ellipse(s * 13 - 4, HY - 1, 3.2, 1.6, -0.5, 0, Math.PI * 2); g.fill(); });
+    g.fillStyle = 'rgba(120,160,255,0.35)';
+    [-1, 1].forEach(s => { g.beginPath(); g.ellipse(s * 13 + 3, HY + 5, 3, 1.4, -0.4, 0, Math.PI * 2); g.fill(); });
   }
 
   // ── 소품(얼굴·사진 얼굴 위 겹)

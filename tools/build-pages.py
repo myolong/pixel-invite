@@ -10,7 +10,7 @@ import html, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://gamechodae.co.kr/'
 NAME = '게임초대장'
-VER = '20261112b'
+VER = '20261112c'
 ADS = 'ca-pub-5781805498180631'
 KIND_NAMES = {
     'yearend': '연말 모임 초대장', 'newyear': '신년 모임 초대장', 'xmas': '크리스마스 파티 초대장',
