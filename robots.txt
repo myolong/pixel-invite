@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://myolong.github.io/pixel-invite/sitemap.xml
+Sitemap: https://gamechodae.co.kr/sitemap.xml
