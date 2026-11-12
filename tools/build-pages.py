@@ -8,7 +8,7 @@
 import html, json, os, re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SITE = 'https://myolong.github.io/pixel-invite/'
+SITE = 'https://gamechodae.co.kr/'
 NAME = '게임초대장'
 VER = '20261112b'
 ADS = 'ca-pub-5781805498180631'
