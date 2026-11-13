@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 
 Sitemap: https://gamechodae.co.kr/sitemap.xml
+
+#DaumWebMasterTool:453584dc6011daa388f43002396105dbfaca3e5024cb5672e9017574db60e807:LJPampnqaffzNtkuALZiYQ==
