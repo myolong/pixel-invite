@@ -10,7 +10,7 @@ import html, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://gamechodae.co.kr/'
 NAME = '게임초대장'
-VER = '20261116b'
+VER = '20261116c'
 ADS = 'ca-pub-5781805498180631'
 KIND_NAMES = {
     'yearend': '연말 모임 초대장', 'newyear': '신년 모임 초대장', 'xmas': '크리스마스 파티 초대장',
@@ -56,6 +56,9 @@ def head(title, desc, url, depth, ld=None):
   <meta property="og:image" content="{SITE}assets/og/home.png?v=4">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#fff3f5">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/assets/icon/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/icon/icon-180.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dongle:wght@400;700&display=swap">

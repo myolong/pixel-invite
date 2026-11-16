@@ -88,6 +88,10 @@
     $('transfers').innerHTML = r.tr.length
       ? r.tr.map((t) => `<li><span class="names"><b>${esc(state.people[t.from])}</b><span class="arrow">→</span><b>${esc(state.people[t.to])}</b></span><span></span><span class="money">${won(t.amt)}</span></li>`).join('')
       : '<li class="empty">보낼 돈이 없어요.</li>';
+    const bd = breakdown();
+    $('breakdown').innerHTML = bd.length
+      ? bd.map((b) => `<li><div class="bd-top"><b>${esc(b.name)}</b><span>${won(b.amt)}</span></div><small>${b.payer ? `${esc(b.payer)} 결제 · ` : ''}${b.ins}명이 1인 ${won(b.each)}${b.out.length ? ` · ${b.out.map(esc).join(', ')} 빠짐` : ''}</small></li>`).join('')
+      : '<li class="empty">금액을 넣은 항목이 없어요.</li>';
     $('per').innerHTML = '<tr><th>이름</th><th>부담</th><th>낸 돈</th><th>주고받을 돈</th></tr>' +
       state.people.map((p, i) => {
         const d = r.paid[i] - r.owe[i];
@@ -107,9 +111,24 @@
     const data = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
     return location.origin + location.pathname + '#d=' + data;
   }
+  // 항목별 내역: 금액, 낸 사람, 나눈 사람 수, 1인 금액, 빠진 사람
+  function breakdown() {
+    return state.items.filter((it) => Number(it.amount) > 0).map((it) => {
+      const out = it.out.map((i) => state.people[i]).filter(Boolean);
+      const ins = state.people.length - out.length;
+      return { name: it.name || '항목', amt: Number(it.amount), payer: state.people[it.payer] || '', ins, each: ins ? it.amount / ins : 0, out };
+    });
+  }
   function resultText() {
     const r = calc();
-    return [`[${state.title} 정산] 총 ${won(r.total)}`, ...r.tr.map((t) => `${state.people[t.from]} → ${state.people[t.to]} ${won(t.amt)}`)].join('\n');
+    const lines = [`[${state.title} 정산] 총 ${won(r.total)}`, '', '■ 항목별 내역'];
+    breakdown().forEach((b) => {
+      lines.push(`- ${b.name} ${won(b.amt)}${b.payer ? ` (${b.payer} 결제)` : ''} ÷ ${b.ins}명 = 1인 ${won(b.each)}${b.out.length ? ` · ${b.out.join(', ')} 빠짐` : ''}`);
+    });
+    lines.push('', '■ 보낼 돈');
+    if (r.tr.length) r.tr.forEach((t) => lines.push(`${state.people[t.from]} → ${state.people[t.to]} ${won(t.amt)}`));
+    else lines.push('보낼 돈이 없어요.');
+    return lines.join('\n');
   }
 
   // 이벤트

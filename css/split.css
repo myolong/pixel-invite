@@ -73,3 +73,8 @@ body.view .result h2 .step { display: none; }
 .title-in { width: 100%; box-sizing: border-box; margin: 0 0 10px; }
 .sp-faq { margin-top: 4px; }
 body.view .sp-faq, body.view .sample-bar { display: none; }
+.breakdown { list-style: none; padding: 0; margin: 0; }
+.breakdown li { padding: 7px 4px; border-bottom: 1px dashed #ecdde2; }
+.breakdown .bd-top { display: flex; justify-content: space-between; font-size: 15px; }
+.breakdown small { display: block; font-size: 13px; color: var(--px-muted); }
+.breakdown .empty { color: var(--px-muted); font-size: 14px; }
