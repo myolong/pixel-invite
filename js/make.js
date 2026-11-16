@@ -17,6 +17,8 @@
   const looks = { groom: clone(K.people[0].look), bride: clone(K.people[1].look) };
   let who = 'groom';
   let accounts = [];
+  // 회비 방식(모임 초대장): pre = 회비 먼저 걷고 추가 비용은 정산, later = 모임 끝나고 한 번에 정산
+  let feeMode = 'pre';
   // 참석 여부: on(켜기), id(초대장 번호), key(만든 사람 열쇠, 수정용 링크에만 들어감)
   let rsvp = { on: true, id: null, key: null };
   let gameKind = 'catch';
@@ -212,7 +214,19 @@
   }
 
   // ── 계좌
+  const FEE_HINT = {
+    pre: '1인 회비를 먼저 받고, 모자라거나 더 쓴 돈은 모임이 끝나고 정산기로 나눠요.',
+    later: '회비를 미리 걷지 않아요. 모임이 끝나고 쓴 만큼 정산기로 나눠요. 계좌는 정산 받을 곳으로 적어 두세요.',
+  };
+  function renderFeeMode() {
+    $('feeMode').hidden = !K.accountAmount;
+    $('accLegend').textContent = K.accountAmount ? '회비·정산' : '계좌';
+    document.querySelectorAll('[data-fee]').forEach(b => b.classList.toggle('on', b.dataset.fee === feeMode));
+    $('feeHint').textContent = FEE_HINT[feeMode];
+  }
+  document.querySelectorAll('[data-fee]').forEach(b => b.addEventListener('click', () => { feeMode = b.dataset.fee; renderAccounts(); saveDraft(); }));
   function renderAccounts() {
+    renderFeeMode();
     const box = $('accounts');
     box.innerHTML = '';
     const sides = K.accountSides;
@@ -226,7 +240,7 @@
       const bank = inp('은행', a.bank), num = inp('계좌번호', a.number, 30), holder = inp('예금주', a.holder);
       const amount = inp('금액 (예: 1인 30,000원)', a.amount || '', 20);
       amount.className = 'amount';
-      amount.hidden = !K.accountAmount;
+      amount.hidden = !K.accountAmount || feeMode === 'later';
       num.inputMode = 'numeric';
       const del = document.createElement('button');
       del.type = 'button'; del.className = 'del'; del.textContent = '✕'; del.setAttribute('aria-label', '이 계좌 지우기');
@@ -259,7 +273,7 @@
       day: v('day'), time: v('time'),
       venue: { name: v('venue.name'), address: v('venue.address'), transit: v('venue.transit'), parking: v('venue.parking') },
       greeting: form.greeting.value.replace(/\r/g, '').trim(),
-      accounts, looks, rsvp, game: gameKind,
+      accounts, looks, rsvp, game: gameKind, fee: feeMode,
       quiz: { q: v('quiz.q'), a: v('quiz.a'), w: [v('quiz.w1'), v('quiz.w2'), v('quiz.w3')] },
     };
   }
@@ -277,6 +291,7 @@
       const ok = window.Rsvp && Rsvp.validId(d.rsvp.id) && /^[A-Za-z0-9]{24}$/.test(d.rsvp.key || '');
       rsvp = { on: d.rsvp.on !== false, id: ok ? d.rsvp.id : null, key: ok ? d.rsvp.key : null };
     }
+    feeMode = d.fee === 'later' ? 'later' : 'pre';
     if (Array.isArray(d.accounts)) accounts = d.accounts.map(a => ({ side: a.side || '', bank: a.bank || '', number: a.number || '', holder: a.holder || '', amount: a.amount || '' }));
     if (d.looks) {
       SLOTS.forEach((k, i) => {
@@ -312,7 +327,8 @@
       game: gameKind !== 'catch' ? gameKind : '',
       quiz: gameKind === 'quiz' ? { q: d.quiz.q, a: d.quiz.a, w: d.quiz.w.filter(Boolean) } : null,
       rsvp: window.Rsvp && Rsvp.enabled && d.rsvp.on && d.rsvp.id ? { id: d.rsvp.id, pub: !!K.rsvpPublic } : null,
-      accounts: d.accounts.filter(a => a.number.trim()).map(a => clean({ side: a.side, bank: a.bank.trim(), number: a.number.trim(), holder: a.holder.trim(), amount: K.accountAmount ? (a.amount || '').trim().slice(0, 20) : '' })),
+      accounts: d.accounts.filter(a => a.number.trim()).map(a => clean({ side: a.side, bank: a.bank.trim(), number: a.number.trim(), holder: a.holder.trim(), amount: K.accountAmount && d.fee !== 'later' ? (a.amount || '').trim().slice(0, 20) : '' })),
+      fee: K.accountAmount && d.fee === 'later' ? 'later' : '',
     });
   }
   function fromConfig(c) {
@@ -323,7 +339,7 @@
       greeting: c.greeting, accounts: c.accounts || [],
       looks: { groom: (c.groom || {}).look, bride: (c.bride || {}).look },
       rsvp: { on: !c.rsvpOff, id: c.rsvp && c.rsvp.id, key: c.rsvpKey },
-      game: c.game, quiz: c.quiz,
+      game: c.game, quiz: c.quiz, fee: c.fee === 'later' ? 'later' : 'pre',
     };
   }
 

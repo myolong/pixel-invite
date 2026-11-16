@@ -14,6 +14,7 @@
       { name: '2차 노래방', amount: 45000, payer: 1, out: [3, 4] },
     ],
     round: true,
+    fee: { on: false, amount: 0, by: 0, out: [] },
   };
 
   const qs = new URLSearchParams(location.search);
@@ -25,8 +26,18 @@
     state.people = (qs.get('names') || '').split(',').map((s) => s.trim().slice(0, 8)).filter(Boolean).slice(0, 30);
     state.title = (qs.get('t') || '모임').slice(0, 30);
     state.items = [{ name: '1차', amount: 0, payer: 0, out: [] }];
+    // 초대장에서 "회비 먼저 걷기"였으면 1인 회비와 받은 사람(계좌 예금주)을 넘겨받는다
+    const feeAmt = Number((qs.get('fee') || '').replace(/[^0-9]/g, '')) || 0;
+    if (feeAmt) {
+      const by = (qs.get('feeby') || '').trim().slice(0, 8);
+      let bi = by ? state.people.indexOf(by) : -1;
+      if (by && bi < 0) { state.people.unshift(by); bi = 0; }
+      state.fee = { on: true, amount: feeAmt, by: Math.max(bi, 0), out: [] };
+      state.items[0].payer = Math.max(bi, 0);
+    }
     $('sample').hidden = true;
   }
+  if (!state.fee) state.fee = { on: false, amount: 0, by: 0, out: [] };
   if (!view) {
     $('fromInvite').hidden = !qs.get('names');
     $('fromInvite').textContent = `초대장 참석자 ${state.people.length}명을 불러왔어요. 안 온 사람은 ✕로 빼세요.`;
@@ -46,8 +57,25 @@
       if (!ins.length) return;
       ins.forEach((i) => { owe[i] += amt / ins.length; });
     });
-    let bal = owe.map((o, i) => paid[i] - o); // +면 받을 돈
-    if (state.round) bal = bal.map((b) => (b > 0 ? Math.floor(b / 100) * 100 : -Math.ceil(-b / 100) * 100));
+    // 미리 걷은 회비: 낸 사람은 그만큼 낸 것으로, 받은 사람(총무)은 걷은 돈을 갖고 있는 것으로 본다
+    const F = state.fee, feeIn = new Array(n).fill(0);
+    let feeTotal = 0;
+    if (F.on && F.amount > 0 && n) {
+      const payers = state.people.map((_, i) => i).filter((i) => !F.out.includes(i));
+      payers.forEach((i) => { feeIn[i] += F.amount; });
+      feeTotal = F.amount * payers.length;
+    }
+    const held = new Array(n).fill(0);
+    if (feeTotal && F.by >= 0 && F.by < n) held[F.by] = feeTotal;
+    let bal = owe.map((o, i) => paid[i] + feeIn[i] - held[i] - o); // +면 받을 돈
+    if (state.round) {
+      // 보낼 돈은 100원 단위 올림, 받을 돈은 내림. 남는 차이는 가장 많이 받는 사람 몫으로 맞춘다
+      bal = bal.map((b) => (b > 0.5 ? Math.floor(b / 100) * 100 : b < -0.5 ? -Math.ceil(-b / 100) * 100 : 0));
+      const diff = -bal.reduce((x, y) => x + y, 0);
+      let top = -1;
+      bal.forEach((b, i) => { if (b > 0 && (top < 0 || b > bal[top])) top = i; });
+      if (top >= 0) bal[top] += diff;
+    }
     // 큰 빚부터 큰 받을 돈에 맞추는 방식(보내는 횟수 줄이기)
     const cred = [], debt = [];
     bal.forEach((b, i) => { if (b > 0.5) cred.push([i, b]); else if (b < -0.5) debt.push([i, -b]); });
@@ -61,10 +89,22 @@
       if (cred[ci][1] < 1) ci++;
       if (debt[di][1] < 1) di++;
     }
-    return { total, owe, paid, tr };
+    return { total, owe, paid, feeIn, feeTotal, tr };
+  }
+
+  function renderFee() {
+    const F = state.fee;
+    $('feeOn').checked = F.on;
+    $('feeRow').hidden = !F.on;
+    $('feeAmt').value = F.amount ? F.amount.toLocaleString('ko-KR') : '';
+    $('feeBy').innerHTML = state.people.map((p, i) => `<option value="${i}"${i === F.by ? ' selected' : ''}>${esc(p)}</option>`).join('');
+    $('feeWho').innerHTML = state.people.map((p, i) => `<button type="button" class="chip${F.out.includes(i) ? '' : ' on'}" data-ftog="${i}">${esc(p)}</button>`).join('');
+    const cnt = state.people.length - F.out.filter((i) => i < state.people.length).length;
+    $('feeNote').textContent = F.amount ? `${cnt}명 × ${won(F.amount)} = ${won(F.amount * cnt)} 걷음` : '1인 회비를 적어 주세요';
   }
 
   function renderEditor() {
+    renderFee();
     $('people').innerHTML = state.people.map((p, i) => `<span class="person">${esc(p)}<button type="button" data-delp="${i}" aria-label="${esc(p)} 빼기">✕</button></span>`).join('');
     $('items').innerHTML = state.items.map((it, k) => {
       const outNames = it.out.map((i) => state.people[i]).filter(Boolean);
@@ -85,18 +125,30 @@
   function renderResult() {
     const r = calc();
     $('total').textContent = won(r.total);
+    const fs = $('feeSum');
+    if (r.feeTotal) {
+      const diff = r.total - r.feeTotal;
+      fs.hidden = false;
+      fs.innerHTML = `<span>걷은 회비 ${won(r.feeTotal)}</span><b>${diff > 0 ? `더 쓴 돈 ${won(diff)}` : diff < 0 ? `남은 회비 ${won(-diff)}` : '딱 맞아요'}</b>`;
+    } else fs.hidden = true;
     $('transfers').innerHTML = r.tr.length
       ? r.tr.map((t) => `<li><span class="names"><b>${esc(state.people[t.from])}</b><span class="arrow">→</span><b>${esc(state.people[t.to])}</b></span><span></span><span class="money">${won(t.amt)}</span></li>`).join('')
       : '<li class="empty">보낼 돈이 없어요.</li>';
     const bd = breakdown();
+    $('feeBd').hidden = !feeLine();
+    $('feeBd').textContent = feeLine();
     $('breakdown').innerHTML = bd.length
       ? bd.map((b) => `<li><div class="bd-top"><b>${esc(b.name)}</b><span>${won(b.amt)}</span></div><small>${b.payer ? `${esc(b.payer)} 결제 · ` : ''}${b.ins}명이 1인 ${won(b.each)}${b.out.length ? ` · ${b.out.map(esc).join(', ')} 빠짐` : ''}</small></li>`).join('')
       : '<li class="empty">금액을 넣은 항목이 없어요.</li>';
-    $('per').innerHTML = '<tr><th>이름</th><th>부담</th><th>낸 돈</th><th>주고받을 돈</th></tr>' +
+    const F = state.fee;
+    $('per').innerHTML = `<tr><th>이름</th><th>부담</th><th>${r.feeTotal ? '낸 돈(회비 포함)' : '낸 돈'}</th><th>주고받을 돈</th></tr>` +
       state.people.map((p, i) => {
-        const d = r.paid[i] - r.owe[i];
-        return `<tr><td>${esc(p)}</td><td>${won(r.owe[i])}</td><td>${r.paid[i] ? won(r.paid[i]) : '-'}</td><td class="${d > 0.5 ? 'plus' : d < -0.5 ? 'minus' : ''}">${d > 0.5 ? '+' + won(d) : d < -0.5 ? '-' + won(-d) : '0원'}</td></tr>`;
+        const pd = r.paid[i] + r.feeIn[i];
+        const d = pd - (r.feeTotal && i === F.by ? r.feeTotal : 0) - r.owe[i];
+        return `<tr><td>${esc(p)}</td><td>${won(r.owe[i])}</td><td>${pd ? won(pd) : '-'}</td><td class="${d > 0.5 ? 'plus' : d < -0.5 ? 'minus' : ''}">${d > 0.5 ? '+' + won(d) : d < -0.5 ? '-' + won(-d) : '0원'}</td></tr>`;
       }).join('');
+    $('perNote').hidden = !r.feeTotal;
+    if (r.feeTotal) $('perNote').textContent = `${state.people[F.by] || ''} 님의 주고받을 돈은 걷은 회비 ${won(r.feeTotal)}을 빼고 계산했어요.`;
     $('round100').checked = state.round;
     return r;
   }
@@ -112,6 +164,13 @@
     return location.origin + location.pathname + '#d=' + data;
   }
   // 항목별 내역: 금액, 낸 사람, 나눈 사람 수, 1인 금액, 빠진 사람
+  function feeLine() {
+    const F = state.fee;
+    if (!F.on || !F.amount) return '';
+    const cnt = state.people.length - F.out.filter((i) => i < state.people.length).length;
+    const out = F.out.map((i) => state.people[i]).filter(Boolean);
+    return `미리 걷은 회비 1인 ${won(F.amount)} × ${cnt}명 = ${won(F.amount * cnt)}${state.people[F.by] ? ` (${state.people[F.by]} 받음)` : ''}${out.length ? ` · ${out.join(', ')} 안 냄` : ''}`;
+  }
   function breakdown() {
     return state.items.filter((it) => Number(it.amount) > 0).map((it) => {
       const out = it.out.map((i) => state.people[i]).filter(Boolean);
@@ -121,7 +180,9 @@
   }
   function resultText() {
     const r = calc();
-    const lines = [`[${state.title} 정산] 총 ${won(r.total)}`, '', '■ 항목별 내역'];
+    const lines = [`[${state.title} 정산] 총 ${won(r.total)}`];
+    if (feeLine()) lines.push('', '■ 회비', feeLine());
+    lines.push('', '■ 항목별 내역');
     breakdown().forEach((b) => {
       lines.push(`- ${b.name} ${won(b.amt)}${b.payer ? ` (${b.payer} 결제)` : ''} ÷ ${b.ins}명 = 1인 ${won(b.each)}${b.out.length ? ` · ${b.out.join(', ')} 빠짐` : ''}`);
     });
@@ -134,7 +195,7 @@
   // 이벤트
   if (!view) {
     $('clearSample').addEventListener('click', () => {
-      state = { title: '모임', people: [], items: [{ name: '1차', amount: 0, payer: 0, out: [] }], round: state.round };
+      state = { title: '모임', people: [], items: [{ name: '1차', amount: 0, payer: 0, out: [] }], round: state.round, fee: { on: false, amount: 0, by: 0, out: [] } };
       $('sample').hidden = true; $('title').value = state.title; render(); $('personName').focus();
     });
     $('title').addEventListener('input', (e) => { state.title = e.target.value.trim().slice(0, 30) || '모임'; });
@@ -151,6 +212,9 @@
         it.out = it.out.filter((o) => o !== idx).map((o) => (o > idx ? o - 1 : o));
         if (it.payer === idx) it.payer = 0; else if (it.payer > idx) it.payer--;
       });
+      const F = state.fee;
+      F.out = F.out.filter((o) => o !== idx).map((o) => (o > idx ? o - 1 : o));
+      if (F.by === idx) F.by = 0; else if (F.by > idx) F.by--;
       render();
     });
     $('items').addEventListener('click', (e) => {
@@ -176,6 +240,15 @@
     document.querySelector('.quick').addEventListener('click', (e) => {
       const q = e.target.dataset.q; if (!q) return;
       state.items.push({ name: q, amount: 0, payer: 0, out: [] }); render();
+    });
+    $('feeOn').addEventListener('change', (e) => { state.fee.on = e.target.checked; render(); });
+    $('feeAmt').addEventListener('change', (e) => { state.fee.amount = Number(e.target.value.replace(/[^0-9]/g, '')) || 0; render(); });
+    $('feeBy').addEventListener('change', (e) => { state.fee.by = Number(e.target.value); render(); });
+    $('feeWho').addEventListener('click', (e) => {
+      const t = e.target.dataset.ftog; if (t === undefined) return;
+      const i = Number(t), F = state.fee;
+      F.out = F.out.includes(i) ? F.out.filter((o) => o !== i) : F.out.concat(i);
+      render();
     });
     $('round100').addEventListener('change', (e) => { state.round = e.target.checked; renderResult(); });
     $('copyBtn').addEventListener('click', () => { navigator.clipboard && navigator.clipboard.writeText(resultText()); toast('정산 결과를 복사했어요'); });
