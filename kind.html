@@ -20,9 +20,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dongle:wght@400;700&display=swap">
-  <link rel="stylesheet" href="css/invite.css?v=20261116e">
-  <link rel="stylesheet" href="css/make.css?v=20261116e">
-  <link rel="stylesheet" href="css/site.css?v=20261116e">
+  <link rel="stylesheet" href="css/invite.css?v=20261116f">
+  <link rel="stylesheet" href="css/make.css?v=20261116f">
+  <link rel="stylesheet" href="css/site.css?v=20261116f">
   <!-- 광고: 초대장을 만드는 사람이 보는 화면에만(손님이 여는 invite*.html에는 넣지 않음) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5781805498180631" crossorigin="anonymous"></script>
 </head>
@@ -85,8 +85,8 @@
     <p>© 2026 게임초대장. 게임을 깨면 열리는 무료 모바일 초대장.</p>
   </footer>
 
-  <script src="js/invite-code.js?v=20261116e"></script>
-  <script src="js/kinds.js?v=20261116e"></script>
+  <script src="js/invite-code.js?v=20261116f"></script>
+  <script src="js/kinds.js?v=20261116f"></script>
   <script>
     'use strict';
     (async function () {
@@ -110,6 +110,17 @@
       $('kDesc').textContent = K.desc;
       (K.uses || []).forEach(t => $('kUses').append(el('li', '', t)));
       (K.points || []).forEach(t => $('kPoints').append(el('li', '', t)));
+      // 모임 초대장: 회비 방식과 정산기 안내
+      const isGather = !['wedding', 'notice'].includes(k);
+      if (isGather && K.accountAmount) {
+        $('kPoints').append(el('li', '', '회비 방식 선택: 회비 먼저 걷고 추가 비용 정산, 또는 모임 끝나고 한 번에 정산'));
+      }
+      if (isGather) {
+        const li = el('li', '', '모임이 끝나면 단톡방 정산기로 바로 N빵 (참석자 이름 자동, 술 안 마신 사람·회비 안 낸 사람 빼기) ');
+        const a = el('a', '', '정산기 보기 ›'); a.href = 'split.html';
+        li.append(a);
+        $('kPoints').append(li);
+      }
       const gn = K.game.goodName;
       $('kGame').textContent = `${gn} 받기: 30초 동안 떨어지는 ${gn}${josa(gn, '과', '와')} 하트를 받고 먹구름은 피해요. 화면을 좌우로 밀면 캐릭터가 움직여요. 점수와 상관없이 끝나면 ${DOC}이 열리고, 게임을 건너뛰고 바로 볼 수도 있어요.`;
 
@@ -144,6 +155,7 @@
         ['게임이 어려우면 어떡하죠?', `게임은 언제든 건너뛸 수 있고, 점수와 상관없이 끝나면 ${DOC}이 열려요.`],
         ['보낸 뒤에 내용을 고칠 수 있나요?', '수정용 링크로 들어가 고친 뒤 새 링크를 다시 보내면 돼요. 이미 보낸 링크는 고치기 전 내용으로 보여요.'],
         ['사진도 넣을 수 있나요?', '무료 베타에서는 사진 대신 귀여운 캐릭터 그림이 들어가요. 사진첩은 준비 중이에요.'],
+        ...(['wedding', 'notice'].includes(k) ? [] : [['모임이 끝나고 정산도 되나요?', '네. 초대장 마지막 화면의 "모임 끝나면 정산하기"를 누르면 참석자 이름이 채워진 단톡방 정산기가 열려요. 미리 걷은 회비를 빼고, 술 안 마신 사람이나 2차 안 간 사람을 빼서 누가 누구에게 얼마 보낼지 계산해 카톡으로 공유해요.']]),
         ['입력한 정보는 어디에 저장되나요?', '서버에 저장하지 않고 링크 안에만 들어가요. 링크를 가진 사람은 누구나 볼 수 있으니 계좌·연락처는 필요한 것만 적어 주세요.'],
       ];
       faq.forEach(([qq, a]) => { const d = el('details'); d.append(el('summary', '', qq), el('p', '', a)); $('faq').append(d); });
