@@ -10,7 +10,7 @@ import html, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://gamechodae.co.kr/'
 NAME = '게임초대장'
-VER = '20261116a'
+VER = '20261116b'
 ADS = 'ca-pub-5781805498180631'
 KIND_NAMES = {
     'yearend': '연말 모임 초대장', 'newyear': '신년 모임 초대장', 'xmas': '크리스마스 파티 초대장',
@@ -75,7 +75,7 @@ def head(title, desc, url, depth, ld=None):
 def footer(depth):
     up = '../' * depth
     return f'''  <footer class="site-foot">
-    <nav><a href="{up}about.html">사이트 소개</a><a href="{up}guide/">초대장 가이드</a><a href="{up}privacy.html">개인정보처리방침</a><a href="{up}contact.html">문의</a></nav>
+    <nav><a href="{up}about.html">사이트 소개</a><a href="{up}guide/">초대장 가이드</a><a href="{up}split.html">단톡방 정산기</a><a href="{up}privacy.html">개인정보처리방침</a><a href="{up}contact.html">문의</a></nav>
     <p class="other-game">다른 게임: <a href="https://nyangtrain.com/" target="_blank" rel="noopener">냥이꼬리기차</a></p>
     <p>© 2026 {NAME}. 게임을 깨면 열리는 무료 모바일 초대장.</p>
   </footer>
@@ -98,7 +98,13 @@ def main():
               'mainEntityOfPage': url}
         kind = g.get('kind')
         cta = ''
-        if kind in KIND_NAMES:
+        if kind == 'split':
+            cta = '''      <aside class="g-cta">
+        <p><b>단톡방 정산기</b>, 술 안 마신 사람 빼고 N빵까지 1분이면 끝나요.</p>
+        <a class="btn primary" href="../split.html">정산기 바로 쓰기</a>
+      </aside>
+'''
+        elif kind in KIND_NAMES:
             cta = f'''      <aside class="g-cta">
         <p><b>{KIND_NAMES[kind]}</b>, 문구만 고르면 1분이면 끝나요.</p>
         <a class="btn primary" href="../make.html?k={kind}">무료로 만들기</a>
@@ -140,7 +146,7 @@ def main():
 ''' + footer(0) + '</body>\n</html>\n'
         open(os.path.join(ROOT, p['slug'] + '.html'), 'w', encoding='utf-8').write(out)
     # 기존 페이지에 바닥글 넣기(있으면 바꾸기)
-    for fn in ['index.html', 'kind.html', 'make.html']:
+    for fn in ['index.html', 'kind.html', 'make.html', 'split.html']:
         f = os.path.join(ROOT, fn)
         s = open(f, encoding='utf-8').read()
         s = FOOTER_RE.sub('', s)

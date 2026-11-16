@@ -108,3 +108,14 @@
 .g-rel-list li { margin: 6px 0; }
 .g-rel-list a, .home-guides .more { color: var(--px-accent); }
 .home-guides .more { font-size: 14px; font-weight: 700; text-decoration: none; }
+
+/* 첫 화면: 정산기 카드 */
+.split-card { display: block; position: relative; text-decoration: none; color: var(--px-ink); margin: 0 0 20px; border-color: var(--px-accent); box-shadow: 0 4px 0 #f6b5c3; }
+.split-card:active { transform: translateY(2px); box-shadow: 0 2px 0 #f6b5c3; }
+.split-card .sc-tag { display: inline-block; font-size: 12px; font-weight: 700; color: var(--px-accent); background: #ffe6ec; border-radius: 999px; padding: 2px 10px; }
+.split-card b { display: block; font-family: 'Dongle', var(--sans); font-size: 32px; line-height: 1.1; margin: 6px 0 2px; }
+.split-card .sc-desc { display: block; font-size: 14px; color: var(--px-muted); max-width: 520px; }
+.split-card .sc-eg { display: flex; justify-content: space-between; max-width: 260px; margin: 10px 0 4px; padding: 8px 12px; border-radius: 10px; background: #fff6d6; font-weight: 700; font-size: 15px; }
+.split-card .sc-eg i { font-style: normal; }
+.split-card .go { display: block; font-size: 14px; font-weight: 700; color: var(--px-accent); margin-top: 6px; }
+@media (min-width: 640px) { .split-card .sc-eg { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); margin: 0; min-width: 200px; } .split-card .sc-desc { max-width: 60%; } }
