@@ -100,7 +100,8 @@
     $('feeBy').innerHTML = state.people.map((p, i) => `<option value="${i}"${i === F.by ? ' selected' : ''}>${esc(p)}</option>`).join('');
     $('feeWho').innerHTML = state.people.map((p, i) => `<button type="button" class="chip${F.out.includes(i) ? '' : ' on'}" data-ftog="${i}">${esc(p)}</button>`).join('');
     const cnt = state.people.length - F.out.filter((i) => i < state.people.length).length;
-    $('feeNote').textContent = F.amount ? `${cnt}명 × ${won(F.amount)} = ${won(F.amount * cnt)} 걷음` : '1인 회비를 적어 주세요';
+    const notPaid = F.out.map((i) => state.people[i]).filter(Boolean);
+    $('feeNote').textContent = F.amount ? `${cnt}명 × ${won(F.amount)} = ${won(F.amount * cnt)} 걷음${notPaid.length ? ` · ${notPaid.join(', ')} 안 냄(정산 때 같이 받아요)` : ''}` : '1인 회비를 적어 주세요';
   }
 
   function renderEditor() {
