@@ -361,15 +361,19 @@
     if (!guide.children.length) guide.hidden = true;
 
     // 계좌: 신랑 측 / 신부 측 접기
-    $('accNote').textContent = K.accountNote;
-    if (K.accountAmount) $('accHead').textContent = '회비 안내';
+    const feeLater = K.accountAmount && cfg.fee === 'later';
+    const hasAmt = (cfg.accounts || []).some(a => a.amount);
+    $('accNote').textContent = feeLater
+      ? '회비는 미리 걷지 않아요. 모임이 끝나고 쓴 만큼 나눠서 정산해요.'
+      : K.accountNote + (K.accountAmount && hasAmt ? ' 모자라거나 더 쓴 돈은 모임이 끝나고 정산해요.' : '');
+    if (K.accountAmount) $('accHead').textContent = feeLater ? '정산 안내' : '회비 안내';
     const acc = $('accounts');
     const sides = {};
     (cfg.accounts || []).forEach(a => { (sides[a.side] = sides[a.side] || []).push(a); });
     Object.entries(sides).forEach(([side, list]) => {
       const box = el('details', 'acc-group');
       const amt = list.map(a => a.amount).filter(Boolean)[0];
-      box.append(el('summary', '', amt ? `${side} ${amt}` : `${side} 계좌번호`));
+      box.append(el('summary', '', amt ? `${side} ${amt}` : feeLater ? '정산 받을 계좌' : `${side} 계좌번호`));
       if (amt) box.open = true;
       list.forEach(a => {
         const row = el('div', 'account');
@@ -384,7 +388,7 @@
       });
       acc.append(box);
     });
-    if (!acc.children.length) $('accountSec').hidden = true;
+    if (!acc.children.length && !feeLater) $('accountSec').hidden = true;
 
     const contacts = $('contacts');
     const callLabel = i => (two ? `${K.people[i].label}에게 연락` : '전화하기');
@@ -539,6 +543,13 @@
     const q = new URLSearchParams();
     q.set('t', String(cfg.title || K.short || '모임').slice(0, 30));
     if (names.length) q.set('names', names.slice(0, 30).join(','));
+    // 회비를 먼저 걷는 초대장이면 1인 회비와 받은 사람(예금주)도 넘긴다
+    if (cfg.fee !== 'later') {
+      const fa = (cfg.accounts || []).find(a => a.amount);
+      // "1인 30,000원"처럼 적으니 숫자 중 가장 큰 것을 1인 회비로 본다
+      const n = fa && Math.max(0, ...(String(fa.amount).match(/\d[\d,]*/g) || []).map(x => Number(x.replace(/,/g, ''))));
+      if (n) { q.set('fee', n); if (fa.holder) q.set('feeby', fa.holder.slice(0, 8)); }
+    }
     return `split.html?${q}`;
   }
   var splitRows;

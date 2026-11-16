@@ -78,3 +78,13 @@ body.view .sp-faq, body.view .sample-bar { display: none; }
 .breakdown .bd-top { display: flex; justify-content: space-between; font-size: 15px; }
 .breakdown small { display: block; font-size: 13px; color: var(--px-muted); }
 .breakdown .empty { color: var(--px-muted); font-size: 14px; }
+.fee-box { border: 1.5px dashed #e7c3ca; border-radius: 12px; padding: 10px 12px; margin-bottom: 10px; background: #fffaf3; }
+.fee-check { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 15px; margin: 0; }
+.fee-check input { width: 18px; height: 18px; margin: 0; }
+.fee-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; font-size: 14px; color: var(--px-muted); }
+.fee-line input { width: 110px; text-align: right; }
+.fee-line select { padding: 5px 8px; font-size: 15px; }
+#feeRow[hidden], .fee-sum[hidden], .fee-bd[hidden], #perNote[hidden] { display: none; }
+.fee-sum { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 6px 12px 0; font-size: 14px; color: var(--px-muted); }
+.fee-sum b { color: var(--px-accent); }
+.fee-bd { margin: 0; padding: 7px 4px; border-bottom: 1px dashed #ecdde2; font-size: 14px; font-weight: 600; }
