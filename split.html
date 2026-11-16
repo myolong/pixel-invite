@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>단톡방 정산기 · N빵 계산기 - 술 안 마신 사람 빼고 모임비 나누기 | 게임초대장</title>
+  <meta name="description" content="모임비·여행비를 사람마다 다르게 N빵 해요. 술값은 마신 사람만, 2차는 간 사람만 나누고, 누가 누구에게 얼마 보낼지 바로 계산해 카톡으로 공유해요. 가입 없이 무료.">
+  <link rel="canonical" href="https://gamechodae.co.kr/split.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://gamechodae.co.kr/split.html">
+  <meta property="og:site_name" content="게임초대장">
+  <meta property="og:title" content="단톡방 정산기 · N빵 계산기">
+  <meta property="og:description" content="술 안 마신 사람 빼고, 2차는 간 사람만. 누가 누구에게 얼마 보낼지 바로 계산해요.">
+  <meta property="og:image" content="https://gamechodae.co.kr/assets/og/home.png?v=4">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#fff3f5">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dongle:wght@400;700&display=swap">
+  <link rel="stylesheet" href="css/invite.css?v=20261116b">
+  <link rel="stylesheet" href="css/make.css?v=20261116b">
+  <link rel="stylesheet" href="css/site.css?v=20261116b">
+  <link rel="stylesheet" href="css/split.css?v=20261116b">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5781805498180631" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "술 안 마신 사람은 어떻게 빼나요?", "acceptedAnswer": {"@type": "Answer", "text": "술값 항목을 따로 만들고 그 항목에서 안 마신 사람 이름을 누르면 그 사람을 빼고 나눠요."}}, {"@type": "Question", "name": "여러 사람이 나눠서 계산했어도 되나요?", "acceptedAnswer": {"@type": "Answer", "text": "네. 항목마다 낸 사람을 따로 고르면 누가 누구에게 얼마 보낼지 한 번에 정리해요."}}, {"@type": "Question", "name": "입력한 내용이 저장되나요?", "acceptedAnswer": {"@type": "Answer", "text": "서버에 저장하지 않아요. 공유 링크 안에만 담겨서 링크를 받은 사람만 결과를 볼 수 있어요."}}, {"@type": "Question", "name": "카카오페이 정산하기와 뭐가 다른가요?", "acceptedAnswer": {"@type": "Answer", "text": "카카오페이 정산하기는 1/N이나 금액 직접 입력으로 송금을 요청해요. 이 정산기는 그 전에 항목별로 사람마다 다른 금액을 계산해 줘요. 계산 결과를 보고 송금 요청을 보내면 돼요."}}]}</script>
+</head>
+<body class="maker">
+  <header class="mk-head sp-head">
+    <a class="mk-home" href="index.html">게임초대장</a>
+    <nav class="mk-nav"><a href="guide/">초대장 가이드</a><a href="index.html">초대장 만들기</a></nav>
+  </header>
+  <main class="sp">
+    <section class="sp-intro" id="intro">
+      <h1>단톡방 정산기 <span>· N빵 계산기</span></h1>
+      <p>술값은 마신 사람만, 2차는 간 사람만. 사람마다 다르게 나누고 누가 누구에게 얼마 보낼지 한 번에 계산해요. 결과는 링크 하나로 단톡방에 공유돼요.</p>
+    </section>
+
+    <div class="sp-grid">
+      <div class="sp-left" id="editor">
+        <div class="sample-bar" id="sample">예시가 들어 있어요. 숫자를 바꿔 보거나 <button type="button" id="clearSample">비우고 새로 시작</button></div>
+        <section class="mk-card">
+          <h2><span class="step">1</span> 누가 왔나요</h2>
+          <input class="title-in" id="title" maxlength="30" placeholder="모임 이름 (예: 연말 모임)" aria-label="모임 이름">
+          <div class="people" id="people"></div>
+          <form class="add-person" id="addPerson">
+            <input id="personName" maxlength="8" placeholder="이름 추가" aria-label="이름 추가">
+            <button class="mini" type="submit">추가</button>
+          </form>
+          <p class="hint small" id="fromInvite" hidden></p>
+        </section>
+
+        <section class="mk-card">
+          <h2><span class="step">2</span> 어디에 썼나요</h2>
+          <div id="items"></div>
+          <button class="mini add-item" id="addItem" type="button">+ 항목 추가</button>
+          <div class="quick">
+            <span>빠른 추가</span>
+            <button class="chip" type="button" data-q="1차 식사">1차 식사</button>
+            <button class="chip" type="button" data-q="술값" data-drink="1">술값</button>
+            <button class="chip" type="button" data-q="2차">2차</button>
+            <button class="chip" type="button" data-q="숙소">숙소</button>
+            <button class="chip" type="button" data-q="택시">택시</button>
+          </div>
+        </section>
+      </div>
+
+      <aside class="sp-right">
+        <section class="mk-card result" id="result">
+          <h2><span class="step">3</span> 정산 결과</h2>
+          <div class="sum-row"><span>총 쓴 돈</span><b id="total">0원</b></div>
+          <h3>이렇게 보내면 끝</h3>
+          <ol class="transfers" id="transfers"></ol>
+          <h3>사람별 부담액</h3>
+          <table class="per" id="per"></table>
+          <label class="round"><input type="checkbox" id="round100" checked> 100원 단위로 맞추기 (남는 돈은 받는 사람 몫)</label>
+          <div class="share">
+            <button class="btn primary" type="button" id="shareBtn">카톡으로 정산 결과 보내기</button>
+            <button class="btn" type="button" id="copyBtn">결과 글로 복사</button>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="mk-card faq sp-faq">
+      <h2>자주 묻는 질문</h2>
+      <details><summary>술 안 마신 사람은 어떻게 빼나요?</summary><p>술값 항목을 따로 만들고 그 항목에서 안 마신 사람 이름을 누르면 그 사람을 빼고 나눠요.</p></details>
+      <details><summary>여러 사람이 나눠서 계산했어도 되나요?</summary><p>네. 항목마다 낸 사람을 따로 고르면 누가 누구에게 얼마 보낼지 한 번에 정리해요.</p></details>
+      <details><summary>입력한 내용이 저장되나요?</summary><p>서버에 저장하지 않아요. 공유 링크 안에만 담겨서 링크를 받은 사람만 결과를 볼 수 있어요.</p></details>
+      <details><summary>카카오페이 정산하기와 뭐가 다른가요?</summary><p>카카오페이 정산하기는 1/N이나 금액 직접 입력으로 송금을 요청해요. 이 정산기는 그 전에 항목별로 사람마다 다른 금액을 계산해 줘요. 계산 결과를 보고 송금 요청을 보내면 돼요.</p></details>
+      <p class="hint small">더 자세한 요령은 <a href="guide/split-bill-guide.html">모임비 N빵 정산하는 법</a>에 정리했어요.</p>
+    </section>
+
+    <section class="mk-note sp-note">
+      <h2>이렇게 쓰세요</h2>
+      <ul>
+        <li>술을 안 마신 사람은 "술값" 항목에서 이름을 눌러 빼면 돼요.</li>
+        <li>먼저 계산한 사람(낸 사람)을 고르면 누가 누구에게 보낼지 최소 횟수로 정리돼요.</li>
+        <li>입력한 내용은 서버에 저장되지 않아요. 공유 링크 안에만 담겨요.</li>
+      </ul>
+    </section>
+  </main>
+  <footer class="site-foot">
+    <nav><a href="about.html">사이트 소개</a><a href="guide/">초대장 가이드</a><a href="split.html">단톡방 정산기</a><a href="privacy.html">개인정보처리방침</a><a href="contact.html">문의</a></nav>
+    <p class="other-game">다른 게임: <a href="https://nyangtrain.com/" target="_blank" rel="noopener">냥이꼬리기차</a></p>
+    <p>© 2026 게임초대장. 게임을 깨면 열리는 무료 모바일 초대장.</p>
+  </footer>
+  <div class="toast" id="toast" hidden></div>
+  <script src="js/split.js?v=20261116b"></script>
+</body>
+</html>

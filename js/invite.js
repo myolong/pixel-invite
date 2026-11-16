@@ -406,6 +406,12 @@
     });
     $('makeLink').href = `kind.html?k=${cfg.kind || 'wedding'}`;
     if (window.top !== window) $('makeLink').target = '_top';
+    // 모임 초대장이면 정산기로 이어 주기(결혼식·결혼 알림장 제외)
+    if (!['wedding', 'notice'].includes(cfg.kind || 'wedding')) {
+      $('splitLink').hidden = false;
+      setSplitLink();
+      if (window.top !== window) $('splitLink').target = '_top';
+    }
     $('replayBtn').addEventListener('click', () => {
       backToStage();
       startGame();
@@ -520,6 +526,29 @@
     a.click();
   }
 
+  // ───────── 정산기 연결 ─────────
+  // 참석자 이름(일행은 "이름+1")과 모임 이름을 split.html로 넘긴다.
+  function splitHref(rows) {
+    const names = [];
+    rows.filter(r => r.attend).forEach(r => {
+      const n = String(r.name || '').replace(/,/g, ' ').trim().slice(0, 8);
+      if (!n) return;
+      names.push(n);
+      for (let k = 1; k < Math.min(r.people || 1, 10); k++) names.push(`${n}+${k}`);
+    });
+    const q = new URLSearchParams();
+    q.set('t', String(cfg.title || K.short || '모임').slice(0, 30));
+    if (names.length) q.set('names', names.slice(0, 30).join(','));
+    return `split.html?${q}`;
+  }
+  var splitRows;
+  function setSplitLink(rows) {
+    if (rows) splitRows = rows;
+    if (!splitRows) splitRows = [];
+    const a = $('splitLink');
+    if (a && !a.hidden) a.href = splitHref(splitRows);
+  }
+
   // ───────── 참석 여부 ─────────
   function setupRsvp(el) {
     const R = cfg.rsvp;
@@ -572,6 +601,13 @@
         list.append(li);
       });
       if (rows.length) box.append(list);
+      if (yes.length && !['wedding', 'notice'].includes(cfg.kind || 'wedding')) {
+        const go = el('a', 'rsvp-split', '이 명단으로 모임비 정산하기 ›');
+        go.href = splitHref(rows);
+        if (window.top !== window) go.target = '_top';
+        box.append(go);
+        setSplitLink(rows);
+      }
       box.hidden = false;
     };
     const loadList = async () => {
