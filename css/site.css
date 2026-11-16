@@ -73,6 +73,7 @@
 .site-foot nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; margin-bottom: 8px; }
 .site-foot a { color: var(--px-muted); }
 .site-foot p { margin: 0; }
+.site-foot .other-game { margin-bottom: 6px; }
 
 /* 안내 글 */
 .guide-page { max-width: 720px; }

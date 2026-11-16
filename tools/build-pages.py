@@ -10,7 +10,7 @@ import html, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://gamechodae.co.kr/'
 NAME = '게임초대장'
-VER = '20261112c'
+VER = '20261116a'
 ADS = 'ca-pub-5781805498180631'
 KIND_NAMES = {
     'yearend': '연말 모임 초대장', 'newyear': '신년 모임 초대장', 'xmas': '크리스마스 파티 초대장',
@@ -76,6 +76,7 @@ def footer(depth):
     up = '../' * depth
     return f'''  <footer class="site-foot">
     <nav><a href="{up}about.html">사이트 소개</a><a href="{up}guide/">초대장 가이드</a><a href="{up}privacy.html">개인정보처리방침</a><a href="{up}contact.html">문의</a></nav>
+    <p class="other-game">다른 게임: <a href="https://nyangtrain.com/" target="_blank" rel="noopener">냥이꼬리기차</a></p>
     <p>© 2026 {NAME}. 게임을 깨면 열리는 무료 모바일 초대장.</p>
   </footer>
 '''
