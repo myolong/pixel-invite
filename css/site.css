@@ -126,3 +126,15 @@
 .split-card .go { display: block; font-size: 14px; font-weight: 700; color: var(--px-accent); margin-top: 6px; }
 @media (min-width: 640px) { .split-card .sc-eg { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); margin: 0; min-width: 200px; } .split-card .sc-desc { max-width: 60%; } }
 .points a { color: var(--px-accent); font-weight: 700; }
+/* 상단 게임 버튼 */
+.mk-head { gap: 10px; }
+.mk-nav { margin-left: auto; }
+.hg { display: flex; gap: 6px; }
+.hg a { display: flex; align-items: center; gap: 4px; padding: 4px 10px 4px 5px; border-radius: 12px; background: #fff; border: 1.5px solid var(--px-ink); box-shadow: 0 2px 0 var(--px-accent); font: 700 12px var(--sans); color: var(--px-ink); text-decoration: none; white-space: nowrap; }
+.hg a:hover { transform: translateY(-1px); }
+.hg img { width: 24px; height: 24px; }
+@media (max-width: 600px) {
+  .mk-head { flex-wrap: wrap; }
+  .hg { order: 3; width: 100%; margin-top: 8px; }
+  .hg a { flex: 1; justify-content: center; }
+}
