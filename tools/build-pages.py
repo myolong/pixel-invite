@@ -10,7 +10,7 @@ import html, json, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://gamechodae.co.kr/'
 NAME = '게임초대장'
-VER = '20261123a'
+VER = '20261123b'
 ADS = 'ca-pub-5781805498180631'
 KIND_NAMES = {
     'yearend': '연말 모임 초대장', 'newyear': '신년 모임 초대장', 'xmas': '크리스마스 파티 초대장',
@@ -72,6 +72,7 @@ def head(title, desc, url, depth, ld=None):
   <header class="mk-head">
     <a class="mk-home" href="{up}index.html">{NAME}</a>
     <nav class="mk-nav"><a href="{up}guide/">초대장 가이드</a><a href="{up}make.html">만들기</a></nav>
+    <div class="hg"><a href="https://nyangtrain.com/" target="_blank" rel="noopener"><img src="/assets/games/nyangtrain.svg" alt="" width="24" height="24">냥이 꼬리기차</a><a href="https://myolong.github.io/haru/" target="_blank" rel="noopener"><img src="/assets/games/bungeo.svg" alt="" width="24" height="24">붕어빵 사장님</a></div>
   </header>
 '''
 
